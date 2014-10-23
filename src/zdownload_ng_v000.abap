@@ -8601,6 +8601,7 @@ form addGenericStyles using iLocHeader like dumiHtml[]
   append `   border-left-style: solid;` to iLocHeader.
   append `  }` to iLocHeader.
   append '</style>' to iLocHeader.
+  append `<link rel="stylesheet" type="text/css" href="default.css">` to iLocHeader.
 endform.
 
 *----------------------------------------------------------------------------------------------------------------------
