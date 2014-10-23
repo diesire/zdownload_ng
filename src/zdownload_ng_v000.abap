@@ -263,7 +263,7 @@ data: objRuntimeError type ref to cx_root.
 *----------------------------------------------------------------------------------------------------------------------
 *  Constants
 *----------------------------------------------------------------------------------------------------------------------
-constants: VERSIONNO type string value '1.5.2'.
+constants: VERSIONNO type string value '000'.
 constants: TABLES type string value 'TABLES'.
 constants: TABLE type string value 'TABLE'.
 constants: LIKE type string value 'LIKE'.
@@ -8636,9 +8636,8 @@ endform.                                                                        
 * buildFooterMessage...Returns a footer message based on the output file type.
 *----------------------------------------------------------------------------------------------------------------------
 form buildFooterMessage using returnMessage.
-
-  concatenate `Extracted by Mass Download version `
-              VERSIONNO ` - E.G.Mellodew. 1998-`
+  concatenate `Extracted by Mass Download NG version `
+              VERSIONNO ` - <a class="h-card"href="https://github.com/diesire">Pablo Escalada</a>. 2014-`
               sy-datum+0(4) `. Sap Release ` sy-saprl into returnMessage.
 endform.                                                                                            "buildFooterMessage
 
