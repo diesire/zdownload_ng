@@ -7661,6 +7661,7 @@ data: inCommentMode type abap_bool value 'X'.
   append `     <table class="innerTable">` to htmlTable.
   append `       <tr>` to htmlTable.
   append `          <td>` to htmlTable.
+  append `          <div id="editor">` to htmlTable.
 
 
   loop at iContents into waContent.
@@ -7881,6 +7882,7 @@ data: inCommentMode type abap_bool value 'X'.
   endloop.
 
   append `            </div>` to htmlTable.
+  append `          </div>` to htmlTable.
   append `          </td>`  to htmlTable.
   append `        </tr>` to htmlTable.
   append `      </table>` to htmlTable.
@@ -8616,6 +8618,15 @@ data: waFooter type string.
   append waFooter to iLocFooter.
   append `   </tr>` to iLocFooter.
   append `</table>` to iLocFooter.
+  append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>` to iLocFooter.
+  append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/mode-abap.js" type="text/javascript" charset="utf-8"></script>` to iLocFooter.
+  append '<script>' to iLocFooter.
+  append '  var editor = ace.edit("editor");' to iLocFooter.
+  append '  editor.setReadOnly(true);	' to iLocFooter.
+  append '  editor.setTheme("ace/theme/eclipse");' to iLocFooter.
+  append '  editor.setOptions({ maxLines: Infinity });' to iLocFooter.
+  append '  editor.getSession().setMode("ace/mode/abap");' to iLocFooter.
+  append '</script>' to iLocFooter.
   append '</body>' to iLocFooter.
   append '</html>' to iLocFooter.
 endform.                                                                                                 "addHTMLFooter
