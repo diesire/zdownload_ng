@@ -302,6 +302,9 @@ constants: UNIX type string value 'UNIX'.
 constants: NON_UNIX type string value 'not UNIX'.
 constants: HTMLEXTENSION type string value 'html'.
 constants: TEXTEXTENSION type string value 'txt'.
+constants: ABAP_MODE type string value 'abap'.
+constants: XSLT_MODE type string value 'xml'.
+constants: TEXT_MODE type string value 'text'.
 constants: SS_CODE type c value 'C'.
 constants: SS_TABLE type c value 'T'.
 
@@ -1057,7 +1060,8 @@ end-of-selection.
                                                  pProMess
                                                  serverFileSystem
                                                  pBack
-                                                 pExtCSS.
+                                                 pExtCSS
+                                                 philight.
               clear iSingleMessageClass[].
             endat.
           endloop.
@@ -1085,7 +1089,8 @@ end-of-selection.
                                            pProMess
                                            serverFileSystem
                                            pBack
-                                           pExtCSS.
+                                           pExtCSS
+                                           philight.
         endif.
 
 *     Download Classes
@@ -1110,7 +1115,8 @@ end-of-selection.
                                         pProMess
                                         serverFileSystem
                                         pBack
-                                        pExtCSS.
+                                        pExtCSS
+                                        philight.
         endif.
 
 *     Download programs
@@ -1135,7 +1141,8 @@ end-of-selection.
                                          pProMess
                                          serverFileSystem
                                          pBack
-                                         pExtCSS.
+                                         pExtCSS
+                                         philight.
           endif.
 
       when rXSLT.
@@ -1153,7 +1160,8 @@ end-of-selection.
                                      pProMess
                                      serverFileSystem
                                      pBack
-                                     pExtCSS.
+                                     pExtCSS
+                                     philight.
         endif.
     endcase.
 
@@ -4900,7 +4908,8 @@ form downloadMessageClass using iLocMessages like iMessages[]
                                 value(displayProgressMessage)
                                 value(locServerFileSystem)
                                 value(addBackground) type abap_bool
-                                value(externalCSS) type abap_bool.
+                                value(externalCSS) type abap_bool
+                                value(highlight) type abap_bool.
 
 data: htmlPageName type string.
 data: newFilenameOnly type string.
@@ -4934,7 +4943,9 @@ data: completeSavePath type string.
                                     getIncludes
                                     getDictStructures
                                     addBackground
-                                    externalCSS.
+                                    externalCSS
+                                    highlight
+                                    text_mode.
   endif.
 
   perform buildFilename using userFilePath
@@ -5040,7 +5051,8 @@ form downloadFunctions using iLocFunctions like iFunctions[]
                              value(displayProgressMessage)
                              value(locServerFileSystem)
                              value(addBackground) type abap_bool
-                             value(externalCSS) type abap_bool.
+                             value(externalCSS) type abap_bool
+                             value(highlight) type abap_bool.
 
 data: mainSubdir type string.
 data: incSubdir type string.
@@ -5098,7 +5110,8 @@ data: functionDocumentationExists type abap_bool value FALSE.
                                           displayProgressMessage
                                           locServerFileSystem
                                           addBackground
-                                          externalCSS.
+                                          externalCSS
+                                          highlight.
 
 *   Download top include
     perform readIncludeAndDownload using iEmptyTextelements[]
@@ -5121,7 +5134,8 @@ data: functionDocumentationExists type abap_bool value FALSE.
                                          displayProgressMessage
                                          locServerFileSystem
                                          addBackground
-                                         externalCSS.
+                                         externalCSS
+                                         highlight.
 
 *   Download screens.
     if not <waFunction>-iScreenFlow[] is initial.
@@ -5170,7 +5184,8 @@ data: functionDocumentationExists type abap_bool value FALSE.
                                            displayProgressMessage
                                            locServerFileSystem
                                            addBackground
-                                           externalCSS.
+                                           externalCSS
+                                           highlight.
 
     endloop.
 
@@ -5221,7 +5236,8 @@ data: functionDocumentationExists type abap_bool value FALSE.
                                  displayProgressMessage
                                  serverFileSystem
                                  addBackground
-                                 externalCSS.
+                                 externalCSS
+                                 highlight.
     endif.
   endloop.
 endform.                                                                              "downloadFunctions
@@ -5249,7 +5265,8 @@ form readIncludeAndDownload using iLocTextElements like dumiTextTab[]
                                   value(displayProgressMessage)
                                   value(locServerFileSystem)
                                   value(addBackground) type abap_bool
-                                  value(externalCSS) type abap_bool.
+                                  value(externalCSS) type abap_bool
+                                  value(highlight) type abap_bool.
 
 data: iLines type standard table of string with header line.
 data: localFilenameWithPath type string.
@@ -5302,7 +5319,9 @@ data: completeSavePath type string.
                                     getIncludes
                                     getDictStructures
                                     addBackground
-                                    externalCSS.
+                                    externalCSS
+                                    highlight
+                                    abap_mode.
   endif.
 
   if functionName is initial.
@@ -5361,7 +5380,8 @@ form readClassAndDownload using waLocClass type tClass
                                 value(displayProgressMessage)
                                 value(locServerFileSystem)
                                 value(addBackground) type abap_bool
-                                value(externalCSS) type abap_bool.
+                                value(externalCSS) type abap_bool
+                                value(highlight) type abap_bool.
 
 data: iTempLines type standard table of string with header line.
 data: iLines type standard table of string with header line.
@@ -5486,7 +5506,8 @@ data: completeSavePath type string.
                                     customerNameRange
                                     getDictStructures
                                     addBackground
-                                    externalCSS.
+                                    externalCSS
+                                    highlight.
   endif.
 
   if functionName is initial.
@@ -5546,7 +5567,8 @@ form readMethodAndDownload using waLocMethod type tMethod
                                 value(displayProgressMessage)
                                 value(locServerFileSystem)
                                 value(addBackground) type abap_bool
-                                value(externalCSS) type abap_bool.
+                                value(externalCSS) type abap_bool
+                                value(highlight) type abap_bool.
 
 data: iLines type standard table of string with header line.
 data: iTempLines type standard table of string with header line.
@@ -5595,7 +5617,9 @@ data: completeSavePath type string.
                                     getIncludes
                                     getDictStructures
                                     addBackground
-                                    externalCSS.
+                                    externalCSS
+                                    highlight
+                                    abap_mode.
   endif.
 
   if functionName is initial.
@@ -5662,7 +5686,8 @@ form readXsltAndDownload using value(xsltName)
                                value(displayProgressMessage)
                                value(locServerFileSystem)
                                value(addBackground) type abap_bool
-                               value(externalCSS) type abap_bool.
+                               value(externalCSS) type abap_bool
+                               value(highlight) type abap_bool.
 
 data: iLines type standard table of string with header line.
 data: iLocXsltSource type o2pageline_table.
@@ -5703,7 +5728,9 @@ data: completeSavePath type string.
                                       space
                                       space
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      highlight
+                                      XSLT_MODE.
     endif.
 
     perform buildfilename using userFilePath
@@ -5760,7 +5787,8 @@ form readFunctionAndDownload using iLocTextElements like dumiTextTab[]
                                    value(displayProgressMessage)
                                    value(locServerFileSystem)
                                    value(addBackground) type abap_bool
-                                   value(externalCSS) type abap_bool.
+                                   value(externalCSS) type abap_bool
+                                   value(highlight) type abap_bool.
 
 data: iLines type standard table of string with header line.
 data: localFilenameWithPath type string.
@@ -5800,7 +5828,8 @@ data: completeSavePath type string.
                                         getIncludes
                                         getDictStructures
                                         addBackground
-                                        externalCSS.
+                                        externalCSS
+                                        highlight.
   endif.
 
   perform buildFilename using userFilePath
@@ -6560,7 +6589,9 @@ data: completeSavePath type string.
                                       space
                                       space
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      space
+                                      abap_mode.
     endif.
 
     perform buildFilename using userFilePath
@@ -6677,7 +6708,9 @@ data: completeSavePath type string.
                                       space
                                       space
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      space
+                                      abap_mode.
     endif.
 
     perform buildFilename using userFilePath
@@ -6937,7 +6970,8 @@ form downloadPrograms using iLocProgram like iPrograms[]
                             value(displayProgressMessage)
                             value(locServerFileSystem)
                             value(addBackground) type abap_bool
-                            value(externalCSS) type abap_bool.
+                            value(externalCSS) type abap_bool
+                            value(highlight) type abap_bool.
 
 
 data: iProgFunctions type standard table of tFunction with header line.
@@ -6983,7 +7017,8 @@ data: locFileExtension type string.
                                          displayProgressMessage
                                          locServerFileSystem
                                          addBackground
-                                         externalCSS.
+                                         externalCSS
+                                         highlight.
 
 *   Download screens.
     if not <waProgram>-iScreenFlow[] is initial.
@@ -7032,7 +7067,8 @@ data: locFileExtension type string.
                                            displayProgressMessage
                                            locServerFileSystem
                                            addBackground
-                                           externalCSS.
+                                           externalCSS
+                                           highlight.
 
     endloop.
 
@@ -7083,7 +7119,8 @@ data: locFileExtension type string.
                                  displayProgressMessage
                                  serverFileSystem
                                  addBackground
-                                 externalCSS.
+                                 externalCSS
+                                 highlight.
     endif.
 
 *   Download any functions used by these programs
@@ -7111,7 +7148,8 @@ data: locFileExtension type string.
                                       displayProgressMessage
                                       locServerFileSystem
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      highlight.
        clear iProgFunctions[].
      endif.
   endloop.
@@ -7139,7 +7177,8 @@ form downloadClasses using iLocClasses like iClasses[]
                            value(displayProgressMessage)
                            value(locServerFileSystem)
                            value(addBackground) type abap_bool
-                           value(externalCSS) type abap_bool.
+                           value(externalCSS) type abap_bool
+                           value(highlight) type abap_bool.
 
 
 data: iClassFunctions type standard table of tFunction with header line.
@@ -7168,7 +7207,8 @@ data: classDocumentationExists type abap_bool value FALSE.
                                         displayProgressMessage
                                         locServerFileSystem
                                         addBackground
-                                        externalCSS.
+                                        externalCSS
+                                        highlight.
 
 
 *   Download all of the methods
@@ -7191,7 +7231,8 @@ data: classDocumentationExists type abap_bool value FALSE.
                                         displayProgressMessage
                                         locServerFileSystem
                                         addBackground
-                                        externalCSS.
+                                        externalCSS
+                                        highlight.
 
     endloop.
 
@@ -7242,7 +7283,8 @@ data: classDocumentationExists type abap_bool value FALSE.
                                  displayProgressMessage
                                  serverFileSystem
                                  addBackground
-                                 externalCSS.
+                                 externalCSS
+                                 highlight.
     endif.
 
 *   Download any functions used by these programs
@@ -7270,7 +7312,8 @@ data: classDocumentationExists type abap_bool value FALSE.
                                       displayProgressMessage
                                       locServerFileSystem
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      highlight.
        clear iClassFunctions[].
      endif.
 
@@ -7307,7 +7350,8 @@ form downloadXslt using iLocTransformation like iTransformations[]
                             value(displayProgressMessage)
                             value(locServerFileSystem)
                             value(addBackground) type abap_bool
-                            value(externalCSS) type abap_bool.
+                            value(externalCSS) type abap_bool
+                            value(highlight) type abap_bool.
 
 field-symbols: <waTransformation> type tTransformation.
 
@@ -7327,7 +7371,8 @@ field-symbols: <waTransformation> type tTransformation.
                                       displayProgressMessage
                                       locServerFileSystem
                                       addBackground
-                                      externalCSS.
+                                      externalCSS
+                                      highlight.
   endloop.
 endform.                                                                                              "downloadXSLT
 
@@ -7493,7 +7538,9 @@ data: wFieldBaseType.
                                 iLocHtml[].
 
 * Add a html footer to the table
-  perform addHtmlFooter using iLocHtml[].
+  perform addHtmlFooter using iLocHtml[]
+                              space
+                              space.
 endform.                                                                                               "convertDDToHTML
 
 *----------------------------------------------------------------------------------------------------------------------
@@ -7668,7 +7715,9 @@ form convertTableTypeToHtml using iLocTableTypes like iTableTypes[]
   append '   </tr>' to iLocHtml.
 
 * Add a html footer to the table
-  perform addHtmlFooter using iLocHtml[].
+  perform addHtmlFooter using iLocHtml[]
+                              space
+                              space.
 endform.                                                                                  "convertTableTypeToHTML
                                                                      "convertITABtoHtml
 
@@ -7686,7 +7735,9 @@ form convertCodeToHtml using iContents like dumIHtml[]
                              value(getIncludes)
                              value(getDictStructures)
                              value(addBackground) type abap_bool
-                             value(externalCSS) type abap_bool.
+                             value(externalCSS) type abap_bool
+                             value(highlight) type abap_bool
+                             value(editor_mode) type string.
 
 data: htmlTable type standard table of string with header line.
 data: head(255).
@@ -7731,7 +7782,9 @@ data: inCommentMode type abap_bool value 'X'.
   append `     <table class="innerTable">` to htmlTable.
   append `       <tr>` to htmlTable.
   append `          <td>` to htmlTable.
-  append `          <div id="editor">` to htmlTable.
+  IF not highlight is initial.
+    append `          <div id="editor">` to htmlTable.
+  ENDIF.
 
 
   loop at iContents into waContent.
@@ -7952,7 +8005,9 @@ data: inCommentMode type abap_bool value 'X'.
   endloop.
 
   append `            </div>` to htmlTable.
-  append `          </div>` to htmlTable.
+  IF not highlight is initial.
+    append `          </div>` to htmlTable.
+  ENDIF.
   append `          </td>`  to htmlTable.
   append `        </tr>` to htmlTable.
   append `      </table>` to htmlTable.
@@ -7960,7 +8015,9 @@ data: inCommentMode type abap_bool value 'X'.
   append `      </tr>` to htmlTable.
 
 * Add a html footer to the table
-  perform addHtmlFooter using htmlTable[].
+  perform addHtmlFooter using htmlTable[]
+                              highlight
+                              editor_mode.
 
   iContents[] = htmlTable[].
 endform.                                                                                             "convertCodeToHtml
@@ -7976,7 +8033,8 @@ form convertClassToHtml using iContents like dumIHtml[]
                               value(customerNameRange)
                               value(getDictStructures)
                               value(addBackground) type abap_bool
-                              value(externalCSS) type abap_bool.
+                              value(externalCSS) type abap_bool
+                              value(highlight) type abap_bool.
 
 data: htmlTable type standard table of string with header line.
 data: myTabix type syTabix.
@@ -8018,7 +8076,9 @@ data: methodDirectory type string.
   append `     <table class="innerTable">` to htmlTable.
   append `       <tr>` to htmlTable.
   append `          <td>` to htmlTable.
-
+  if not highlight is initial.
+    append `          <div id="editor">` to htmltable.
+  endif.
 
   loop at iContents into waContent.
     myTabix = sy-tabix.
@@ -8165,6 +8225,9 @@ data: methodDirectory type string.
   endloop.
 
   append `            </div>` to htmlTable.
+  if not highlight is initial.
+    append `          </div>` to htmltable.
+  endif.
   append `          </td>`  to htmlTable.
   append `        </tr>` to htmlTable.
   append `      </table>` to htmlTable.
@@ -8172,7 +8235,9 @@ data: methodDirectory type string.
   append `      </tr>` to htmlTable.
 
 * Add a html footer to the table
-  perform addHtmlFooter using htmlTable[].
+  perform addHtmlFooter using htmlTable[]
+                              highlight
+                              abap_mode.
 
   iContents[] = htmlTable[].
 endform.                                                                                            "convertClassToHtml
@@ -8191,7 +8256,8 @@ form convertFunctionToHtml using iContents like dumIHtml[]
                                  value(getIncludes)
                                  value(getDictStructures)
                                  value(addBackground) type abap_bool
-                                 value(externalCSS) type abap_bool.
+                                 value(externalCSS) type abap_bool
+                                 value(highlight) type abap_bool.
 
 data: htmlTable type standard table of string with header line.
 data: head(255).
@@ -8236,6 +8302,9 @@ data: inCommentMode type abap_bool value 'X'.
   append `     <table class="innerTable">` to htmlTable.
   append `       <tr>` to htmlTable.
   append `          <td>` to htmlTable.
+  if not highlight is initial.
+    append `          <div id="editor">` to htmltable.
+  endif.
 
   loop at iContents into waContent.
     myTabix = sy-tabix.
@@ -8508,6 +8577,9 @@ data: inCommentMode type abap_bool value 'X'.
   endloop.
 
   append `            </div>` to htmlTable.
+  if not highlight is initial.
+    append `          </div>` to htmltable.
+  endif.
   append `          </td>`  to htmlTable.
   append `        </tr>` to htmlTable.
   append `      </table>` to htmlTable.
@@ -8515,7 +8587,9 @@ data: inCommentMode type abap_bool value 'X'.
   append `      </tr>` to htmlTable.
 
 * Add a html footer to the table
-  perform addHtmlFooter using htmlTable[].
+  perform addHtmlFooter using htmlTable[]
+                              highlight
+                              abap_mode.
 
   iContents[] = htmlTable[].
 endform.                                                                                         "convertFunctionToHtml
@@ -8686,7 +8760,9 @@ endform.
 *----------------------------------------------------------------------------------------------------------------------
 * addHTMLFooter...  add a html formatted footer to our output table
 *----------------------------------------------------------------------------------------------------------------------
-form addHTMLFooter using iLocFooter like dumiHtml[].
+form addHTMLFooter using iLocFooter like dumiHtml[]
+                         value(highlight) type abap_bool
+                         value(editor_mode) type string.
 
 data: footerMessage type string.
 data: waFooter type string.
@@ -8698,15 +8774,17 @@ data: waFooter type string.
   append waFooter to iLocFooter.
   append `   </tr>` to iLocFooter.
   append `</table>` to iLocFooter.
-  append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>` to iLocFooter.
-  append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/mode-abap.js" type="text/javascript" charset="utf-8"></script>` to iLocFooter.
-  append '<script>' to iLocFooter.
-  append '  var editor = ace.edit("editor");' to iLocFooter.
-  append '  editor.setReadOnly(true);	' to iLocFooter.
-  append '  editor.setTheme("ace/theme/eclipse");' to iLocFooter.
-  append '  editor.setOptions({ maxLines: Infinity });' to iLocFooter.
-  append '  editor.getSession().setMode("ace/mode/abap");' to iLocFooter.
-  append '</script>' to iLocFooter.
+  IF not highlight is initial.
+    append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>` to iLocFooter.
+    append '<script>' to iLocFooter.
+    append '  var editor = ace.edit("editor");' to iLocFooter.
+    append '  editor.setReadOnly(true);	' to iLocFooter.
+    append '  editor.setTheme("ace/theme/eclipse");' to iLocFooter.
+    append '  editor.setOptions({ maxLines: Infinity });' to iLocFooter.
+    concatenate '  editor.getSession().setMode("ace/mode/' editor_mode '");' into waFooter.
+    append waFooter to iLocFooter.
+    append '</script>' to iLocFooter.
+  ENDIF.
   append '</body>' to iLocFooter.
   append '</html>' to iLocFooter.
 endform.                                                                                                 "addHTMLFooter
