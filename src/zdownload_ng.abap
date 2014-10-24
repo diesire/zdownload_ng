@@ -1,6 +1,6 @@
 program zdownload_ng.
 *======================================================================================================================
-*  Mass download version 1.5.2.
+*  ZDownload NG version 000.
 *----------------------------------------------------------------------------------------------------------------------
 *  PROGRAM DESCRIPTION & USE
 *  Allows a user to download programs, Functions, DD definitions, etc to the presentation server.  This version searches
@@ -23,9 +23,10 @@ program zdownload_ng.
 *  has not been designed to allow programs to be uploaded to SAP systems.
 *----------------------------------------------------------------------------------------------------------------------
 *
-* Author          : Copyright (C) 1998 E.G.Mellodew
-* program contact : www.dalestech.com
-
+* Author          : Copyright (C) 2014 Pablo Escalada
+*
+* Forked from Mass download version 1.5.2. by E.G.Mellodew
+*
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
 * as published by the Free Software Foundation; either version 2
