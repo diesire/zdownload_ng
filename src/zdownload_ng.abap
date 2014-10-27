@@ -551,6 +551,10 @@ selection-screen begin of line.
 selection-screen comment 5(29) thilight.
 parameters: philight as checkbox default 'X'.
 selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 5(29) tnewcss.
+parameters: pnewcss as checkbox default 'X'.
+selection-screen end of line.
 
 selection-screen begin of line.
 selection-screen comment 1(20) tptxt.
@@ -851,6 +855,7 @@ initialization.
   tback   = 'Include background colour'.
   textcss = 'External CSS'.
   thilight = 'Hightlight code'.
+  tnewcss = 'New css template'.
   tptext  = 'Text elements'.
   tpinc   = 'Include programs'.
   treci   = 'Recursive search'.
@@ -1053,7 +1058,8 @@ end-of-selection.
                                              ppromess
                                              serverfilesystem
                                              pback
-                                             pextcss.
+                                             pextcss
+                                             pnewcss.
         endif.
 
       when rtabtype.
@@ -1069,7 +1075,8 @@ end-of-selection.
                                              ppromess
                                              serverfilesystem
                                              pback
-                                             pextcss.
+                                             pextcss
+                                             pnewcss.
         endif.
 
 *     Download message class
@@ -1095,7 +1102,8 @@ end-of-selection.
                                                  serverfilesystem
                                                  pback
                                                  pextcss
-                                                 philight.
+                                                 philight
+                                                 pnewcss.
               clear isinglemessageclass[].
             endat.
           endloop.
@@ -1124,7 +1132,8 @@ end-of-selection.
                                           serverfilesystem
                                           pback
                                           pextcss
-                                          philight.
+                                          philight
+                                          pnewcss.
         endif.
 
 *     Download Classes
@@ -1150,7 +1159,8 @@ end-of-selection.
                                         serverfilesystem
                                         pback
                                         pextcss
-                                        philight.
+                                        philight
+                                        pnewcss.
         endif.
 
 *     Download programs
@@ -1176,7 +1186,8 @@ end-of-selection.
                                          serverfilesystem
                                          pback
                                          pextcss
-                                         philight.
+                                         philight
+                                         pnewcss.
         endif.
 
       when rxslt.
@@ -1195,7 +1206,8 @@ end-of-selection.
                                      serverfilesystem
                                      pback
                                      pextcss
-                                     philight.
+                                     philight
+                                     pnewcss.
         endif.
     endcase.
 
@@ -4773,7 +4785,8 @@ form downloadddstructures using ilocdictionary like idictionary[]
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
-                                value(externalcss) type abap_bool.
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
 
   field-symbols: <wadictionary> type tdicttable.
@@ -4816,7 +4829,8 @@ form downloadddstructures using ilocdictionary like idictionary[]
                                       <wadictionary>-tabletitle
                                       sorttablesasc
                                       addbackground
-                                      externalcss.
+                                      externalcss
+                                      newtemplate.
 
         export ihtmltable to memory id <wadictionary>-tablename.
       endif.
@@ -4861,7 +4875,8 @@ form downloadddtabletypes using iloctabletypes like itabletypes[]
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
-                                value(externalcss) type abap_bool.
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
   field-symbols: <watabletypes> like line of iloctabletypes.
   field-symbols <wattfilename> like line of iloctabletypefilename[].
@@ -4904,7 +4919,8 @@ form downloadddtabletypes using iloctabletypes like itabletypes[]
                                              <watabletypes>-ddtext
                                              sorttablesasc
                                              addbackground
-                                             externalcss.
+                                             externalcss
+                                             newtemplate.
 
         if savetoserver is initial.
           perform savefiletopc using ihtmltable[]
@@ -4946,7 +4962,8 @@ form downloadmessageclass using ilocmessages like imessages[]
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
                                 value(externalcss) type abap_bool
-                                value(highlight) type abap_bool.
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
   data: htmlpagename type string.
   data: newfilenameonly type string.
@@ -4982,7 +4999,8 @@ form downloadmessageclass using ilocmessages like imessages[]
                                     addbackground
                                     externalcss
                                     highlight
-                                    text_mode.
+                                    text_mode
+                                    newtemplate.
   endif.
 
   perform buildfilename using userfilepath
@@ -5089,7 +5107,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                              value(locserverfilesystem)
                              value(addbackground) type abap_bool
                              value(externalcss) type abap_bool
-                             value(highlight) type abap_bool.
+                             value(highlight) type abap_bool
+                             value(newtemplate) type abap_bool.
 
   data: mainsubdir type string.
   data: incsubdir type string.
@@ -5124,7 +5143,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                          functiondocumentationexists
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download main source code
@@ -5148,7 +5168,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                           locserverfilesystem
                                           addbackground
                                           externalcss
-                                          highlight.
+                                          highlight
+                                          newtemplate.
 
 *   Download top include
     perform readincludeanddownload using iemptytextelements[]
@@ -5172,7 +5193,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                          locserverfilesystem
                                          addbackground
                                          externalcss
-                                         highlight.
+                                         highlight
+                                         newtemplate.
 
 *   Download screens.
     if not <wafunction>-iscreenflow[] is initial.
@@ -5222,7 +5244,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                            locserverfilesystem
                                            addbackground
                                            externalcss
-                                           highlight.
+                                           highlight
+                                           newtemplate.
 
     endloop.
 
@@ -5239,7 +5262,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download all Table Types
@@ -5255,7 +5279,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download Transformations
@@ -5274,7 +5299,8 @@ form downloadfunctions using ilocfunctions like ifunctions[]
                                  serverfilesystem
                                  addbackground
                                  externalcss
-                                 highlight.
+                                 highlight
+                                 newtemplate.
     endif.
   endloop.
 endform.                                                                              "downloadFunctions
@@ -5303,7 +5329,8 @@ form readincludeanddownload using iloctextelements like dumitexttab[]
                                   value(locserverfilesystem)
                                   value(addbackground) type abap_bool
                                   value(externalcss) type abap_bool
-                                  value(highlight) type abap_bool.
+                                  value(highlight) type abap_bool
+                                  value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: localfilenamewithpath type string.
@@ -5358,7 +5385,8 @@ form readincludeanddownload using iloctextelements like dumitexttab[]
                                     addbackground
                                     externalcss
                                     highlight
-                                    abap_mode.
+                                    abap_mode
+                                    newtemplate.
   endif.
 
   if functionname is initial.
@@ -5418,7 +5446,8 @@ form readclassanddownload using walocclass type tclass
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
                                 value(externalcss) type abap_bool
-                                value(highlight) type abap_bool.
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
   data: itemplines type standard table of string with header line.
   data: ilines type standard table of string with header line.
@@ -5544,7 +5573,8 @@ form readclassanddownload using walocclass type tclass
                                     getdictstructures
                                     addbackground
                                     externalcss
-                                    highlight.
+                                    highlight
+                                    newtemplate.
   endif.
 
   if functionname is initial.
@@ -5605,7 +5635,8 @@ form readmethodanddownload using walocmethod type tmethod
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
                                 value(externalcss) type abap_bool
-                                value(highlight) type abap_bool.
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: itemplines type standard table of string with header line.
@@ -5656,7 +5687,8 @@ form readmethodanddownload using walocmethod type tmethod
                                     addbackground
                                     externalcss
                                     highlight
-                                    abap_mode.
+                                    abap_mode
+                                    newtemplate.
   endif.
 
   if functionname is initial.
@@ -5724,7 +5756,8 @@ form readxsltanddownload using value(xsltname)
                                value(locserverfilesystem)
                                value(addbackground) type abap_bool
                                value(externalcss) type abap_bool
-                               value(highlight) type abap_bool.
+                               value(highlight) type abap_bool
+                               value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: ilocxsltsource type o2pageline_table.
@@ -5767,7 +5800,8 @@ form readxsltanddownload using value(xsltname)
                                       addbackground
                                       externalcss
                                       highlight
-                                      xslt_mode.
+                                      xslt_mode
+                                      newtemplate.
     endif.
 
     perform buildfilename using userfilepath
@@ -5825,7 +5859,8 @@ form readfunctionanddownload using iloctextelements like dumitexttab[]
                                    value(locserverfilesystem)
                                    value(addbackground) type abap_bool
                                    value(externalcss) type abap_bool
-                                   value(highlight) type abap_bool.
+                                   value(highlight) type abap_bool
+                                   value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: localfilenamewithpath type string.
@@ -5866,7 +5901,8 @@ form readfunctionanddownload using iloctextelements like dumitexttab[]
                                         getdictstructures
                                         addbackground
                                         externalcss
-                                        highlight.
+                                        highlight
+                                        newtemplate.
   endif.
 
   perform buildfilename using userfilepath
@@ -6527,7 +6563,8 @@ form downloadfunctiondocs using value(functionname)
                                       documentationdownloaded
                                 value(locserverfilesystem)
                                 value(addbackground) type abap_bool
-                                value(externalcss) type abap_bool.
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: idocumentation type standard table of funct with header line.
@@ -6632,7 +6669,8 @@ form downloadfunctiondocs using value(functionname)
                                       addbackground
                                       externalcss
                                       space
-                                      abap_mode.
+                                      abap_mode
+                                      newtemplate.
     endif.
 
     perform buildfilename using userfilepath
@@ -6683,7 +6721,8 @@ form downloadclassdocs using value(classname) type seoclsname
                                    documentationdownloaded
                              value(locserverfilesystem)
                              value(addbackground) type abap_bool
-                             value(externalcss) type abap_bool.
+                             value(externalcss) type abap_bool
+                             value(newtemplate) type abap_bool.
 
   data: ilines type standard table of string with header line.
   data: idocumentation type standard table of funct with header line.
@@ -6751,7 +6790,8 @@ form downloadclassdocs using value(classname) type seoclsname
                                       addbackground
                                       externalcss
                                       space
-                                      abap_mode.
+                                      abap_mode
+                                      newtemplate.
     endif.
 
     perform buildfilename using userfilepath
@@ -7012,7 +7052,8 @@ form downloadprograms using ilocprogram like iprograms[]
                             value(locserverfilesystem)
                             value(addbackground) type abap_bool
                             value(externalcss) type abap_bool
-                            value(highlight) type abap_bool.
+                            value(highlight) type abap_bool
+                            value(newtemplate) type abap_bool.
 
 
   data: iprogfunctions type standard table of tfunction with header line.
@@ -7059,7 +7100,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                          locserverfilesystem
                                          addbackground
                                          externalcss
-                                         highlight.
+                                         highlight
+                                         newtemplate.
 
 *   Download screens.
     if not <waprogram>-iscreenflow[] is initial.
@@ -7109,7 +7151,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                            locserverfilesystem
                                            addbackground
                                            externalcss
-                                           highlight.
+                                           highlight
+                                           newtemplate.
 
     endloop.
 
@@ -7126,7 +7169,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download all Table Types
@@ -7142,7 +7186,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download Transformations
@@ -7161,7 +7206,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                  serverfilesystem
                                  addbackground
                                  externalcss
-                                 highlight.
+                                 highlight
+                                 newtemplate.
     endif.
 
 *   Download any functions used by these programs
@@ -7190,7 +7236,8 @@ form downloadprograms using ilocprogram like iprograms[]
                                       locserverfilesystem
                                       addbackground
                                       externalcss
-                                      highlight.
+                                      highlight
+                                      newtemplate.
       clear iprogfunctions[].
     endif.
   endloop.
@@ -7219,7 +7266,8 @@ form downloadclasses using ilocclasses like iclasses[]
                            value(locserverfilesystem)
                            value(addbackground) type abap_bool
                            value(externalcss) type abap_bool
-                           value(highlight) type abap_bool.
+                           value(highlight) type abap_bool
+                           value(newtemplate) type abap_bool.
 
 
   data: iclassfunctions type standard table of tfunction with header line.
@@ -7249,7 +7297,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                         locserverfilesystem
                                         addbackground
                                         externalcss
-                                        highlight.
+                                        highlight
+                                        newtemplate.
 
 
 *   Download all of the methods
@@ -7273,7 +7322,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                           locserverfilesystem
                                           addbackground
                                           externalcss
-                                          highlight.
+                                          highlight
+                                          newtemplate.
 
     endloop.
 
@@ -7290,7 +7340,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download all Table Types
@@ -7306,7 +7357,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                          displayprogressmessage
                                          locserverfilesystem
                                          addbackground
-                                         externalcss.
+                                         externalcss
+                                         newtemplate.
     endif.
 
 *   Download Transformations
@@ -7325,7 +7377,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                  serverfilesystem
                                  addbackground
                                  externalcss
-                                 highlight.
+                                 highlight
+                                 newtemplate.
     endif.
 
 *   Download any functions used by these programs
@@ -7354,7 +7407,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                       locserverfilesystem
                                       addbackground
                                       externalcss
-                                      highlight.
+                                      highlight
+                                      newtemplate.
       clear iclassfunctions[].
     endif.
 
@@ -7370,7 +7424,8 @@ form downloadclasses using ilocclasses like iclasses[]
                                        classdocumentationexists
                                        locserverfilesystem
                                        addbackground
-                                       externalcss.
+                                       externalcss
+                                       newtemplate.
     endif.
   endloop.
 endform.                                                                                               "downloadClasses
@@ -7392,7 +7447,8 @@ form downloadxslt using iloctransformation like itransformations[]
                             value(locserverfilesystem)
                             value(addbackground) type abap_bool
                             value(externalcss) type abap_bool
-                            value(highlight) type abap_bool.
+                            value(highlight) type abap_bool
+                            value(newtemplate) type abap_bool.
 
   field-symbols: <watransformation> type ttransformation.
 
@@ -7413,7 +7469,8 @@ form downloadxslt using iloctransformation like itransformations[]
                                       locserverfilesystem
                                       addbackground
                                       externalcss
-                                      highlight.
+                                      highlight
+                                      newtemplate.
   endloop.
 endform.                                                                                              "downloadXSLT
 
@@ -7484,7 +7541,8 @@ form convertddtohtml using ilocdictstructure like dumidictstructure[]
                            value(tabletitle)
                            value(sorttablesasc)
                            value(addbackground) type abap_bool
-                           value(externalcss) type abap_bool.
+                           value(externalcss) type abap_bool
+                           value(newtemplate) type abap_bool.
 
   data: icolumncaptions type standard table of string with header line.
   data: wadictionary type tdicttablestructure.
@@ -7507,7 +7565,8 @@ form convertddtohtml using ilocdictstructure like dumidictstructure[]
                               title
                               addbackground
                               ss_table
-                              externalcss.
+                              externalcss
+                              newtemplate.
 
   append `<body>` to ilochtml.
   append `  <table class="outerTable">` to ilochtml.
@@ -7676,7 +7735,8 @@ form converttabletypetohtml using iloctabletypes like itabletypes[]
                                   value(tabletitle)
                                   value(sorttablesasc)
                                   value(addbackground) type abap_bool
-                                  value(externalcss) type abap_bool.
+                                  value(externalcss) type abap_bool
+                                  value(newtemplate) type abap_bool.
 
   data: icolumncaptions type standard table of string with header line.
   data: wadictionary type tdicttablestructure.
@@ -7697,7 +7757,8 @@ form converttabletypetohtml using iloctabletypes like itabletypes[]
                               title
                               addbackground
                               ss_table
-                              externalcss.
+                              externalcss
+                              newtemplate.
 
   append '<body>' to ilochtml.
   append '  <table class="outerTable">' to ilochtml.
@@ -7778,7 +7839,8 @@ form convertcodetohtml using icontents like dumihtml[]
                              value(addbackground) type abap_bool
                              value(externalcss) type abap_bool
                              value(highlight) type abap_bool
-                             value(editor_mode) type string.
+                             value(editor_mode) type string
+                             value(newtemplate) type abap_bool.
 
   data: htmltable type standard table of string with header line.
   data: head(255).
@@ -7801,7 +7863,8 @@ form convertcodetohtml using icontents like dumihtml[]
                               programname
                               addbackground
                               ss_code
-                              externalcss.
+                              externalcss
+                              newtemplate.
 
   append '<body>' to htmltable.
 * Prgroamname and description
@@ -8075,7 +8138,8 @@ form convertclasstohtml using icontents like dumihtml[]
                               value(getdictstructures)
                               value(addbackground) type abap_bool
                               value(externalcss) type abap_bool
-                              value(highlight) type abap_bool.
+                              value(highlight) type abap_bool
+                              value(newtemplate) type abap_bool.
 
   data: htmltable type standard table of string with header line.
   data: mytabix type sytabix.
@@ -8095,7 +8159,8 @@ form convertclasstohtml using icontents like dumihtml[]
                               classname
                               addbackground
                               ss_code
-                              externalcss.
+                              externalcss
+                              newtemplate.
 
   append '<body>' to htmltable.
 * Class name and description
@@ -8298,7 +8363,8 @@ form convertfunctiontohtml using icontents like dumihtml[]
                                  value(getdictstructures)
                                  value(addbackground) type abap_bool
                                  value(externalcss) type abap_bool
-                                 value(highlight) type abap_bool.
+                                 value(highlight) type abap_bool
+                                 value(newtemplate) type abap_bool.
 
   data: htmltable type standard table of string with header line.
   data: head(255).
@@ -8321,7 +8387,8 @@ form convertfunctiontohtml using icontents like dumihtml[]
                               functionname
                               addbackground
                               ss_code
-                              externalcss.
+                              externalcss
+                              newtemplate.
 
   append '<body>' to htmltable.
 * Class name and description
@@ -8686,7 +8753,8 @@ form addhtmlheader using ilocheader like dumihtml[]
                          value(title)
                          value(addbackground) type abap_bool
                          value(stylesheettype) type char1
-                         value(externalcss) type abap_bool.
+                         value(externalcss) type abap_bool
+                         value(newtemplate) type abap_bool.
 
   data: waheader type string.
 
@@ -8702,15 +8770,18 @@ form addhtmlheader using ilocheader like dumihtml[]
   case stylesheettype.
     when ss_code.
       perform addcodestyles using ilocheader
-                                  addbackground.
+                                  addbackground
+                                  newtemplate.
     when ss_table.
       perform addtablestyles using ilocheader
-                                   addbackground.
+                                   addbackground
+                                   newtemplate.
   endcase.
 
   perform addgenericstyles using ilocheader
                                  addbackground
-                                 externalcss.
+                                 externalcss
+                                 newtemplate.
 
   append '</head>' to ilocheader.
 endform.                                                                                                 "addHTMLHeader
@@ -8719,13 +8790,21 @@ endform.                                                                        
 * addCodeStyles... Add the stylesheets needed for HTML output
 *----------------------------------------------------------------------------------------------------------------------
 form addcodestyles using ilocheader like dumihtml[]
-                         value(addbackground) type abap_bool.
+                         value(addbackground) type abap_bool
+                         value(newtemplate) type abap_bool.
 
   append '<style type="text/css">' to ilocheader.
-  append `.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
-  append `  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
-  append `  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
-  append `  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+  IF newtemplate is initial.
+    append `.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
+    append `  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+  else.
+    append `.code{ font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#000; font-size:12px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .codeComment {font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#0000F0; font-size:12px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .normalBold{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
+    append `  .normalBoldLarge{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+  ENDIF.
   append '</style>' to ilocheader.
 endform.                    "addCodeStyles
 
@@ -8733,17 +8812,31 @@ endform.                    "addCodeStyles
 * addTableStyles... Add the stylesheets needed for HTML output
 *----------------------------------------------------------------------------------------------------------------------
 form addtablestyles using ilocheader like dumihtml[]
-                          value(addbackground) type abap_bool.
+                          value(addbackground) type abap_bool
+                          value(newtemplate) type abap_bool.
 
   append '<style type="text/css">' to ilocheader.
   append `  th{text-align:left}` to ilocheader.
 
-  append `  .cell{` to ilocheader.
-  append `     font-family:"Courier New", Courier, monospace;` to ilocheader.
-  append `     color:#000;` to ilocheader.
-  append `     font-size:12px;` to ilocheader.
-  append `     background-color:#F2F4F7;` to ilocheader.
-  append `  }` to ilocheader.
+  if newtemplate is initial.
+    append `  .cell{` to ilocheader.
+    append `     font-family:"Courier New", Courier, monospace;` to ilocheader.
+    append `     color:#000;` to ilocheader.
+    append `     font-size:12px;` to ilocheader.
+    append `     background-color:#F2F4F7;` to ilocheader.
+    append `  }` to ilocheader.
+  else.
+    append `  th{` to ilocheader.
+    append `     font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px;` to ilocheader.
+    append `  }` to ilocheader.
+
+    append `  .cell{` to ilocheader.
+    append `     font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace;` to ilocheader.
+    append `     color:#000;` to ilocheader.
+    append `     font-size:12px;` to ilocheader.
+    append `     background-color:#F2F4F7;` to ilocheader.
+    append `  }` to ilocheader.
+  endif.
 
   append `  .cell td { border: thin solid #ccc; }` to ilocheader.
   append `</style>` to ilocheader.
@@ -8754,14 +8847,22 @@ endform.                    "addTableStyles
 *----------------------------------------------------------------------------------------------------------------------
 form addgenericstyles using ilocheader like dumihtml[]
                           value(addbackground) type abap_bool
-                          value(externalcss) type abap_bool.
+                          value(externalcss) type abap_bool
+                          value(newtemplate) type abap_bool.
 
   append '<style type="text/css">' to ilocheader.
 
-  append `  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
-  append `  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
-  append `  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
-  append `  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
+  IF newtemplate is initial.
+    append `  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
+    append `  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
+    append `  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+    append `  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
+  else.
+    append `  .normal{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
+    append `  .footer{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
+    append `  h2{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+    append `  h3{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
+  ENDIF.
 
   append `  .outerTable{` to ilocheader.
   if not addbackground is initial.
