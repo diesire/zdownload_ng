@@ -8151,6 +8151,7 @@ form convertclasstohtml using icontents like dumihtml[]
   data: copyofcurrentline type string.
   data: currentlinelength type i value 0.
   data: copylinelength type i value 0.
+  data: replacelenght type i value 0.
   data: incommentmode type abap_bool value 'X'.
   data: methoddirectory type string.
 
@@ -8308,14 +8309,19 @@ form convertclasstohtml using icontents like dumihtml[]
           htmltable = wacontent.
 
           try.
-              if htmltable+0(1) = ` `.
-                while htmltable cs ` `.
-                  replace ` ` with '&nbsp;' into htmltable.
-                  if sy-subrc <> 0.
-                    exit.
-                  endif.
-                endwhile.
-              endif.
+              replacelenght = 0.
+              while htmltable+0(1) = ` `.
+                replace ` ` with '&nbsp;' into htmltable.
+                if sy-subrc <> 0.
+                  exit.
+                endif.
+                shift htmltable left by 6 places circular.
+                replacelenght = replacelenght + 6.
+              endwhile.
+
+              do replacelenght times.
+                shift htmltable right circular.
+              enddo.
             catch cx_sy_range_out_of_bounds into objruntimeerror.
           endtry.
         else.
@@ -8794,7 +8800,7 @@ form addcodestyles using ilocheader like dumihtml[]
                          value(newtemplate) type abap_bool.
 
   append '<style type="text/css">' to ilocheader.
-  IF newtemplate is initial.
+  if newtemplate is initial.
     append `.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
     append `  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
     append `  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
@@ -8804,7 +8810,7 @@ form addcodestyles using ilocheader like dumihtml[]
     append `  .codeComment {font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#0000F0; font-size:12px; background-color:#F2F4F7 }` to ilocheader.
     append `  .normalBold{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
     append `  .normalBoldLarge{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
-  ENDIF.
+  endif.
   append '</style>' to ilocheader.
 endform.                    "addCodeStyles
 
@@ -8852,7 +8858,7 @@ form addgenericstyles using ilocheader like dumihtml[]
 
   append '<style type="text/css">' to ilocheader.
 
-  IF newtemplate is initial.
+  if newtemplate is initial.
     append `  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
     append `  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
     append `  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
@@ -8862,7 +8868,7 @@ form addgenericstyles using ilocheader like dumihtml[]
     append `  .footer{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
     append `  h2{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
     append `  h3{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
-  ENDIF.
+  endif.
 
   append `  .outerTable{` to ilocheader.
   if not addbackground is initial.
