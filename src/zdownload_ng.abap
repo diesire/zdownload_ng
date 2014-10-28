@@ -8146,6 +8146,7 @@ form convertclasstohtml using icontents like dumihtml[]
   data: wacontent type string.
   data: head type string.
   data: tail type string.
+  data: body type string.
   data: hyperlinkname type string.
   data: lowercaselink type string.
   data: copyofcurrentline type string.
@@ -8236,10 +8237,20 @@ form convertclasstohtml using icontents like dumihtml[]
 *--        When it is a method, make a link
           find regex '([:space:]*methods[:space:]*)(.*)' in wacontent
                                                          ignoring case
-                                                         submatches head hyperlinkname.
-
+                                                         submatches head body.
           if sy-subrc = 0.
-            shift hyperlinkname left deleting leading space.
+            shift body left deleting leading space.
+            clear tail.
+            split body at space into hyperlinkname tail.
+            if body <> hyperlinkname.
+              concatenate space tail into tail.
+            else.
+              split body at '.' into hyperlinkname tail.
+              if body <> hyperlinkname.
+                concatenate '.' tail into tail.
+              endif.
+            endif.
+
             concatenate methoddirectory
                         '/'
                         hyperlinkname
@@ -8253,6 +8264,7 @@ form convertclasstohtml using icontents like dumihtml[]
                         '">'
                         hyperlinkname
                         '</a>'
+                        tail
                         into wacontent.
             shift wacontent right by 2 places.
           endif.
