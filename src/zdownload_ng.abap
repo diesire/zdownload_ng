@@ -1725,6 +1725,7 @@ form findtabledefinition using value(tablename)
 
   if sy-subrc = 0 and gotstate = 'A'.
     loop at definition.
+      clear wadictstruct.
       move-corresponding definition to wadictstruct.
       perform removeleadingzeros changing wadictstruct-position.
       perform removeleadingzeros changing wadictstruct-leng.
