@@ -7656,6 +7656,7 @@ form adddomaintohtml using ilocdictstructure like dumidictstructure[]
   data: title type string.
   field-symbols: <ilocdictstructure> type tdicttablestructure.
   data: idomstructure type standard table of tdomainstructure with header line.
+  data: idomstructure_found type standard table of tdomainstructure with header line.
 * Holds one cell from the internal table
   field-symbols: <fsfield>.
 * The value of one cell form the internal table
@@ -7670,6 +7671,20 @@ form adddomaintohtml using ilocdictstructure like dumidictstructure[]
 * Add the table cells here
   loop at ilocdictstructure assigning <ilocdictstructure>.
     loop at <ilocdictstructure>-idomains into idomstructure.
+
+*     Domain already exists?
+      read table idomstructure_found
+        with key domname = idomstructure-domname
+          domvalue_l = idomstructure-domvalue_l
+          domvalue_h = idomstructure-domvalue_h.
+
+      if sy-subrc is initial.
+        exit. "Domain exists, try next one
+      endif.
+
+      "Add domain to existing ones
+      append idomstructure to idomstructure_found.
+
 *     OK, lets add the header since we know we have some domain texrt to add.
       if addedheader = ''.
         append `  <table class="outerTable">` to ilochtml.
