@@ -1,4 +1,4 @@
-PROGRAM zdownload_ng.
+program zdownload_ng.
 *======================================================================================================================
 *  ZDownload NG version 000.
 *----------------------------------------------------------------------------------------------------------------------
@@ -46,785 +46,844 @@ PROGRAM zdownload_ng.
 *----------------------------------------------------------------------------------------------------------------------
 *  SAP Tables
 *----------------------------------------------------------------------------------------------------------------------
-TABLES: trdir, seoclass, tfdir, enlfdir, dd02l, tadiv, dd40l, transfdesc.
-TYPE-POOLS: abap, seor.
+tables: trdir, seoclass, tfdir, enlfdir, dd02l, tadiv, dd40l, transfdesc.
+type-pools: abap, seor.
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Types
 *----------------------------------------------------------------------------------------------------------------------
 * text element structure
-TYPES: ttexttable LIKE textpool.
+types: ttexttable like textpool.
 * GUI titles
-TYPES: tguititle LIKE d347t.
+types: tguititle like d347t.
 
 * Message classes
-TYPES: BEGIN OF tmessage,
-         arbgb LIKE t100-arbgb,
-         stext LIKE t100a-stext,
-         msgnr LIKE t100-msgnr,
-         text  LIKE t100-text,
-       END OF tmessage.
+types: begin of tmessage,
+         arbgb like t100-arbgb,
+         stext like t100a-stext,
+         msgnr like t100-msgnr,
+         text  like t100-text,
+       end of tmessage.
 
 * Screen flow.
-TYPES: BEGIN OF tscreenflow,
-         screen LIKE d020s-dnum,
-         code LIKE d022s-line,
-       END OF tscreenflow.
+types: begin of tscreenflow,
+         screen like d020s-dnum,
+         code like d022s-line,
+       end of tscreenflow.
 
 * Holds all domain texts
-TYPES: BEGIN OF tdomainstructure,
-         domname TYPE domname,
-         domvalue_l TYPE domvalue_l,
-         domvalue_h TYPE domvalue_l,
-         ddtext TYPE val_text,
-       END OF tdomainstructure.
+types: begin of tdomainstructure,
+         domname type domname,
+         domvalue_l type domvalue_l,
+         domvalue_h type domvalue_l,
+         ddtext type val_text,
+       end of tdomainstructure.
 
 * Holds a table\structure definition
-TYPES: BEGIN OF tdicttablestructure,
-         fieldname LIKE dd03l-fieldname,
-         position  LIKE dd03l-position,
-         keyflag   LIKE dd03l-keyflag,
-         rollname  LIKE dd03l-rollname,
-         domname   LIKE dd03l-domname,
-         datatype  LIKE dd03l-datatype,
-         leng      LIKE dd03l-leng,
-         lowercase TYPE lowercase,
-         ddtext    LIKE dd04t-ddtext,
-         idomains TYPE tdomainstructure OCCURS 0,
-       END OF tdicttablestructure.
+types: begin of tdicttablestructure,
+         fieldname like dd03l-fieldname,
+         position  like dd03l-position,
+         keyflag   like dd03l-keyflag,
+         rollname  like dd03l-rollname,
+         domname   like dd03l-domname,
+         datatype  like dd03l-datatype,
+         leng      like dd03l-leng,
+         lowercase type lowercase,
+         ddtext    like dd04t-ddtext,
+         idomains type tdomainstructure occurs 0,
+       end of tdicttablestructure.
 
 *-- Holds a table type
-TYPES: BEGIN OF ttabletype,
-         typename   TYPE ttypename,  " Name of table type
-         rowtype    TYPE ttrowtype,  " Name of row type for table types
-         ttypkind   TYPE ttypkind,   " Category of table type (range or general table type)
-         range_ctyp TYPE range_ctyp, " Elem. type of LOW and HIGH components of a Ranges type
-         reftype    TYPE ddreftype,  " Type of Object Referenced
-         occurs     TYPE ddoccurs,   " Initial Line Number for Table Types
-         ddtext     TYPE ddtext,     " Description
-       END OF ttabletype.
+types: begin of ttabletype,
+         typename   type ttypename,  " Name of table type
+         rowtype    type ttrowtype,  " Name of row type for table types
+         ttypkind   type ttypkind,   " Category of table type (range or general table type)
+         range_ctyp type range_ctyp, " Elem. type of LOW and HIGH components of a Ranges type
+         reftype    type ddreftype,  " Type of Object Referenced
+         occurs     type ddoccurs,   " Initial Line Number for Table Types
+         ddtext     type ddtext,     " Description
+       end of ttabletype.
 
 * Holds a tables attributes + its definition
-TYPES: BEGIN OF tdicttable,
-         tablename    LIKE dd03l-tabname,
-         tabletitle   LIKE dd02t-ddtext,
-         istructure TYPE tdicttablestructure OCCURS 0,
-       END OF tdicttable.
+types: begin of tdicttable,
+         tablename    like dd03l-tabname,
+         tabletitle   like dd02t-ddtext,
+         istructure type tdicttablestructure occurs 0,
+       end of tdicttable.
 
-TYPES: BEGIN OF tdictfilename,
-         tablename    LIKE dd03l-tabname,
-         filename TYPE string,
-       END OF tdictfilename.
+types: begin of tdictfilename,
+         tablename    like dd03l-tabname,
+         filename type string,
+       end of tdictfilename.
 
-TYPES: BEGIN OF ttransformation,
-         xsltname LIKE trdir-name,
-         xsltdesc LIKE tftit-stext,
-         subc     LIKE trdir-subc,
-       END OF ttransformation.
+types: begin of ttransformation,
+         xsltname like trdir-name,
+         xsltdesc like tftit-stext,
+         subc     like trdir-subc,
+       end of ttransformation.
 
 * Include program names
-TYPES: BEGIN OF tinclude,
-         includename LIKE trdir-name,
-         includetitle LIKE tftit-stext,
-       END OF tinclude.
+types: begin of tinclude,
+         includename like trdir-name,
+         includetitle like tftit-stext,
+       end of tinclude.
 
 * Exception class texts
-TYPES: BEGIN OF tconcept,
-         constname TYPE string,
-         concept TYPE sotr_conc,
-       END OF tconcept.
+types: begin of tconcept,
+         constname type string,
+         concept type sotr_conc,
+       end of tconcept.
 
 * Method
-TYPES: BEGIN OF tmethod,
+types: begin of tmethod,
          cmpname(61),
-         descript LIKE vseomethod-descript,
-         exposure LIKE vseomethod-exposure,
-         methodkey TYPE string,
-       END OF tmethod.
+         descript like vseomethod-descript,
+         exposure like vseomethod-exposure,
+         methodkey type string,
+       end of tmethod.
 
 * Interfaces
-TYPES: BEGIN OF tinterface,
-         interfacename LIKE vseoclass-clsname,
-       END OF tinterface.
+types: begin of tinterface,
+         interfacename like vseoclass-clsname,
+       end of tinterface.
 
 * Class
-TYPES: BEGIN OF tclass,
+types: begin of tclass,
          scanned(1),
-         clsname LIKE vseoclass-clsname,
-         descript LIKE vseoclass-descript,
-         msg_id LIKE vseoclass-msg_id,
-         exposure LIKE vseoclass-exposure,
-         state LIKE vseoclass-state,
-         clsfinal LIKE vseoclass-clsfinal,
-         r3release LIKE vseoclass-r3release,
-         imethods TYPE tmethod OCCURS 0,
-         idictstruct TYPE tdicttable OCCURS 0,
-         itextelements TYPE ttexttable OCCURS 0,
-         imessages TYPE tmessage OCCURS 0,
-         iinterfaces TYPE tinterface OCCURS 0,
-         iconcepts TYPE tconcept OCCURS 0,
-         itabletypes TYPE ttabletype OCCURS 0,
-         itransformations TYPE ttransformation OCCURS 0,
-         textelementkey TYPE string,
-         publicclasskey TYPE string,
-         privateclasskey TYPE string,
-         protectedclasskey TYPE string,
-         typesclasskey TYPE string,
-         exceptionclass TYPE abap_bool,
-       END OF tclass.
+         clsname like vseoclass-clsname,
+         descript like vseoclass-descript,
+         msg_id like vseoclass-msg_id,
+         exposure like vseoclass-exposure,
+         state like vseoclass-state,
+         clsfinal like vseoclass-clsfinal,
+         r3release like vseoclass-r3release,
+         imethods type tmethod occurs 0,
+         idictstruct type tdicttable occurs 0,
+         itextelements type ttexttable occurs 0,
+         imessages type tmessage occurs 0,
+         iinterfaces type tinterface occurs 0,
+         iconcepts type tconcept occurs 0,
+         itabletypes type ttabletype occurs 0,
+         itransformations type ttransformation occurs 0,
+         textelementkey type string,
+         publicclasskey type string,
+         privateclasskey type string,
+         protectedclasskey type string,
+         typesclasskey type string,
+         exceptionclass type abap_bool,
+       end of tclass.
 
 * function modules
-TYPES: BEGIN OF tfunction,
-         functionname LIKE tfdir-funcname,
-         functiongroup LIKE enlfdir-area,
-         includenumber LIKE tfdir-include,
-         functionmaininclude LIKE tfdir-funcname,
-         functiontitle LIKE tftit-stext,
-         topincludename LIKE tfdir-funcname,
-         progname LIKE tfdir-pname,
-         programlinkname LIKE tfdir-pname,
-         messageclass LIKE t100-arbgb,
-         itextelements TYPE ttexttable OCCURS 0,
-         iselectiontexts TYPE ttexttable OCCURS 0,
-         imessages TYPE tmessage OCCURS 0,
-         iincludes TYPE tinclude OCCURS 0,
-         idictstruct TYPE tdicttable OCCURS 0,
-         iguititle TYPE tguititle OCCURS 0,
-         iscreenflow TYPE tscreenflow OCCURS 0,
-         itabletypes TYPE ttabletype OCCURS 0,
-         itransformations TYPE ttransformation OCCURS 0,
-       END OF tfunction.
+types: begin of tfunction,
+         functionname like tfdir-funcname,
+         functiongroup like enlfdir-area,
+         includenumber like tfdir-include,
+         functionmaininclude like tfdir-funcname,
+         functiontitle like tftit-stext,
+         topincludename like tfdir-funcname,
+         progname like tfdir-pname,
+         programlinkname like tfdir-pname,
+         messageclass like t100-arbgb,
+         itextelements type ttexttable occurs 0,
+         iselectiontexts type ttexttable occurs 0,
+         imessages type tmessage occurs 0,
+         iincludes type tinclude occurs 0,
+         idictstruct type tdicttable occurs 0,
+         iguititle type tguititle occurs 0,
+         iscreenflow type tscreenflow occurs 0,
+         itabletypes type ttabletype occurs 0,
+         itransformations type ttransformation occurs 0,
+       end of tfunction.
 
-TYPES: BEGIN OF tprogram,
-         progname LIKE trdir-name,
-         programtitle LIKE tftit-stext,
-         subc LIKE trdir-subc,
-         messageclass LIKE t100-arbgb,
-         imessages TYPE tmessage OCCURS 0,
-         itextelements TYPE ttexttable OCCURS 0,
-         iselectiontexts TYPE ttexttable OCCURS 0,
-         iguititle TYPE tguititle OCCURS 0,
-         iscreenflow TYPE tscreenflow OCCURS 0,
-         iincludes TYPE tinclude OCCURS 0,
-         idictstruct TYPE tdicttable OCCURS 0,
-         itabletypes TYPE ttabletype OCCURS 0,
-         itransformations TYPE ttransformation OCCURS 0,
-       END OF tprogram.
+types: begin of tprogram,
+         progname like trdir-name,
+         programtitle like tftit-stext,
+         subc like trdir-subc,
+         messageclass like t100-arbgb,
+         imessages type tmessage occurs 0,
+         itextelements type ttexttable occurs 0,
+         iselectiontexts type ttexttable occurs 0,
+         iguititle type tguititle occurs 0,
+         iscreenflow type tscreenflow occurs 0,
+         iincludes type tinclude occurs 0,
+         idictstruct type tdicttable occurs 0,
+         itabletypes type ttabletype occurs 0,
+         itransformations type ttransformation occurs 0,
+       end of tprogram.
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Internal tables
 *----------------------------------------------------------------------------------------------------------------------
 *  Dictionary object
-DATA: idictionary TYPE STANDARD TABLE OF tdicttable WITH HEADER LINE.
+data: idictionary type standard table of tdicttable with header line.
 *  Dictionary objects which have previously been downloaded
-DATA: idictfilename TYPE STANDARD TABLE OF tdictfilename WITH HEADER LINE.
+data: idictfilename type standard table of tdictfilename with header line.
 *  Table Types
-DATA: itabletypes TYPE STANDARD TABLE OF ttabletype WITH HEADER LINE.
+data: itabletypes type standard table of ttabletype with header line.
 *  Table Type objects which have previously been downloaded
-DATA: itabletypefilename TYPE STANDARD TABLE OF tdictfilename WITH HEADER LINE.
+data: itabletypefilename type standard table of tdictfilename with header line.
 * Function modules.
-DATA: ifunctions TYPE STANDARD TABLE OF tfunction WITH HEADER LINE.
+data: ifunctions type standard table of tfunction with header line.
 * Function modules used within programs.
-DATA: iprogfunctions TYPE STANDARD TABLE OF tfunction WITH HEADER LINE.
+data: iprogfunctions type standard table of tfunction with header line.
 * Tree display structure.
-DATA: itreedisplay TYPE STANDARD TABLE OF snodetext WITH HEADER LINE.
+data: itreedisplay type standard table of snodetext with header line.
 * Message class data
-DATA: imessages TYPE STANDARD TABLE OF tmessage WITH HEADER LINE.
+data: imessages type standard table of tmessage with header line.
 * Holds a single message class an all of its messages
-DATA: isinglemessageclass TYPE STANDARD TABLE OF tmessage WITH HEADER LINE.
+data: isinglemessageclass type standard table of tmessage with header line.
 * Holds program related data
-DATA: iprograms TYPE STANDARD TABLE OF tprogram WITH HEADER LINE.
+data: iprograms type standard table of tprogram with header line.
 * Classes
-DATA: iclasses TYPE STANDARD TABLE OF tclass WITH HEADER LINE.
+data: iclasses type standard table of tclass with header line.
 * Table of paths created on the SAP server
-DATA: iserverpaths TYPE STANDARD TABLE OF string WITH HEADER LINE.
+data: iserverpaths type standard table of string with header line.
 * Table of XSL Transformations
-DATA: itransformations TYPE STANDARD TABLE OF ttransformation WITH HEADER LINE.
+data: itransformations type standard table of ttransformation with header line.
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Table prototypes
 *----------------------------------------------------------------------------------------------------------------------
-DATA: dumidictstructure TYPE STANDARD TABLE OF tdicttablestructure.
-DATA: dumitexttab TYPE STANDARD TABLE OF ttexttable.
-DATA: dumiincludes TYPE STANDARD TABLE OF tinclude.
-DATA: dumihtml TYPE STANDARD TABLE OF string.
-DATA: dumiheader TYPE STANDARD TABLE OF string .
-DATA: dumiscreen TYPE STANDARD TABLE OF tscreenflow .
-DATA: dumiguititle TYPE STANDARD TABLE OF tguititle.
-DATA: dumimethods TYPE STANDARD TABLE OF tmethod.
-DATA: dumiconcepts TYPE STANDARD TABLE OF tconcept.
-DATA: dumiinterfaces TYPE STANDARD TABLE OF tinterface.
+data: dumidictstructure type standard table of tdicttablestructure.
+data: dumitexttab type standard table of ttexttable.
+data: dumiincludes type standard table of tinclude.
+data: dumihtml type standard table of string.
+data: dumiheader type standard table of string .
+data: dumiscreen type standard table of tscreenflow .
+data: dumiguititle type standard table of tguititle.
+data: dumimethods type standard table of tmethod.
+data: dumiconcepts type standard table of tconcept.
+data: dumiinterfaces type standard table of tinterface.
 
 *----------------------------------------------------------------------------------------------------------------------
 *   Global objects
 *----------------------------------------------------------------------------------------------------------------------
-DATA: objfile TYPE REF TO cl_gui_frontend_services.
-DATA: objruntimeerror TYPE REF TO cx_root.
+data: objfile type ref to cl_gui_frontend_services.
+data: objruntimeerror type ref to cx_root.
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Constants
 *----------------------------------------------------------------------------------------------------------------------
-CONSTANTS: versionno TYPE string VALUE '000'.
-CONSTANTS: tables TYPE string VALUE 'TABLES'.
-CONSTANTS: table TYPE string VALUE 'TABLE'.
-CONSTANTS: like TYPE string VALUE 'LIKE'.
-CONSTANTS: type TYPE string VALUE 'TYPE'.
-CONSTANTS: typerefto TYPE string VALUE 'TYPE REF TO'.
-CONSTANTS: structure TYPE string VALUE 'STRUCTURE'.
-CONSTANTS: lowstructure TYPE string VALUE 'structure'.
-CONSTANTS: occurs TYPE string VALUE 'OCCURS'.
-CONSTANTS: function TYPE string VALUE 'FUNCTION'.
-CONSTANTS: callfunction TYPE string VALUE ' CALL FUNCTION'.
-CONSTANTS: message TYPE string  VALUE 'MESSAGE'.
-CONSTANTS: include TYPE string VALUE 'INCLUDE'.
-CONSTANTS: transformation TYPE string VALUE 'TRANSFORMATION'.
-CONSTANTS: lowinclude TYPE string VALUE 'include'.
-CONSTANTS: destination TYPE string VALUE 'DESTINATION'.
-CONSTANTS: is_table TYPE string VALUE 'T'.
-CONSTANTS: is_transformation TYPE string VALUE 'X'.
-CONSTANTS: is_program TYPE string VALUE 'P'.
-CONSTANTS: is_screen TYPE string VALUE 'S'.
-CONSTANTS: is_guititle TYPE string VALUE 'G'.
-CONSTANTS: is_documentation TYPE string VALUE 'D'.
-CONSTANTS: is_messageclass TYPE string VALUE 'MC'.
-CONSTANTS: is_function TYPE string VALUE 'F'.
-CONSTANTS: is_class TYPE string VALUE 'C'.
-CONSTANTS: is_method TYPE string VALUE 'M'.
-CONSTANTS: asterix TYPE string VALUE '*'.
-CONSTANTS: comma TYPE string VALUE ','.
-CONSTANTS: period TYPE string VALUE '.'.
-CONSTANTS: dash TYPE string VALUE '-'.
-CONSTANTS: true TYPE abap_bool VALUE 'X'.
-CONSTANTS: false TYPE abap_bool VALUE ''.
-CONSTANTS: lt TYPE string VALUE '&lt;'.
-CONSTANTS: gt TYPE string VALUE '&gt;'.
-CONSTANTS: unix TYPE string VALUE 'UNIX'.
-CONSTANTS: non_unix TYPE string VALUE 'not UNIX'.
-CONSTANTS: htmlextension TYPE string VALUE 'html'.
-CONSTANTS: textextension TYPE string VALUE 'txt'.
-CONSTANTS: abap_mode TYPE string VALUE 'abap'.
-CONSTANTS: xslt_mode TYPE string VALUE 'xml'.
-CONSTANTS: text_mode TYPE string VALUE 'text'.
-CONSTANTS: ss_code TYPE c VALUE 'C'.
-CONSTANTS: ss_table TYPE c VALUE 'T'.
+constants: versionno type string value '000'.
+constants: tables type string value 'TABLES'.
+constants: table type string value 'TABLE'.
+constants: like type string value 'LIKE'.
+constants: type type string value 'TYPE'.
+constants: typerefto type string value 'TYPE REF TO'.
+constants: structure type string value 'STRUCTURE'.
+constants: lowstructure type string value 'structure'.
+constants: occurs type string value 'OCCURS'.
+constants: function type string value 'FUNCTION'.
+constants: callfunction type string value ' CALL FUNCTION'.
+constants: message type string  value 'MESSAGE'.
+constants: include type string value 'INCLUDE'.
+constants: transformation type string value 'TRANSFORMATION'.
+constants: lowinclude type string value 'include'.
+constants: destination type string value 'DESTINATION'.
+constants: is_table type string value 'T'.
+constants: is_transformation type string value 'X'.
+constants: is_program type string value 'P'.
+constants: is_screen type string value 'S'.
+constants: is_guititle type string value 'G'.
+constants: is_documentation type string value 'D'.
+constants: is_messageclass type string value 'MC'.
+constants: is_function type string value 'F'.
+constants: is_class type string value 'C'.
+constants: is_method type string value 'M'.
+constants: asterix type string value '*'.
+constants: comma type string value ','.
+constants: period type string value '.'.
+constants: dash type string value '-'.
+constants: true type abap_bool value 'X'.
+constants: false type abap_bool value ''.
+constants: lt type string value '&lt;'.
+constants: gt type string value '&gt;'.
+constants: unix type string value 'UNIX'.
+constants: non_unix type string value 'not UNIX'.
+constants: htmlextension type string value 'html'.
+constants: textextension type string value 'txt'.
+constants: abap_mode type string value 'abap'.
+constants: xslt_mode type string value 'xml'.
+constants: text_mode type string value 'text'.
+constants: ss_code type c value 'C'.
+constants: ss_table type c value 'T'.
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Global variables
 *----------------------------------------------------------------------------------------------------------------------
-DATA: statusbarmessage(100).
-DATA: forcedexit TYPE abap_bool VALUE false.
-DATA: starttime LIKE sy-uzeit.
-DATA: runtime LIKE sy-uzeit.
-DATA: downloadfileextension TYPE string.
-DATA: downloadfolder TYPE string.
-DATA: serverslashseparator TYPE string.
-DATA: frontendslashseparator TYPE string.
-DATA: slashseparatortouse TYPE string.
-DATA: serverfilesystem TYPE filesys_d.
-DATA: serverfolder TYPE string.
-DATA: frontendopsystem TYPE string.
-DATA: serveropsystem TYPE string.
-DATA: customernamespace TYPE string.
-RANGES: soprogramname FOR trdir-name.
-RANGES: soauthor FOR usr02-bname.
-RANGES: sotablenames FOR dd02l-tabname.
-RANGES: sotabletypenames FOR dd40l-typename.
-RANGES: sofunctionname  FOR tfdir-funcname.
-RANGES: soclassname FOR vseoclass-clsname.
-RANGES: sofunctiongroup FOR enlfdir-area.
-RANGES: soxsltname FOR tadir-obj_name.
-FIELD-SYMBOLS: <wadictstruct> TYPE tdicttable.
+data: statusbarmessage(100).
+data: forcedexit type abap_bool value false.
+data: starttime like sy-uzeit.
+data: runtime like sy-uzeit.
+data: downloadfileextension type string.
+data: downloadfolder type string.
+data: serverslashseparator type string.
+data: frontendslashseparator type string.
+data: slashseparatortouse type string.
+data: serverfilesystem type filesys_d.
+data: serverfolder type string.
+data: frontendopsystem type string.
+data: serveropsystem type string.
+data: customernamespace type string.
+ranges: soprogramname for trdir-name.
+ranges: soauthor for usr02-bname.
+ranges: sotablenames for dd02l-tabname.
+ranges: sotabletypenames for dd40l-typename.
+ranges: sofunctionname  for tfdir-funcname.
+ranges: soclassname for vseoclass-clsname.
+ranges: sofunctiongroup for enlfdir-area.
+ranges: soxsltname for tadir-obj_name.
+field-symbols: <wadictstruct> type tdicttable.
+
+*---------------------------------------------------------------------*
+*  Classes
+*---------------------------------------------------------------------*
+class gc_output_xml definition.
+  public section.
+    data:
+      gv_program_name type string,
+      gv_program_description type string.
+
+    methods:
+      generate
+        exporting
+          et_lines type string_t.
+
+  private section.
+    data:
+      gt_lines type string_t.
+
+    methods:
+      append
+        importing
+          iv_line type string.
+endclass.                    "gc_output_xml DEFINITION
+
+*----------------------------------------------------------------------*
+*       CLASS gc_output_xml IMPLEMENTATION
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+class gc_output_xml implementation.
+  method generate.
+    field-symbols:
+      <ls_statement> type sstmnt.
+
+    data:
+      lt_tokens type standard table of stokes,
+      lt_statements type standard table of sstmnt.
+
+    scan abap-source et_lines
+      with comments
+      tokens into lt_tokens
+      statements into lt_statements.
+
+    append( '<?xml version="1.0" encoding="UTF-8"?>' ).
+    append( |<program name="{ gv_program_name }">| ).
+    append( |<description>| ).
+    append( |<![CDATA[{ gv_program_description }]]>|  ).
+    append( |</description>| ).
+    append( '</program>' ).
+
+    et_lines = gt_lines.
+  endmethod.                    "generate
+
+  method append.
+    append iv_line to gt_lines.
+  endmethod.                    "append
+endclass.                    "gc_output_xml IMPLEMENTATION
+
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Selection screen declaration
 *----------------------------------------------------------------------------------------------------------------------
 * Author
-SELECTION-SCREEN: BEGIN OF BLOCK b1 WITH FRAME TITLE tblock1.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(23) tauth.
-PARAMETERS: pauth LIKE usr02-bname MEMORY ID mauth.
-SELECTION-SCREEN END OF LINE.
+selection-screen: begin of block b1 with frame title tblock1.
+selection-screen begin of line.
+selection-screen comment 5(23) tauth.
+parameters: pauth like usr02-bname memory id mauth.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(36) tpmod.
-PARAMETERS: pmod AS CHECKBOX.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN: END OF BLOCK b1.
+selection-screen begin of line.
+selection-screen comment 5(36) tpmod.
+parameters: pmod as checkbox.
+selection-screen end of line.
+selection-screen: end of block b1.
 
-SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE tblock2.
+selection-screen begin of block b2 with frame title tblock2.
 * Tables
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rtable RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(15) trtable.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rtable radiobutton group r1.
+selection-screen comment 5(15) trtable.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tptable.
-SELECT-OPTIONS: sotable FOR dd02l-tabname.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tptable.
+select-options: sotable for dd02l-tabname.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(79) ttnote.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(79) ttnote.
+selection-screen end of line.
 
 * Table Types
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rtabtype RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(15) trtabtyp.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rtabtype radiobutton group r1.
+selection-screen comment 5(15) trtabtyp.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tptabtyp.
-SELECT-OPTIONS: sotabtyp FOR dd40l-typename.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tptabtyp.
+select-options: sotabtyp for dd40l-typename.
+selection-screen end of line.
 
 * Message classes
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rmess RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(18) tpmes.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rmess radiobutton group r1.
+selection-screen comment 5(18) tpmes.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(18) tmname.
-PARAMETERS: pmname LIKE t100-arbgb MEMORY ID mmname.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(18) tmname.
+parameters: pmname like t100-arbgb memory id mmname.
+selection-screen end of line.
 
 * Function modules
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rfunc RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(30) trfunc.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rfunc radiobutton group r1.
+selection-screen comment 5(30) trfunc.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tpfname.
-SELECT-OPTIONS: sofname FOR tfdir-funcname.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tpfname.
+select-options: sofname for tfdir-funcname.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tfgroup.
-SELECT-OPTIONS: sofgroup FOR enlfdir-area.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tfgroup.
+select-options: sofgroup for enlfdir-area.
+selection-screen end of line.
 
 * XSLT
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rxslt RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(30) trxslt.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rxslt radiobutton group r1.
+selection-screen comment 5(30) trxslt.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tpxslt.
-SELECT-OPTIONS: soxslt FOR transfdesc-xsltdesc.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tpxslt.
+select-options: soxslt for transfdesc-xsltdesc.
+selection-screen end of line.
 
 * Classes
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rclass RADIOBUTTON GROUP r1.
-SELECTION-SCREEN COMMENT 5(30) trclass.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rclass radiobutton group r1.
+selection-screen comment 5(30) trclass.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) tpcname.
-SELECT-OPTIONS: soclass FOR seoclass-clsname.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) tpcname.
+select-options: soclass for seoclass-clsname.
+selection-screen end of line.
 
 * Programs / includes
-SELECTION-SCREEN BEGIN OF LINE.
-PARAMETERS: rprog RADIOBUTTON GROUP r1 DEFAULT 'X'.
-SELECTION-SCREEN COMMENT 5(18) tprog.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+parameters: rprog radiobutton group r1 default 'X'.
+selection-screen comment 5(18) tprog.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 10(15) trpname.
-SELECT-OPTIONS: soprog FOR trdir-name.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 10(15) trpname.
+select-options: soprog for trdir-name.
+selection-screen end of line.
 
-SELECTION-SCREEN SKIP.
+selection-screen skip.
 * Language
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(27) tmlang.
-PARAMETERS: pmlang LIKE t100-sprsl DEFAULT 'EN'.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(27) tmlang.
+parameters: pmlang like t100-sprsl default 'EN'.
+selection-screen end of line.
 
 * Package
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(24) tpack.
-SELECT-OPTIONS: sopack FOR tadiv-devclass.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(24) tpack.
+select-options: sopack for tadiv-devclass.
+selection-screen end of line.
 
 * Customer objects
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(27) tcust.
-PARAMETERS: pcust AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(27) tcust.
+parameters: pcust as checkbox default 'X'.
+selection-screen end of line.
 
 * Alt customer name range
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(27) tnrange.
-PARAMETERS: pcname TYPE namespace MEMORY ID mnamespace.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN: END OF BLOCK b2.
+selection-screen begin of line.
+selection-screen comment 1(27) tnrange.
+parameters: pcname type namespace memory id mnamespace.
+selection-screen end of line.
+selection-screen: end of block b2.
 
 * Additional things to download.
-SELECTION-SCREEN: BEGIN OF BLOCK b3 WITH FRAME TITLE tblock3.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tptext.
-PARAMETERS: ptext AS CHECKBOX DEFAULT 'X' MEMORY ID mtext.
-SELECTION-SCREEN END OF LINE.
+selection-screen: begin of block b3 with frame title tblock3.
+selection-screen begin of line.
+selection-screen comment 1(33) tptext.
+parameters: ptext as checkbox default 'X' memory id mtext.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tmess.
-PARAMETERS: pmess AS CHECKBOX DEFAULT 'X' MEMORY ID mmess.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tmess.
+parameters: pmess as checkbox default 'X' memory id mmess.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tttyp.
-PARAMETERS: pttyp AS CHECKBOX DEFAULT 'X' MEMORY ID mttyp.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tttyp.
+parameters: pttyp as checkbox default 'X' memory id mttyp.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) txslt.
-PARAMETERS: ptrans AS CHECKBOX DEFAULT 'X' MEMORY ID mxslt.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) txslt.
+parameters: ptrans as checkbox default 'X' memory id mxslt.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tpinc.
-PARAMETERS: pinc AS CHECKBOX DEFAULT 'X' MEMORY ID minc.
-SELECTION-SCREEN COMMENT 40(20) treci.
-PARAMETERS: preci AS CHECKBOX DEFAULT 'X' MEMORY ID mreci.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tpinc.
+parameters: pinc as checkbox default 'X' memory id minc.
+selection-screen comment 40(20) treci.
+parameters: preci as checkbox default 'X' memory id mreci.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tpfunc.
-PARAMETERS: pfunc AS CHECKBOX DEFAULT 'X' MEMORY ID mfunc.
-SELECTION-SCREEN COMMENT 40(20) trecf.
-PARAMETERS: precf AS CHECKBOX DEFAULT 'X' MEMORY ID mrecf.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tpfunc.
+parameters: pfunc as checkbox default 'X' memory id mfunc.
+selection-screen comment 40(20) trecf.
+parameters: precf as checkbox default 'X' memory id mrecf.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) trecc.
-PARAMETERS: precc AS CHECKBOX DEFAULT 'X' MEMORY ID mrecc.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) trecc.
+parameters: precc as checkbox default 'X' memory id mrecc.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tfdoc.
-PARAMETERS: pfdoc AS CHECKBOX DEFAULT 'X' MEMORY ID mfdoc.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tfdoc.
+parameters: pfdoc as checkbox default 'X' memory id mfdoc.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tcdoc.
-PARAMETERS: pcdoc AS CHECKBOX DEFAULT 'X' MEMORY ID mcdoc.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tcdoc.
+parameters: pcdoc as checkbox default 'X' memory id mcdoc.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tpscr.
-PARAMETERS: pscr AS CHECKBOX DEFAULT 'X' MEMORY ID mscr.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tpscr.
+parameters: pscr as checkbox default 'X' memory id mscr.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tpdict.
-PARAMETERS: pdict AS CHECKBOX DEFAULT 'X' MEMORY ID mdict.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) tpdict.
+parameters: pdict as checkbox default 'X' memory id mdict.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tsortt.
-PARAMETERS: psortt AS CHECKBOX DEFAULT ' ' MEMORY ID msortt.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN: END OF BLOCK b3.
+selection-screen begin of line.
+selection-screen comment 1(33) tsortt.
+parameters: psortt as checkbox default ' ' memory id msortt.
+selection-screen end of line.
+selection-screen: end of block b3.
 
 * File details
-SELECTION-SCREEN: BEGIN OF BLOCK b4 WITH FRAME TITLE tblock4.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(20) tphtml.
-PARAMETERS: phtml RADIOBUTTON GROUP g1 DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
+selection-screen: begin of block b4 with frame title tblock4.
+selection-screen begin of line.
+selection-screen comment 1(20) tphtml.
+parameters: phtml radiobutton group g1 default 'X'.
+selection-screen end of line.
 
 * HTML options
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(29) tback.
-PARAMETERS: pback AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(29) textcss.
-PARAMETERS: pextcss AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(29) thilight.
-PARAMETERS: philight AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 5(29) tnewcss.
-PARAMETERS: pnewcss AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 5(29) tback.
+parameters: pback as checkbox default 'X'.
+selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 5(29) textcss.
+parameters: pextcss as checkbox default 'X'.
+selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 5(29) thilight.
+parameters: philight as checkbox default 'X'.
+selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 5(29) tnewcss.
+parameters: pnewcss as checkbox default 'X'.
+selection-screen end of line.
 
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(20) tptxt.
-PARAMETERS: ptxt RADIOBUTTON GROUP g1.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(20) tptxt.
+parameters: ptxt radiobutton group g1.
+selection-screen end of line.
 
-SELECTION-SCREEN SKIP.
+selection-screen skip.
 
 * Download to SAP server
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(25) tserv.
-PARAMETERS: pserv RADIOBUTTON GROUP g2.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 8(20) tspath.
-PARAMETERS: plogical LIKE filename-fileintern MEMORY ID mlogical.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN COMMENT /28(60) tsdpath.
+selection-screen begin of line.
+selection-screen comment 1(25) tserv.
+parameters: pserv radiobutton group g2.
+selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 8(20) tspath.
+parameters: plogical like filename-fileintern memory id mlogical.
+selection-screen end of line.
+selection-screen comment /28(60) tsdpath.
 
 * Download to PC
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(25) tpc.
-PARAMETERS: ppc RADIOBUTTON GROUP g2 DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 8(20) tppath.
-PARAMETERS: pfolder LIKE rlgrap-filename MEMORY ID mfolder.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN: END OF BLOCK b4.
+selection-screen begin of line.
+selection-screen comment 1(25) tpc.
+parameters: ppc radiobutton group g2 default 'X'.
+selection-screen end of line.
+selection-screen begin of line.
+selection-screen comment 8(20) tppath.
+parameters: pfolder like rlgrap-filename memory id mfolder.
+selection-screen end of line.
+selection-screen: end of block b4.
 
 * Display options
-SELECTION-SCREEN: BEGIN OF BLOCK b5 WITH FRAME TITLE tblock5.
+selection-screen: begin of block b5 with frame title tblock5.
 * Display final report
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) trep.
-PARAMETERS: prep AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
+selection-screen begin of line.
+selection-screen comment 1(33) trep.
+parameters: prep as checkbox default 'X'.
+selection-screen end of line.
 * Display progress messages
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN COMMENT 1(33) tpromess.
-PARAMETERS: ppromess AS CHECKBOX DEFAULT 'X'.
-SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN: END OF BLOCK b5.
+selection-screen begin of line.
+selection-screen comment 1(33) tpromess.
+parameters: ppromess as checkbox default 'X'.
+selection-screen end of line.
+selection-screen: end of block b5.
 
 *----------------------------------------------------------------------------------------------------------------------
 * Display a directory picker window
 *----------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR pfolder.
+at selection-screen on value-request for pfolder.
 
-  DATA: objfile TYPE REF TO cl_gui_frontend_services.
-  DATA: pickedfolder TYPE string.
-  DATA: initialfolder TYPE string.
+  data: objfile type ref to cl_gui_frontend_services.
+  data: pickedfolder type string.
+  data: initialfolder type string.
 
-  IF sy-batch IS INITIAL.
-    CREATE OBJECT objfile.
+  if sy-batch is initial.
+    create object objfile.
 
-    IF NOT pfolder IS INITIAL.
+    if not pfolder is initial.
       initialfolder = pfolder.
-    ELSE.
-      objfile->get_temp_directory( CHANGING temp_dir = initialfolder
-                                   EXCEPTIONS cntl_error = 1
+    else.
+      objfile->get_temp_directory( changing temp_dir = initialfolder
+                                   exceptions cntl_error = 1
                                              error_no_gui = 2
                                              not_supported_by_gui = 3 ).
-    ENDIF.
+    endif.
 
-    objfile->directory_browse( EXPORTING initial_folder = initialfolder
-                               CHANGING selected_folder = pickedfolder
-                               EXCEPTIONS cntl_error = 1
+    objfile->directory_browse( exporting initial_folder = initialfolder
+                               changing selected_folder = pickedfolder
+                               exceptions cntl_error = 1
                                           error_no_gui = 2
                                           not_supported_by_gui = 3 ).
 
-    IF sy-subrc = 0.
+    if sy-subrc = 0.
       pfolder = pickedfolder.
-    ELSE.
-      WRITE: / 'An error has occured picking a folder'.
-    ENDIF.
-  ENDIF.
+    else.
+      write: / 'An error has occured picking a folder'.
+    endif.
+  endif.
 
 *----------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN.
+at selection-screen.
 *----------------------------------------------------------------------------------------------------------------------
-  CASE 'X'.
-    WHEN ppc.
-      IF pfolder IS INITIAL.
+  case 'X'.
+    when ppc.
+      if pfolder is initial.
 *       User must enter a path to save to
-        MESSAGE e000(oo) WITH 'You must enter a file path'.
-      ENDIF.
+        message e000(oo) with 'You must enter a file path'.
+      endif.
 
-    WHEN pserv.
-      IF plogical IS INITIAL.
+    when pserv.
+      if plogical is initial.
 *       User must enter a logical path to save to
-        MESSAGE e000(oo) WITH 'You must enter a logical file name'.
-      ENDIF.
-  ENDCASE.
+        message e000(oo) with 'You must enter a logical file name'.
+      endif.
+  endcase.
 
 *----------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON plogical.
+at selection-screen on plogical.
 *----------------------------------------------------------------------------------------------------------------------
-  IF NOT pserv IS INITIAL.
-    CALL FUNCTION 'FILE_GET_NAME'
-      EXPORTING
+  if not pserv is initial.
+    call function 'FILE_GET_NAME'
+      exporting
         logical_filename = plogical
-      IMPORTING
+      importing
         file_name        = serverfolder
-      EXCEPTIONS
+      exceptions
         file_not_found   = 1
-        OTHERS           = 2.
-    IF sy-subrc = 0.
-      IF serverfolder IS INITIAL.
-        MESSAGE e000(oo) WITH 'No file path returned from logical filename'.
-      ELSE.
+        others           = 2.
+    if sy-subrc = 0.
+      if serverfolder is initial.
+        message e000(oo) with 'No file path returned from logical filename'.
+      else.
 *       Path to display on the selection screen
         tsdpath = serverfolder.
 *       Remove the trailing slash off the path as the subroutine buildFilename will add an extra one
-        SHIFT serverfolder RIGHT DELETING TRAILING serverslashseparator.
-        SHIFT serverfolder LEFT DELETING LEADING space.
-      ENDIF.
-    ELSE.
-      MESSAGE e000(oo) WITH 'Logical filename does not exist'.
-    ENDIF.
-  ENDIF.
+        shift serverfolder right deleting trailing serverslashseparator.
+        shift serverfolder left deleting leading space.
+      endif.
+    else.
+      message e000(oo) with 'Logical filename does not exist'.
+    endif.
+  endif.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soprog-low.
+at selection-screen on value-request for soprog-low.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'PROG'
       object_name           = soprog-low
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = soprog-low
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soprog-high.
+at selection-screen on value-request for soprog-high.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'PROG'
       object_name           = soprog-high
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = soprog-high
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soxslt-low.
+at selection-screen on value-request for soxslt-low.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'XSLT'
       object_name           = soxslt-low
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = soxslt-low
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soxslt-high.
+at selection-screen on value-request for soxslt-high.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'XSLT'
       object_name           = soxslt-high
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = soxslt-high
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soclass-low.
+at selection-screen on value-request for soclass-low.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'F4_DD_ALLTYPES'
-    EXPORTING
+  call function 'F4_DD_ALLTYPES'
+    exporting
       object               = soclass-low
       suppress_selection   = 'X'
       display_only         = ''
       only_types_for_clifs = 'X'
-    IMPORTING
+    importing
       result               = soclass-low.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR soclass-high.
+at selection-screen on value-request for soclass-high.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'F4_DD_ALLTYPES'
-    EXPORTING
+  call function 'F4_DD_ALLTYPES'
+    exporting
       object               = soclass-high
       suppress_selection   = 'X'
       display_only         = ''
       only_types_for_clifs = 'X'
-    IMPORTING
+    importing
       result               = soclass-high.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR sofname-low.
+at selection-screen on value-request for sofname-low.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'FUNC'
       object_name           = sofname-low
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = sofname-low
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR sofname-high.
+at selection-screen on value-request for sofname-high.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'FUNC'
       object_name           = sofname-high
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = sofname-high
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR sofgroup-low.
+at selection-screen on value-request for sofgroup-low.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'FUGR'
       object_name           = sofgroup-low
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = sofgroup-low
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 * ---------------------------------------------------------------------------------------------------------------------
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR sofgroup-high.
+at selection-screen on value-request for sofgroup-high.
 * ---------------------------------------------------------------------------------------------------------------------
-  CALL FUNCTION 'REPOSITORY_INFO_SYSTEM_F4'
-    EXPORTING
+  call function 'REPOSITORY_INFO_SYSTEM_F4'
+    exporting
       object_type           = 'FUGR'
       object_name           = sofgroup-high
       suppress_selection    = 'X'
       use_alv_grid          = ''
       without_personal_list = ''
-    IMPORTING
+    importing
       object_name_selected  = sofgroup-high
-    EXCEPTIONS
+    exceptions
       cancel                = 1.
 
 *----------------------------------------------------------------------------------------------------------------------
 * initialisation
 *----------------------------------------------------------------------------------------------------------------------
-INITIALIZATION.
+initialization.
 * Parameter screen texts.
   tblock1 = 'Author (Optional)'.
   tblock2 = 'Objects to download'.
@@ -880,68 +939,68 @@ INITIALIZATION.
   txslt = 'Transformation'.
 
 * Determine the frontend operating system type.
-  IF sy-batch IS INITIAL.
-    PERFORM determinefrontendopsystem USING frontendslashseparator frontendopsystem.
-  ENDIF.
-  PERFORM determineserveropsystem USING serverslashseparator serverfilesystem serveropsystem.
+  if sy-batch is initial.
+    perform determinefrontendopsystem using frontendslashseparator frontendopsystem.
+  endif.
+  perform determineserveropsystem using serverslashseparator serverfilesystem serveropsystem.
 
 * Determine if the external command exists.  If it doesn't then disable the server input field
-  PERFORM findexternalcommand USING serverfilesystem.
+  perform findexternalcommand using serverfilesystem.
 
 *----------------------------------------------------------------------------------------------------------------------
-START-OF-SELECTION.
+start-of-selection.
 *----------------------------------------------------------------------------------------------------------------------
-  PERFORM checkcomboboxes.
-  PERFORM fillselectionranges.
+  perform checkcomboboxes.
+  perform fillselectionranges.
   starttime = sy-uzeit.
 
 * Don't display status messages if we are running in the background
-  IF NOT sy-batch IS INITIAL.
+  if not sy-batch is initial.
     ppromess = ''.
-  ENDIF.
+  endif.
 
 * Fool the HTML routines to stop them hyperlinking anything with a space in them
-  IF pcname IS INITIAL.
+  if pcname is initial.
     customernamespace  = '^'.
-  ELSE.
+  else.
     customernamespace = pcname.
-  ENDIF.
+  endif.
 
 * Set the file extension and output type of the file
-  IF ptxt IS INITIAL.
+  if ptxt is initial.
     downloadfileextension = htmlextension.
-  ELSE.
+  else.
     downloadfileextension = textextension.
-  ENDIF.
+  endif.
 
 * Determine which operating slash and download directory to use
-  CASE 'X'.
-    WHEN ppc.
+  case 'X'.
+    when ppc.
       slashseparatortouse = frontendslashseparator.
       downloadfolder = pfolder.
-    WHEN pserv.
+    when pserv.
       slashseparatortouse = serverslashseparator.
       downloadfolder = serverfolder.
-  ENDCASE.
+  endcase.
 
 * Main program flow.
-  CASE 'X'.
+  case 'X'.
 *   Select tables
-    WHEN rtable.
-      PERFORM retrievetables USING idictionary[]
+    when rtable.
+      perform retrievetables using idictionary[]
                                    sotablenames[]
                                    soauthor[]
                                    sopack[].
 
-    WHEN rtabtype.
-      PERFORM retrievetabletypes USING itabletypes[]
+    when rtabtype.
+      perform retrievetabletypes using itabletypes[]
                                        sotabletypenames[]
                                        soauthor[]
                                        sopack[].
 
 *   Select message classes tables
-    WHEN rmess.
-      PERFORM retrievemessageclass USING imessages[]
+    when rmess.
+      perform retrievemessageclass using imessages[]
                                          soauthor[]      "Author
                                          pmname          "Message class name
                                          pmlang          "Message class language
@@ -949,8 +1008,8 @@ START-OF-SELECTION.
                                          sopack[].       "Package
 
 *   Select function modules
-    WHEN rfunc.
-      PERFORM retrievefunctions USING sofunctionname[]   "Function name
+    when rfunc.
+      perform retrievefunctions using sofunctionname[]   "Function name
                                       sofunctiongroup[]  "Function group
                                       ifunctions[]       "Found functions
                                       soauthor[]         "Author
@@ -961,7 +1020,7 @@ START-OF-SELECTION.
                                       sopack[].             "Package
 
 *       Find Dict structures, messages, functions, includes etc.
-      PERFORM scanforadditionalfuncstuff USING ifunctions[]
+      perform scanforadditionalfuncstuff using ifunctions[]
                                                preci                   "Search for includes recursively
                                                precf                   "Search for functions recursively
                                                pinc                    "Search for includes
@@ -973,8 +1032,8 @@ START-OF-SELECTION.
                                                customernamespace.      "Customer name range
 
 *   Select Classes
-    WHEN rclass.
-      PERFORM retrieveclasses USING iclasses[]
+    when rclass.
+      perform retrieveclasses using iclasses[]
                                     ifunctions[]
                                     soclassname[]       "Class name
                                     soauthor[]          "Author
@@ -993,9 +1052,9 @@ START-OF-SELECTION.
                                     pmlang              "Language
                                     sopack[].           "Package
 
-      LOOP AT ifunctions.
+      loop at ifunctions.
 *       Find Dict structures, messages, functions, includes etc.
-        PERFORM scanforadditionalfuncstuff USING ifunctions[]
+        perform scanforadditionalfuncstuff using ifunctions[]
                                                  preci                   "Search for includes recursively
                                                  precf                   "Search for functions recursively
                                                  pinc                    "Search for includes
@@ -1005,11 +1064,11 @@ START-OF-SELECTION.
                                                  ptrans                  "Search for transformations
                                                  pcust                   "Customer data only
                                                  customernamespace.      "Customer name range
-      ENDLOOP.
+      endloop.
 
 *   Select programs
-    WHEN rprog.
-      PERFORM retrieveprograms USING iprograms[]
+    when rprog.
+      perform retrieveprograms using iprograms[]
                                      iprogfunctions[]
                                      soprogramname[]    "Program name
                                      soauthor[]         "Author
@@ -1027,8 +1086,8 @@ START-OF-SELECTION.
                                      preci              "Search recursively for includes
                                      sopack[].             "Package
 
-    WHEN rxslt.
-      PERFORM retrievexslt USING itransformations[]
+    when rxslt.
+      perform retrievexslt using itransformations[]
                                  soxsltname[]           "XSL Transformation name
                                  soauthor[]             "Author
                                  customernamespace      "Customer name range
@@ -1036,18 +1095,18 @@ START-OF-SELECTION.
                                  pcust                  "Customer object only
                                  sopack[].              "Package
 
-  ENDCASE.
+  endcase.
 
 *----------------------------------------------------------------------------------------------------------------------
-END-OF-SELECTION.
+end-of-selection.
 *----------------------------------------------------------------------------------------------------------------------
-  IF forcedexit = 0.
+  if forcedexit = 0.
 *   Decide what to download
-    CASE 'X'.
+    case 'X'.
 *     Download tables
-      WHEN rtable.
-        IF NOT ( idictionary[] IS INITIAL ).
-          PERFORM downloadddstructures USING idictionary[]
+      when rtable.
+        if not ( idictionary[] is initial ).
+          perform downloadddstructures using idictionary[]
                                              idictfilename[]
                                              downloadfolder
                                              htmlextension
@@ -1060,11 +1119,11 @@ END-OF-SELECTION.
                                              pback
                                              pextcss
                                              pnewcss.
-        ENDIF.
+        endif.
 
-      WHEN rtabtype.
-        IF NOT ( itabletypes[] IS INITIAL ).
-          PERFORM downloadddtabletypes USING itabletypes[]
+      when rtabtype.
+        if not ( itabletypes[] is initial ).
+          perform downloadddtabletypes using itabletypes[]
                                              itabletypefilename[]
                                              downloadfolder
                                              htmlextension
@@ -1077,16 +1136,16 @@ END-OF-SELECTION.
                                              pback
                                              pextcss
                                              pnewcss.
-        ENDIF.
+        endif.
 
 *     Download message class
-      WHEN rmess.
-        IF NOT ( imessages[] IS INITIAL ).
-          SORT imessages ASCENDING BY arbgb msgnr.
-          LOOP AT imessages.
-            APPEND imessages TO isinglemessageclass.
-            AT END OF arbgb.
-              PERFORM downloadmessageclass USING isinglemessageclass[]
+      when rmess.
+        if not ( imessages[] is initial ).
+          sort imessages ascending by arbgb msgnr.
+          loop at imessages.
+            append imessages to isinglemessageclass.
+            at end of arbgb.
+              perform downloadmessageclass using isinglemessageclass[]
                                                  imessages-arbgb
                                                  downloadfolder
                                                  downloadfileextension
@@ -1104,15 +1163,15 @@ END-OF-SELECTION.
                                                  pextcss
                                                  philight
                                                  pnewcss.
-              CLEAR isinglemessageclass[].
-            ENDAT.
-          ENDLOOP.
-        ENDIF.
+              clear isinglemessageclass[].
+            endat.
+          endloop.
+        endif.
 
 *     Download functions
-      WHEN rfunc.
-        IF NOT ( ifunctions[] IS INITIAL ).
-          PERFORM downloadfunctions USING ifunctions[]
+      when rfunc.
+        if not ( ifunctions[] is initial ).
+          perform downloadfunctions using ifunctions[]
                                           idictfilename[]
                                           itabletypefilename[]
                                           downloadfolder
@@ -1134,12 +1193,12 @@ END-OF-SELECTION.
                                           pextcss
                                           philight
                                           pnewcss.
-        ENDIF.
+        endif.
 
 *     Download Classes
-      WHEN rclass.
-        IF NOT ( iclasses[] IS INITIAL ).
-          PERFORM downloadclasses USING iclasses[]
+      when rclass.
+        if not ( iclasses[] is initial ).
+          perform downloadclasses using iclasses[]
                                         ifunctions[]
                                         idictfilename[]
                                         itabletypefilename[]
@@ -1161,12 +1220,12 @@ END-OF-SELECTION.
                                         pextcss
                                         philight
                                         pnewcss.
-        ENDIF.
+        endif.
 
 *     Download programs
-      WHEN rprog.
-        IF NOT ( iprograms[] IS INITIAL ).
-          PERFORM downloadprograms USING iprograms[]
+      when rprog.
+        if not ( iprograms[] is initial ).
+          perform downloadprograms using iprograms[]
                                          iprogfunctions[]
                                          idictfilename[]
                                          itabletypefilename[]
@@ -1188,11 +1247,11 @@ END-OF-SELECTION.
                                          pextcss
                                          philight
                                          pnewcss.
-        ENDIF.
+        endif.
 
-      WHEN rxslt.
-        IF NOT ( itransformations[] IS INITIAL ).
-          PERFORM downloadxslt USING itransformations[]
+      when rxslt.
+        if not ( itransformations[] is initial ).
+          perform downloadxslt using itransformations[]
                                      downloadfolder
                                      downloadfileextension
                                      htmlextension
@@ -1208,121 +1267,121 @@ END-OF-SELECTION.
                                      pextcss
                                      philight
                                      pnewcss.
-        ENDIF.
-    ENDCASE.
+        endif.
+    endcase.
 
 *   Free all the memory IDs we may have built up in the program
 *   Free up any memory used for caching HTML versions of objects
-    PERFORM freememory USING iprograms[]
+    perform freememory using iprograms[]
                              ifunctions[]
                              iprogfunctions[]
                              idictionary[]
                              itabletypes[]
                              itransformations[].
 
-    IF NOT prep IS INITIAL.
-      GET TIME.
+    if not prep is initial.
+      get time.
       runtime = sy-uzeit - starttime.
 
-      CASE 'X'.
-        WHEN rtable.
-          PERFORM filltreenodetables USING idictionary[]
+      case 'X'.
+        when rtable.
+          perform filltreenodetables using idictionary[]
                                            itreedisplay[]
                                            runtime.
-        WHEN rtabtype.
-          PERFORM filltreenodetabletypes USING itabletypes[]
+        when rtabtype.
+          perform filltreenodetabletypes using itabletypes[]
                                                itreedisplay[]
                                                runtime.
 
-        WHEN rmess.
-          PERFORM filltreenodemessages USING imessages[]
+        when rmess.
+          perform filltreenodemessages using imessages[]
                                              itreedisplay[]
                                              runtime.
 
 
-        WHEN rfunc.
-          PERFORM filltreenodefunctions USING ifunctions[]
+        when rfunc.
+          perform filltreenodefunctions using ifunctions[]
                                               itreedisplay[]
                                               runtime.
 
-        WHEN rclass.
-          PERFORM filltreenodeclasses USING iclasses[]
+        when rclass.
+          perform filltreenodeclasses using iclasses[]
                                             ifunctions[]
                                             itreedisplay[]
                                             runtime.
 
-        WHEN rprog.
-          PERFORM filltreenodeprograms USING iprograms[]
+        when rprog.
+          perform filltreenodeprograms using iprograms[]
                                              iprogfunctions[]
                                              itreedisplay[]
                                              runtime.
 
-        WHEN rxslt.
-          PERFORM filltreenodexslt USING itransformations[]
+        when rxslt.
+          perform filltreenodexslt using itransformations[]
                                          itreedisplay[]
                                          runtime.
-      ENDCASE.
+      endcase.
 
-      IF NOT ( itreedisplay[] IS INITIAL ).
-        PERFORM displaytree USING itreedisplay[].
-      ELSE.
+      if not ( itreedisplay[] is initial ).
+        perform displaytree using itreedisplay[].
+      else.
         statusbarmessage = 'No items found matching selection criteria'.
-        PERFORM displaystatus USING statusbarmessage 2.
-      ENDIF.
-    ENDIF.
-  ENDIF.
+        perform displaystatus using statusbarmessage 2.
+      endif.
+    endif.
+  endif.
 
 * Clear out all the internal tables
-  CLEAR iprograms[].
-  CLEAR ifunctions[].
-  CLEAR iclasses[].
-  CLEAR iprogfunctions[].
-  CLEAR imessages[].
-  CLEAR idictionary[].
-  CLEAR idictfilename[].
-  CLEAR itabletypefilename[].
-  CLEAR itransformations[].
-  CLEAR itabletypes[].
+  clear iprograms[].
+  clear ifunctions[].
+  clear iclasses[].
+  clear iprogfunctions[].
+  clear imessages[].
+  clear idictionary[].
+  clear idictfilename[].
+  clear itabletypefilename[].
+  clear itransformations[].
+  clear itabletypes[].
 
 *--- Memory IDs
 * User name
-  SET PARAMETER ID 'MAUTH' FIELD pauth.
+  set parameter id 'MAUTH' field pauth.
 * Message class
-  SET PARAMETER ID 'MMNAME' FIELD pmname.
+  set parameter id 'MMNAME' field pmname.
 * Customer namespace
-  SET PARAMETER ID 'MNAMESPACE' FIELD pcname.
+  set parameter id 'MNAMESPACE' field pcname.
 * Folder
-  SET PARAMETER ID 'MFOLDER' FIELD pfolder.
+  set parameter id 'MFOLDER' field pfolder.
 * Logical filepath
-  SET PARAMETER ID 'MLOGICAL' FIELD plogical.
+  set parameter id 'MLOGICAL' field plogical.
 * Text element checkbox
-  SET PARAMETER ID 'MTEXT' FIELD ptext.
+  set parameter id 'MTEXT' field ptext.
 * Messages checkbox
-  SET PARAMETER ID 'MMESS' FIELD pmess.
+  set parameter id 'MMESS' field pmess.
 * Includes checkbox
-  SET PARAMETER ID 'MINC' FIELD pinc.
+  set parameter id 'MINC' field pinc.
 * Recursive includes checkbox.
-  SET PARAMETER ID 'MRECI' FIELD preci.
+  set parameter id 'MRECI' field preci.
 * Functions checkbox
-  SET PARAMETER ID 'MFUNC' FIELD pfunc.
+  set parameter id 'MFUNC' field pfunc.
 * Recursive functions checkbox
-  SET PARAMETER ID 'MRECF' FIELD precf.
+  set parameter id 'MRECF' field precf.
 * Recursive classes checkbox
-  SET PARAMETER ID 'MRECF' FIELD precc.
+  set parameter id 'MRECF' field precc.
 * Function module documentation checkbox
-  SET PARAMETER ID 'MFDOC' FIELD pfdoc.
+  set parameter id 'MFDOC' field pfdoc.
 * Class documentation checkbox
-  SET PARAMETER ID 'MCDOC' FIELD pcdoc.
+  set parameter id 'MCDOC' field pcdoc.
 * Screens checkbox
-  SET PARAMETER ID 'MSCR' FIELD pscr.
+  set parameter id 'MSCR' field pscr.
 * Dictionary checkbox
-  SET PARAMETER ID 'MDICT' FIELD pdict.
+  set parameter id 'MDICT' field pdict.
 * Sort table ascending checkBox
-  SET PARAMETER ID 'MSORTT' FIELD psortt.
+  set parameter id 'MSORTT' field psortt.
 * Table Types checkbox
-  SET PARAMETER ID 'MTTYP' FIELD pttyp.
+  set parameter id 'MTTYP' field pttyp.
 * XSLT checkbox
-  SET PARAMETER ID 'MXSLT' FIELD ptrans.
+  set parameter id 'MXSLT' field ptrans.
 
 
 ***********************************************************************************************************************
@@ -1332,634 +1391,634 @@ END-OF-SELECTION.
 *----------------------------------------------------------------------------------------------------------------------
 *  free memory...
 *----------------------------------------------------------------------------------------------------------------------
-FORM freememory USING ilocprograms LIKE iprograms[]
-                      ilocfunctions LIKE ifunctions[]
-                      ilocprogfunctions LIKE iprogfunctions[]
-                      ilocdictionary LIKE idictionary[]
-                      iloctabletypes LIKE itabletypes[]
-                      iloctransformation LIKE itransformations[] .
+form freememory using ilocprograms like iprograms[]
+                      ilocfunctions like ifunctions[]
+                      ilocprogfunctions like iprogfunctions[]
+                      ilocdictionary like idictionary[]
+                      iloctabletypes like itabletypes[]
+                      iloctransformation like itransformations[] .
 
-  FIELD-SYMBOLS: <wafunction> LIKE LINE OF ilocfunctions.
-  FIELD-SYMBOLS: <waprogram> LIKE LINE OF ilocprograms.
-  FIELD-SYMBOLS: <wadictstruct> TYPE tdicttable.
-  FIELD-SYMBOLS: <watabletypestruct> LIKE LINE OF iloctabletypes.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
+  field-symbols: <wafunction> like line of ilocfunctions.
+  field-symbols: <waprogram> like line of ilocprograms.
+  field-symbols: <wadictstruct> type tdicttable.
+  field-symbols: <watabletypestruct> like line of iloctabletypes.
+  field-symbols: <watransformation> type ttransformation.
 
-  LOOP AT ilocfunctions ASSIGNING <wafunction>.
-    LOOP AT <wafunction>-idictstruct ASSIGNING <wadictstruct>.
-      FREE MEMORY ID <wadictstruct>-tablename.
-    ENDLOOP.
-  ENDLOOP.
+  loop at ilocfunctions assigning <wafunction>.
+    loop at <wafunction>-idictstruct assigning <wadictstruct>.
+      free memory id <wadictstruct>-tablename.
+    endloop.
+  endloop.
 
-  LOOP AT ilocprogfunctions ASSIGNING <wafunction>.
-    LOOP AT <wafunction>-idictstruct ASSIGNING <wadictstruct>.
-      FREE MEMORY ID <wadictstruct>-tablename.
-    ENDLOOP.
-  ENDLOOP.
+  loop at ilocprogfunctions assigning <wafunction>.
+    loop at <wafunction>-idictstruct assigning <wadictstruct>.
+      free memory id <wadictstruct>-tablename.
+    endloop.
+  endloop.
 
-  LOOP AT ilocprograms ASSIGNING <waprogram>.
-    LOOP AT <waprogram>-idictstruct ASSIGNING <wadictstruct>.
-      FREE MEMORY ID <wadictstruct>-tablename.
-    ENDLOOP.
-  ENDLOOP.
+  loop at ilocprograms assigning <waprogram>.
+    loop at <waprogram>-idictstruct assigning <wadictstruct>.
+      free memory id <wadictstruct>-tablename.
+    endloop.
+  endloop.
 
-  LOOP AT ilocdictionary ASSIGNING <wadictstruct>.
-    FREE MEMORY ID <wadictstruct>-tablename.
-  ENDLOOP.
+  loop at ilocdictionary assigning <wadictstruct>.
+    free memory id <wadictstruct>-tablename.
+  endloop.
 
-  LOOP AT iloctabletypes ASSIGNING <watabletypestruct>.
-    FREE MEMORY ID <watabletypestruct>-typename.
-  ENDLOOP.
+  loop at iloctabletypes assigning <watabletypestruct>.
+    free memory id <watabletypestruct>-typename.
+  endloop.
 
-  LOOP AT iloctransformation ASSIGNING <watransformation>.
-    FREE MEMORY ID <watransformation>-xsltname.
-  ENDLOOP.
-ENDFORM.                    "freeMemory
+  loop at iloctransformation assigning <watransformation>.
+    free memory id <watransformation>-xsltname.
+  endloop.
+endform.                    "freeMemory
 
 *----------------------------------------------------------------------------------------------------------------------
 *  checkComboBoxes...  Check input parameters
 *----------------------------------------------------------------------------------------------------------------------
-FORM checkcomboboxes.
+form checkcomboboxes.
 
-  IF pauth IS INITIAL.
-    IF sopack[] IS INITIAL.
-      CASE 'X'.
-        WHEN rtable.
-          IF sotable[] IS INITIAL.
+  if pauth is initial.
+    if sopack[] is initial.
+      case 'X'.
+        when rtable.
+          if sotable[] is initial.
             statusbarmessage = 'You must enter either a table name or author.'.
-          ENDIF.
-        WHEN rfunc.
-          IF ( sofname[] IS INITIAL ) AND ( sofgroup[] IS INITIAL ).
-            IF sofname[] IS INITIAL.
+          endif.
+        when rfunc.
+          if ( sofname[] is initial ) and ( sofgroup[] is initial ).
+            if sofname[] is initial.
               statusbarmessage = 'You must enter either a function name or author.'.
-            ELSE.
-              IF sofgroup[] IS INITIAL.
+            else.
+              if sofgroup[] is initial.
                 statusbarmessage = 'You must enter either a function group, or an author name.'.
-              ENDIF.
-            ENDIF.
-          ENDIF.
-        WHEN rprog.
-          IF soprog[] IS INITIAL.
+              endif.
+            endif.
+          endif.
+        when rprog.
+          if soprog[] is initial.
             statusbarmessage = 'You must enter either a program name or author name.'.
-          ENDIF.
-      ENDCASE.
-    ENDIF.
-  ELSE.
+          endif.
+      endcase.
+    endif.
+  else.
 *   Check the user name of the person objects are to be downloaded for
-    IF pauth = 'SAP*' OR pauth = 'SAP'.
+    if pauth = 'SAP*' or pauth = 'SAP'.
       statusbarmessage = 'Sorry cannot download all objects for SAP standard user'.
-    ENDIF.
-  ENDIF.
+    endif.
+  endif.
 
-  IF NOT statusbarmessage IS INITIAL.
-    PERFORM displaystatus USING statusbarmessage 3.
+  if not statusbarmessage is initial.
+    perform displaystatus using statusbarmessage 3.
     forcedexit = 1.
-    STOP.
-  ENDIF.
-ENDFORM.                                                                                "checkComboBoxes
+    stop.
+  endif.
+endform.                                                                                "checkComboBoxes
 
 *----------------------------------------------------------------------------------------------------------------------
 * fillSelectionRanges...      for selection routines
 *----------------------------------------------------------------------------------------------------------------------
-FORM fillselectionranges.
+form fillselectionranges.
 
-  DATA: strlength TYPE i.
+  data: strlength type i.
 
   strlength = strlen( pcname ).
 
-  IF NOT pauth IS INITIAL.
+  if not pauth is initial.
     soauthor-sign = 'I'.
     soauthor-option = 'EQ'.
     soauthor-low = pauth.
-    APPEND soauthor.
-  ENDIF.
+    append soauthor.
+  endif.
 
 * Tables
-  IF NOT sotable IS INITIAL.
+  if not sotable is initial.
     sotablenames[] = sotable[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT sotablenames.
-        IF sotablenames-low+0(strlength) <> pcname.
-          CONCATENATE pcname sotablenames-low INTO sotablenames-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at sotablenames.
+        if sotablenames-low+0(strlength) <> pcname.
+          concatenate pcname sotablenames-low into sotablenames-low.
+        endif.
 
-        IF sotablenames-high+0(strlength) <> pcname.
-          CONCATENATE pcname sotablenames-high INTO sotablenames-high.
-        ENDIF.
+        if sotablenames-high+0(strlength) <> pcname.
+          concatenate pcname sotablenames-high into sotablenames-high.
+        endif.
 
-        MODIFY sotablenames.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify sotablenames.
+      endloop.
+    endif.
+  endif.
 
 * Function names
-  IF NOT sofname IS INITIAL.
+  if not sofname is initial.
     sofunctionname[] = sofname[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT sofunctionname.
-        IF sofunctionname-low+0(strlength) <> pcname.
-          CONCATENATE pcname sofunctionname-low INTO sofunctionname-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at sofunctionname.
+        if sofunctionname-low+0(strlength) <> pcname.
+          concatenate pcname sofunctionname-low into sofunctionname-low.
+        endif.
 
-        IF sofunctionname-high+0(strlength) <> pcname.
-          CONCATENATE pcname sofunctionname-high INTO sofunctionname-high.
-        ENDIF.
+        if sofunctionname-high+0(strlength) <> pcname.
+          concatenate pcname sofunctionname-high into sofunctionname-high.
+        endif.
 
-        MODIFY sofunctionname.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify sofunctionname.
+      endloop.
+    endif.
+  endif.
 
 * Table Types
-  IF NOT sotabtyp IS INITIAL.
+  if not sotabtyp is initial.
     sotabletypenames[] = sotabtyp[].
 
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT sotabletypenames.
-        IF sotabletypenames-low+0(strlength) <> pcname.
-          CONCATENATE pcname sotabletypenames-low INTO sotabletypenames-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at sotabletypenames.
+        if sotabletypenames-low+0(strlength) <> pcname.
+          concatenate pcname sotabletypenames-low into sotabletypenames-low.
+        endif.
 
-        IF sotablenames-high+0(strlength) <> pcname.
-          CONCATENATE pcname sotabletypenames-high INTO sotabletypenames-high.
-        ENDIF.
+        if sotablenames-high+0(strlength) <> pcname.
+          concatenate pcname sotabletypenames-high into sotabletypenames-high.
+        endif.
 
-        MODIFY sotabletypenames.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify sotabletypenames.
+      endloop.
+    endif.
+  endif.
 
 * Function group
-  IF NOT sofgroup IS INITIAL.
+  if not sofgroup is initial.
     sofunctiongroup[] = sofgroup[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT sofunctionname.
-        IF sofunctiongroup-low+0(strlength) <> pcname.
-          CONCATENATE pcname sofunctiongroup-low INTO sofunctiongroup-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at sofunctionname.
+        if sofunctiongroup-low+0(strlength) <> pcname.
+          concatenate pcname sofunctiongroup-low into sofunctiongroup-low.
+        endif.
 
-        IF sofunctiongroup-high+0(strlength) <> pcname.
-          CONCATENATE pcname sofunctiongroup-high INTO sofunctiongroup-high.
-        ENDIF.
+        if sofunctiongroup-high+0(strlength) <> pcname.
+          concatenate pcname sofunctiongroup-high into sofunctiongroup-high.
+        endif.
 
-        MODIFY sofunctiongroup.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify sofunctiongroup.
+      endloop.
+    endif.
+  endif.
 
 * Class names
-  IF NOT soclass IS INITIAL.
+  if not soclass is initial.
     soclassname[] = soclass[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT soclassname.
-        IF soclassname-low+0(strlength) <> pcname.
-          CONCATENATE pcname soclassname-low INTO soclassname-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at soclassname.
+        if soclassname-low+0(strlength) <> pcname.
+          concatenate pcname soclassname-low into soclassname-low.
+        endif.
 
-        IF soclassname-high+0(strlength) <> pcname.
-          CONCATENATE pcname soclassname-high INTO soclassname-high.
-        ENDIF.
+        if soclassname-high+0(strlength) <> pcname.
+          concatenate pcname soclassname-high into soclassname-high.
+        endif.
 
-        MODIFY soclassname.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify soclassname.
+      endloop.
+    endif.
+  endif.
 
 * Program names
-  IF NOT soprog IS INITIAL.
+  if not soprog is initial.
     soprogramname[] = soprog[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT soprogramname.
-        IF soprogramname-low+0(strlength) <> pcname.
-          CONCATENATE pcname soprogramname-low INTO soprogramname-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at soprogramname.
+        if soprogramname-low+0(strlength) <> pcname.
+          concatenate pcname soprogramname-low into soprogramname-low.
+        endif.
 
-        IF soprogramname-high+0(strlength) <> pcname.
-          CONCATENATE pcname soprogramname-high INTO soprogramname-high.
-        ENDIF.
+        if soprogramname-high+0(strlength) <> pcname.
+          concatenate pcname soprogramname-high into soprogramname-high.
+        endif.
 
-        MODIFY soprogramname.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
+        modify soprogramname.
+      endloop.
+    endif.
+  endif.
 
 * XSLT names
-  IF NOT soxslt IS INITIAL.
+  if not soxslt is initial.
     soxsltname[] = soxslt[].
 *   Add in the customer namespace if we need to
-    IF NOT pcname IS INITIAL.
-      LOOP AT soxsltname.
-        IF soxsltname-low+0(strlength) <> pcname.
-          CONCATENATE pcname soxsltname-low INTO soxsltname-low.
-        ENDIF.
+    if not pcname is initial.
+      loop at soxsltname.
+        if soxsltname-low+0(strlength) <> pcname.
+          concatenate pcname soxsltname-low into soxsltname-low.
+        endif.
 
-        IF soxsltname-high+0(strlength) <> pcname.
-          CONCATENATE pcname soxsltname-high INTO soxsltname-high.
-        ENDIF.
+        if soxsltname-high+0(strlength) <> pcname.
+          concatenate pcname soxsltname-high into soxsltname-high.
+        endif.
 
-        MODIFY soxsltname.
-      ENDLOOP.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                                          " fillSelectionRanges
+        modify soxsltname.
+      endloop.
+    endif.
+  endif.
+endform.                                                                                          " fillSelectionRanges
 
 *----------------------------------------------------------------------------------------------------------------------
 *  retrieveTables...             Search for tables in dictionary
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrievetables USING ilocdictstructure LIKE idictionary[]
-                          sotable LIKE sotable[]
-                          soauthor LIKE soauthor[]
-                          value(solocpackage) LIKE sopack[].
+form retrievetables using ilocdictstructure like idictionary[]
+                          sotable like sotable[]
+                          soauthor like soauthor[]
+                          value(solocpackage) like sopack[].
 
-  DATA: idictstructure TYPE STANDARD TABLE OF tdicttable.
-  DATA: wadictstructure TYPE tdicttable.
+  data: idictstructure type standard table of tdicttable.
+  data: wadictstructure type tdicttable.
 
-  SELECT a~tabname AS tablename
-         INTO CORRESPONDING FIELDS OF TABLE idictstructure
-         FROM dd02l AS a
-         INNER JOIN tadir AS b
-           ON a~tabname = b~obj_name
-         WHERE a~tabname IN sotable
-           AND a~tabclass <> 'CLUSTER'
-           AND a~tabclass <> 'POOL'
-           AND a~tabclass <> 'VIEW'
-           AND a~as4user IN soauthor
-           AND a~as4local = 'A'
-           AND b~pgmid = 'R3TR'
-           AND b~object = 'TABL'
-           AND b~devclass IN solocpackage[].
+  select a~tabname as tablename
+         into corresponding fields of table idictstructure
+         from dd02l as a
+         inner join tadir as b
+           on a~tabname = b~obj_name
+         where a~tabname in sotable
+           and a~tabclass <> 'CLUSTER'
+           and a~tabclass <> 'POOL'
+           and a~tabclass <> 'VIEW'
+           and a~as4user in soauthor
+           and a~as4local = 'A'
+           and b~pgmid = 'R3TR'
+           and b~object = 'TABL'
+           and b~devclass in solocpackage[].
 
-  LOOP AT idictstructure INTO wadictstructure.
-    PERFORM findtabledescription USING wadictstructure-tablename
+  loop at idictstructure into wadictstructure.
+    perform findtabledescription using wadictstructure-tablename
                                        wadictstructure-tabletitle.
 
-    PERFORM findtabledefinition USING wadictstructure-tablename
+    perform findtabledefinition using wadictstructure-tablename
                                       wadictstructure-istructure[].
 
-    APPEND wadictstructure TO ilocdictstructure.
-    CLEAR wadictstructure.
-  ENDLOOP.
-ENDFORM.                                                                                                "retrieveTables
+    append wadictstructure to ilocdictstructure.
+    clear wadictstructure.
+  endloop.
+endform.                                                                                                "retrieveTables
 
 *----------------------------------------------------------------------------------------------------------------------
 *  retrieveTableTypes
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrievetabletypes  USING iloctabletypes      LIKE itabletypes[]
-                               sotabletypenames    LIKE sotable[]
-                               soauthor            LIKE soauthor[]
-                               value(solocpackage) LIKE sopack[].
+form retrievetabletypes  using iloctabletypes      like itabletypes[]
+                               sotabletypenames    like sotable[]
+                               soauthor            like soauthor[]
+                               value(solocpackage) like sopack[].
 
-  SELECT *
-         INTO CORRESPONDING FIELDS OF TABLE iloctabletypes
-         FROM dd40l AS a
-         INNER JOIN dd40t AS t
-            ON a~typename = t~typename
-         INNER JOIN tadir AS b
-           ON a~typename = b~obj_name
-         WHERE a~typename IN sotabletypenames
-           AND t~ddlanguage EQ sy-langu
-           AND a~as4user IN soauthor
-           AND a~as4local = 'A'
-           AND b~pgmid = 'R3TR'
-           AND b~object = 'TTYP'
-           AND b~devclass IN solocpackage[].
+  select *
+         into corresponding fields of table iloctabletypes
+         from dd40l as a
+         inner join dd40t as t
+            on a~typename = t~typename
+         inner join tadir as b
+           on a~typename = b~obj_name
+         where a~typename in sotabletypenames
+           and t~ddlanguage eq sy-langu
+           and a~as4user in soauthor
+           and a~as4local = 'A'
+           and b~pgmid = 'R3TR'
+           and b~object = 'TTYP'
+           and b~devclass in solocpackage[].
 
-ENDFORM.                                                                                          " RETRIEVETABLETYPES
+endform.                                                                                          " RETRIEVETABLETYPES
 
 *-------------------------------------------------------------------------------------------------------
 *  retrieveXSLT...
 *-------------------------------------------------------------------------------------------------------
-FORM retrievexslt USING iloctransformations LIKE itransformations[]
-                        rangexslt   LIKE soxsltname[]
-                        rangeauthor LIKE soauthor[]
+form retrievexslt using iloctransformations like itransformations[]
+                        rangexslt   like soxsltname[]
+                        rangeauthor like soauthor[]
                         value(custnamerange)
                         value(alsomodifiedbyauthor)
                         value(customerprogsonly)
-                        value(solocpackage) LIKE sopack[].
+                        value(solocpackage) like sopack[].
 
-  DATA: warangexslt LIKE LINE OF rangexslt.
+  data: warangexslt like line of rangexslt.
 
-  IF rangexslt[] IS INITIAL.
+  if rangexslt[] is initial.
 *   We are finding all programs by an author
-    PERFORM findallxsltforauthor USING iloctransformations[]
+    perform findallxsltforauthor using iloctransformations[]
                                        rangexslt[]
                                        rangeauthor[]
                                        custnamerange
                                        alsomodifiedbyauthor
                                        customerprogsonly
                                        solocpackage[].
-  ELSE.
-    READ TABLE rangexslt INDEX 1 INTO warangexslt.
-    IF warangexslt-low CS asterix.
-      PERFORM findxsltbywildcard USING iloctransformations[]
+  else.
+    read table rangexslt index 1 into warangexslt.
+    if warangexslt-low cs asterix.
+      perform findxsltbywildcard using iloctransformations[]
                                        rangexslt[]
                                        rangeauthor[]
                                        custnamerange
                                        customerprogsonly
                                        solocpackage[].
-    ELSE.
-      PERFORM checkxsltdoesexist USING iloctransformations[]
+    else.
+      perform checkxsltdoesexist using iloctransformations[]
                                        rangexslt[].
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                               "retrieveXSLT
+    endif.
+  endif.
+endform.                                                                               "retrieveXSLT
 
 *----------------------------------------------------------------------------------------------------------------------
 *  findTableDescription...  Search for table description in dictionary
 *----------------------------------------------------------------------------------------------------------------------
-FORM findtabledescription USING value(tablename)
+form findtabledescription using value(tablename)
                                       tabledescription.
 
-  SELECT SINGLE ddtext
-                FROM dd02t
-                INTO tabledescription
-                WHERE tabname = tablename
-                 AND ddlanguage = pmlang.
-ENDFORM.                                                                                          "findTableDescription
+  select single ddtext
+                from dd02t
+                into tabledescription
+                where tabname = tablename
+                 and ddlanguage = pmlang.
+endform.                                                                                          "findTableDescription
 
 *----------------------------------------------------------------------------------------------------------------------
 *  findTableDefinition... Find the structure of a table from the SAP database.
 *----------------------------------------------------------------------------------------------------------------------
-FORM findtabledefinition USING value(tablename)
-                               idictstruct LIKE dumidictstructure[].
+form findtabledefinition using value(tablename)
+                               idictstruct like dumidictstructure[].
 
-  DATA gotstate LIKE dcobjif-gotstate.
-  DATA: definition TYPE STANDARD TABLE OF dd03p WITH HEADER LINE.
-  DATA: idomaindataa TYPE STANDARD TABLE OF dd07v WITH HEADER LINE.
-  DATA: idomaindatan TYPE STANDARD TABLE OF dd07v WITH HEADER LINE.
-  DATA: wadictstruct TYPE tdicttablestructure.
-  DATA: wadomainstruct TYPE tdomainstructure.
-  DATA: wadd02v_n TYPE dd02v.
+  data gotstate like dcobjif-gotstate.
+  data: definition type standard table of dd03p with header line.
+  data: idomaindataa type standard table of dd07v with header line.
+  data: idomaindatan type standard table of dd07v with header line.
+  data: wadictstruct type tdicttablestructure.
+  data: wadomainstruct type tdomainstructure.
+  data: wadd02v_n type dd02v.
 
-  CLEAR idictstruct[].
+  clear idictstruct[].
 
-  CALL FUNCTION 'DD_INT_TABL_GET'
-    EXPORTING
+  call function 'DD_INT_TABL_GET'
+    exporting
       tabname        = tablename
       langu          = pmlang
-    IMPORTING
+    importing
       gotstate       = gotstate
       dd02v_n        = wadd02v_n
-    TABLES
+    tables
       dd03p_n        = definition
-    EXCEPTIONS
+    exceptions
       internal_error = 1.
 
-  IF sy-subrc = 0 AND NOT wadd02v_n IS INITIAL.
-    CALL FUNCTION 'DD_TABL_EXPAND'
-      EXPORTING
+  if sy-subrc = 0 and not wadd02v_n is initial.
+    call function 'DD_TABL_EXPAND'
+      exporting
         dd02v_wa          = wadd02v_n
         mode              = 46
         prid              = 0
-      TABLES
+      tables
         dd03p_tab         = definition
-      EXCEPTIONS
+      exceptions
         illegal_parameter = 1.
-  ENDIF.
+  endif.
 
-  IF sy-subrc = 0 AND gotstate = 'A'.
-    LOOP AT definition.
-      CLEAR wadictstruct.
-      MOVE-CORRESPONDING definition TO wadictstruct.
-      PERFORM removeleadingzeros CHANGING wadictstruct-position.
-      PERFORM removeleadingzeros CHANGING wadictstruct-leng.
+  if sy-subrc = 0 and gotstate = 'A'.
+    loop at definition.
+      clear wadictstruct.
+      move-corresponding definition to wadictstruct.
+      perform removeleadingzeros changing wadictstruct-position.
+      perform removeleadingzeros changing wadictstruct-leng.
 
 *     Add any domain data
-      CALL FUNCTION 'DD_DOMA_GET'
-        EXPORTING
+      call function 'DD_DOMA_GET'
+        exporting
           domain_name   = definition-domname
           get_state     = 'M  '
           langu         = pmlang
 *         prid          = 0
           withtext      = 'X'
-        TABLES
+        tables
           dd07v_tab_a   = idomaindataa
           dd07v_tab_n   = idomaindatan
-        EXCEPTIONS
+        exceptions
           illegal_value = 1
           op_failure    = 2.
 
-      LOOP AT idomaindataa.
-        MOVE-CORRESPONDING idomaindataa TO wadomainstruct.
-        APPEND wadomainstruct TO wadictstruct-idomains.
-      ENDLOOP.
+      loop at idomaindataa.
+        move-corresponding idomaindataa to wadomainstruct.
+        append wadomainstruct to wadictstruct-idomains.
+      endloop.
 
-      CLEAR idomaindataa[].
-      APPEND wadictstruct TO idictstruct.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                                           "findTableDefinition
+      clear idomaindataa[].
+      append wadictstruct to idictstruct.
+    endloop.
+  endif.
+endform.                                                                                           "findTableDefinition
 
 *----------------------------------------------------------------------------------------------------------------------
 *  retrieveMessageClass...   Retrieve a message class from the SAP database
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrievemessageclass USING ilocmessages LIKE imessages[]
-                                rangeauthor LIKE soauthor[]
+form retrievemessageclass using ilocmessages like imessages[]
+                                rangeauthor like soauthor[]
                                 value(messageclassname)
                                 value(messageclasslang)
                                 value(modifiedby)
-                                value(solocpackage) LIKE sopack[].
+                                value(solocpackage) like sopack[].
 
-  DATA: wamessage TYPE tmessage.
-  DATA: imclasses TYPE STANDARD TABLE OF arbgb.
+  data: wamessage type tmessage.
+  data: imclasses type standard table of arbgb.
 
 
-  IF NOT messageclassname IS INITIAL.
+  if not messageclassname is initial.
 *   Check to see if the message class exists in the package
-    IF NOT solocpackage[] IS INITIAL.
-      SELECT obj_name AS arbgb
-             INTO TABLE imclasses
-             FROM tadir
-             WHERE pgmid = 'R3TR'
-               AND object = 'MSAG'
-               AND devclass IN solocpackage.
-    ENDIF.
+    if not solocpackage[] is initial.
+      select obj_name as arbgb
+             into table imclasses
+             from tadir
+             where pgmid = 'R3TR'
+               and object = 'MSAG'
+               and devclass in solocpackage.
+    endif.
 
-    REPLACE '*' WITH '%' INTO messageclassname.
-    IF imclasses[] IS INITIAL.
-      SELECT t100~arbgb
+    replace '*' with '%' into messageclassname.
+    if imclasses[] is initial.
+      select t100~arbgb
              t100~text
              t100~msgnr
              t100a~stext
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocmessages
-             FROM t100
-             INNER JOIN t100a
-               ON t100a~arbgb = t100~arbgb
-             WHERE t100a~masterlang = messageclasslang
-               AND t100~sprsl = messageclasslang
-               AND t100~arbgb LIKE messageclassname
-               AND t100a~respuser IN rangeauthor[].
-    ELSE.
-      SELECT t100~arbgb
+             appending corresponding fields of table ilocmessages
+             from t100
+             inner join t100a
+               on t100a~arbgb = t100~arbgb
+             where t100a~masterlang = messageclasslang
+               and t100~sprsl = messageclasslang
+               and t100~arbgb like messageclassname
+               and t100a~respuser in rangeauthor[].
+    else.
+      select t100~arbgb
              t100~text
              t100~msgnr
              t100a~stext
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocmessages
-             FROM t100
-             INNER JOIN t100a
-               ON t100a~arbgb = t100~arbgb
-             FOR ALL ENTRIES IN imclasses
-               WHERE t100~sprsl = messageclasslang
-               AND ( t100~arbgb LIKE messageclassname AND t100~arbgb = imclasses-table_line )
-               AND t100a~masterlang = messageclasslang
-               AND t100a~respuser IN rangeauthor[].
-    ENDIF.
-  ELSE.
-    IF modifiedby IS INITIAL.
+             appending corresponding fields of table ilocmessages
+             from t100
+             inner join t100a
+               on t100a~arbgb = t100~arbgb
+             for all entries in imclasses
+               where t100~sprsl = messageclasslang
+               and ( t100~arbgb like messageclassname and t100~arbgb = imclasses-table_line )
+               and t100a~masterlang = messageclasslang
+               and t100a~respuser in rangeauthor[].
+    endif.
+  else.
+    if modifiedby is initial.
 *       Select by author
-      SELECT t100~arbgb                                "#EC CI_BUFFJOIN
+      select t100~arbgb                                "#EC CI_BUFFJOIN
              t100~msgnr
              t100~text
              t100a~stext
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocmessages
-             FROM t100
-             INNER JOIN t100a
-               ON t100a~arbgb = t100~arbgb
-             INNER JOIN tadir
-               ON t100~arbgb = tadir~obj_name
-             WHERE t100a~masterlang = messageclasslang
-               AND t100a~respuser IN rangeauthor[]
-               AND tadir~pgmid = 'R3TR'
-               AND tadir~object = 'MSAG'
-               AND tadir~devclass IN solocpackage[].
+             appending corresponding fields of table ilocmessages
+             from t100
+             inner join t100a
+               on t100a~arbgb = t100~arbgb
+             inner join tadir
+               on t100~arbgb = tadir~obj_name
+             where t100a~masterlang = messageclasslang
+               and t100a~respuser in rangeauthor[]
+               and tadir~pgmid = 'R3TR'
+               and tadir~object = 'MSAG'
+               and tadir~devclass in solocpackage[].
 
-    ELSE.
+    else.
 *     Select also by the last person who modified the message class
-      SELECT t100~arbgb                                "#EC CI_BUFFJOIN
+      select t100~arbgb                                "#EC CI_BUFFJOIN
              t100~msgnr
              t100~text
              t100a~stext
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocmessages
-             FROM t100
-             INNER JOIN t100a
-               ON t100a~arbgb = t100~arbgb
-             INNER JOIN tadir
-               ON t100~arbgb = tadir~obj_name
-             WHERE t100a~masterlang = messageclasslang
-               AND t100a~respuser IN rangeauthor[]
-               AND t100a~lastuser IN rangeauthor[]
-               AND tadir~pgmid = 'R3TR'
-               AND tadir~object = 'MSAG'
-               AND tadir~devclass IN solocpackage[].
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                                          "retrieveMessageClass
+             appending corresponding fields of table ilocmessages
+             from t100
+             inner join t100a
+               on t100a~arbgb = t100~arbgb
+             inner join tadir
+               on t100~arbgb = tadir~obj_name
+             where t100a~masterlang = messageclasslang
+               and t100a~respuser in rangeauthor[]
+               and t100a~lastuser in rangeauthor[]
+               and tadir~pgmid = 'R3TR'
+               and tadir~object = 'MSAG'
+               and tadir~devclass in solocpackage[].
+    endif.
+  endif.
+endform.                                                                                          "retrieveMessageClass
 
 *----------------------------------------------------------------------------------------------------------------------
 *  retrieveFunctions...   Retrieve function modules from SAP DB.  May be called in one of two ways
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrievefunctions USING sofname LIKE sofunctionname[]
-                             sofgroup LIKE sofunctiongroup[]
-                             ilocfunctionnames LIKE ifunctions[]
-                             value(solocauthor) LIKE soauthor[]
+form retrievefunctions using sofname like sofunctionname[]
+                             sofgroup like sofunctiongroup[]
+                             ilocfunctionnames like ifunctions[]
+                             value(solocauthor) like soauthor[]
                              value(gettextelements)
                              value(getscreens)
                              value(customeronly)
                              value(customernamerange)
-                             value(solocpackage) LIKE sopack[].
+                             value(solocpackage) like sopack[].
 
-  DATA: wafunctionname TYPE tfunction.
-  DATA: nogroupsfound TYPE abap_bool VALUE true.
-  DATA: previousfg TYPE v_fdir-area.
+  data: wafunctionname type tfunction.
+  data: nogroupsfound type abap_bool value true.
+  data: previousfg type v_fdir-area.
 
 * select by function name and/or function group.
-  SELECT a~funcname AS functionname
-         a~area AS functiongroup
-         INTO CORRESPONDING FIELDS OF TABLE ilocfunctionnames
-         FROM v_fdir AS a
-         INNER JOIN tlibv AS b
-           ON a~area = b~area
-         INNER JOIN tadir AS c
-           ON a~area = c~obj_name
-         WHERE a~funcname IN sofname[]
-           AND a~area IN sofgroup[]
-           AND a~generated = ''
-           AND b~uname IN solocauthor[]
-           AND pgmid = 'R3TR'
-           AND object = 'FUGR'
-           AND devclass IN solocpackage[]
-           ORDER BY a~area.
+  select a~funcname as functionname
+         a~area as functiongroup
+         into corresponding fields of table ilocfunctionnames
+         from v_fdir as a
+         inner join tlibv as b
+           on a~area = b~area
+         inner join tadir as c
+           on a~area = c~obj_name
+         where a~funcname in sofname[]
+           and a~area in sofgroup[]
+           and a~generated = ''
+           and b~uname in solocauthor[]
+           and pgmid = 'R3TR'
+           and object = 'FUGR'
+           and devclass in solocpackage[]
+           order by a~area.
 
-  LOOP AT ilocfunctionnames INTO wafunctionname.
-    PERFORM retrievefunctiondetail USING wafunctionname-functionname
+  loop at ilocfunctionnames into wafunctionname.
+    perform retrievefunctiondetail using wafunctionname-functionname
                                          wafunctionname-progname
                                          wafunctionname-includenumber
                                          wafunctionname-functiontitle.
 
-    PERFORM findmainfunctioninclude USING wafunctionname-progname
+    perform findmainfunctioninclude using wafunctionname-progname
                                           wafunctionname-functiongroup
                                           wafunctionname-includenumber
                                           wafunctionname-functionmaininclude.
 
-    PERFORM findfunctiontopinclude USING wafunctionname-progname
+    perform findfunctiontopinclude using wafunctionname-progname
                                          wafunctionname-functiongroup
                                          wafunctionname-topincludename.
 
 *   Find all user defined includes within the function group
-    PERFORM scanforfunctionincludes USING wafunctionname-progname
+    perform scanforfunctionincludes using wafunctionname-progname
                                           customeronly
                                           customernamerange
                                           wafunctionname-iincludes[].
 *   Find main message class
-    PERFORM findmainmessageclass USING wafunctionname-progname
+    perform findmainmessageclass using wafunctionname-progname
                                        wafunctionname-messageclass.
 
 *   Find any screens declared within the main include
-    IF NOT getscreens IS INITIAL.
-      IF previousfg IS INITIAL OR previousfg <> wafunctionname-functiongroup.
-        PERFORM findfunctionscreenflow USING wafunctionname.
+    if not getscreens is initial.
+      if previousfg is initial or previousfg <> wafunctionname-functiongroup.
+        perform findfunctionscreenflow using wafunctionname.
 
 *       Search for any GUI texts
-        PERFORM retrieveguititles USING wafunctionname-iguititle[]
+        perform retrieveguititles using wafunctionname-iguititle[]
                                         wafunctionname-progname.
-      ENDIF.
-    ENDIF.
+      endif.
+    endif.
 
-    IF NOT gettextelements IS INITIAL.
+    if not gettextelements is initial.
 *     Find the program texts from out of the database.
-      PERFORM retrieveprogramtexts USING wafunctionname-iselectiontexts[]
+      perform retrieveprogramtexts using wafunctionname-iselectiontexts[]
                                          wafunctionname-itextelements[]
                                          wafunctionname-progname.
-    ENDIF.
+    endif.
 
     previousfg = wafunctionname-functiongroup.
-    MODIFY ilocfunctionnames FROM wafunctionname.
-  ENDLOOP.
-ENDFORM.                                                                                             "retrieveFunctions
+    modify ilocfunctionnames from wafunctionname.
+  endloop.
+endform.                                                                                             "retrieveFunctions
 
 *----------------------------------------------------------------------------------------------------------------------
 *  retrieveFunctionDetail...   Retrieve function module details from SAP DB.
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrievefunctiondetail USING value(functionname)
+form retrievefunctiondetail using value(functionname)
                                         progname
                                         includename
                                         titletext.
 
-  SELECT SINGLE pname
+  select single pname
                 include
-                FROM tfdir
-                INTO (progname, includename)
-                WHERE funcname = functionname.
+                from tfdir
+                into (progname, includename)
+                where funcname = functionname.
 
-  IF sy-subrc = 0.
-    SELECT SINGLE stext
-                  FROM tftit
-                  INTO titletext
-                  WHERE spras = pmlang
-                    AND funcname = functionname.
-  ENDIF.
-ENDFORM.                                                                                        "retrieveFunctionDetail                                                                                  "findFunctionTopInclude
+  if sy-subrc = 0.
+    select single stext
+                  from tftit
+                  into titletext
+                  where spras = pmlang
+                    and funcname = functionname.
+  endif.
+endform.                                                                                        "retrieveFunctionDetail                                                                                  "findFunctionTopInclude
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanForAdditionalFuncStuff... Search for additional things relating to functions
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanforadditionalfuncstuff USING ilocfunctions LIKE ifunctions[]
+form scanforadditionalfuncstuff using ilocfunctions like ifunctions[]
                                       value(recursiveincludes)
                                       value(recursivefunctions)
                                       value(searchforincludes)
@@ -1970,618 +2029,618 @@ FORM scanforadditionalfuncstuff USING ilocfunctions LIKE ifunctions[]
                                       value(customeronly)
                                       value(customernamerange).
 
-  DATA: wafunction TYPE tfunction.
-  DATA: wainclude TYPE tinclude.
+  data: wafunction type tfunction.
+  data: wainclude type tinclude.
 
-  LOOP AT ilocfunctions INTO wafunction.
-    IF NOT searchforincludes IS INITIAL.
+  loop at ilocfunctions into wafunction.
+    if not searchforincludes is initial.
 *     Search in the main program
-      PERFORM scanforincludeprograms USING wafunction-progname
+      perform scanforincludeprograms using wafunction-progname
                                            recursiveincludes
                                            customeronly
                                            customernamerange
                                            wafunction-iincludes[].
 
 *     Search in the main include
-      PERFORM scanforincludeprograms USING wafunction-functionmaininclude
+      perform scanforincludeprograms using wafunction-functionmaininclude
                                            recursiveincludes
                                            customeronly
                                            customernamerange
                                            wafunction-iincludes[].
 
 *     Search in the top include
-      PERFORM scanforincludeprograms USING wafunction-topincludename
+      perform scanforincludeprograms using wafunction-topincludename
                                            recursiveincludes
                                            customeronly
                                            customernamerange
                                            wafunction-iincludes[].
-    ENDIF.
+    endif.
 
-    IF NOT searchforfunctions IS INITIAL.
-      PERFORM scanforfunctions USING wafunction-functionmaininclude
+    if not searchforfunctions is initial.
+      perform scanforfunctions using wafunction-functionmaininclude
                                      wafunction-programlinkname
                                      recursiveincludes
                                      recursivefunctions
                                      customeronly
                                      customernamerange
                                      ilocfunctions[].
-    ENDIF.
+    endif.
 
-    MODIFY ilocfunctions FROM wafunction.
-  ENDLOOP.
+    modify ilocfunctions from wafunction.
+  endloop.
 
 
-  LOOP AT ilocfunctions INTO wafunction.
+  loop at ilocfunctions into wafunction.
 *   Now we have everthing perhaps we had better find all the dictionary structures
-    IF NOT searchfordictionary IS INITIAL.
-      PERFORM scanfortables USING wafunction-progname
+    if not searchfordictionary is initial.
+      perform scanfortables using wafunction-progname
                                   customeronly
                                   customernamerange
                                   wafunction-idictstruct[].
 
-      PERFORM scanforlikeortype USING wafunction-progname
+      perform scanforlikeortype using wafunction-progname
                                       customeronly
                                       customernamerange
                                       wafunction-idictstruct[]
                                       wafunction-itabletypes[].
 
-      PERFORM scanfortables USING wafunction-functionmaininclude
+      perform scanfortables using wafunction-functionmaininclude
                                   customeronly
                                   customernamerange
                                   wafunction-idictstruct[].
 
-      PERFORM scanforlikeortype USING wafunction-functionmaininclude
+      perform scanforlikeortype using wafunction-functionmaininclude
                                       customeronly
                                       customernamerange
                                       wafunction-idictstruct[]
                                       wafunction-itabletypes[].
 
-      LOOP AT wafunction-iincludes INTO wainclude.
-        PERFORM scanfortables USING wainclude-includename
+      loop at wafunction-iincludes into wainclude.
+        perform scanfortables using wainclude-includename
                                     customeronly
                                     customernamerange
                                     wafunction-idictstruct[].
 
-        PERFORM scanforlikeortype USING wainclude-includename
+        perform scanforlikeortype using wainclude-includename
                                         customeronly
                                         customernamerange
                                         wafunction-idictstruct[]
                                         wafunction-itabletypes[].
-      ENDLOOP.
+      endloop.
 
-      MODIFY ilocfunctions FROM wafunction.
-    ENDIF.
+      modify ilocfunctions from wafunction.
+    endif.
 
 *   Now search for all messages
-    IF NOT searchformessages IS INITIAL.
-      PERFORM scanformessages USING wafunction-progname
+    if not searchformessages is initial.
+      perform scanformessages using wafunction-progname
                                     wafunction-messageclass
                                     wafunction-imessages[].
-      MODIFY ilocfunctions FROM wafunction.
-    ENDIF.
+      modify ilocfunctions from wafunction.
+    endif.
 
 *   Search for TRansformations.
-    IF NOT searchfortransformations IS INITIAL.
-      PERFORM scanfortransformations USING wafunction-progname
+    if not searchfortransformations is initial.
+      perform scanfortransformations using wafunction-progname
                                            customeronly
                                            customernamerange
                                            wafunction-itransformations[].
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                    "scanForAdditionalFuncStuff
+    endif.
+  endloop.
+endform.                                                                                    "scanForAdditionalFuncStuff
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanForClasses... Search each class or method for other classes
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanforclasses USING value(classname)
+form scanforclasses using value(classname)
                           value(classlinkname)
                           value(customeronly)
                           value(customernamerange)
-                                ilocclasses LIKE iclasses[]
-                          value(solocpackage) LIKE sopack[].
+                                ilocclasses like iclasses[]
+                          value(solocpackage) like sopack[].
 
-  DATA ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: head TYPE string.
-  DATA: tail TYPE string.
-  DATA: linelength TYPE i VALUE 0.
-  DATA: waline TYPE string.
-  DATA: waclass TYPE tclass.
-  DATA: wasearchclass TYPE tclass.
-  DATA: castclassname TYPE program.
-  DATA: exceptioncustomernamerange TYPE string.
+  data ilines type standard table of string with header line.
+  data: head type string.
+  data: tail type string.
+  data: linelength type i value 0.
+  data: waline type string.
+  data: waclass type tclass.
+  data: wasearchclass type tclass.
+  data: castclassname type program.
+  data: exceptioncustomernamerange type string.
 
 * Build the name of the possible cusotmer exception classes
-  CONCATENATE customernamerange 'CX_' INTO  exceptioncustomernamerange.
+  concatenate customernamerange 'CX_' into  exceptioncustomernamerange.
 
 * Read the program code from the textpool.
   castclassname = classname.
-  READ REPORT castclassname INTO ilines.
+  read report castclassname into ilines.
 
-  LOOP AT ilines INTO waline.
+  loop at ilines into waline.
 *   Find custom tables.
     linelength = strlen( waline ).
-    IF linelength > 0.
-      IF waline(1) = asterix.
-        CONTINUE.
-      ENDIF.
+    if linelength > 0.
+      if waline(1) = asterix.
+        continue.
+      endif.
 
-      TRANSLATE waline TO UPPER CASE.
+      translate waline to upper case.
 
-      FIND typerefto IN waline IGNORING CASE.
-      IF sy-subrc = 0.
+      find typerefto in waline ignoring case.
+      if sy-subrc = 0.
 *       Have found a reference to another class
-        SPLIT waline AT type INTO head tail.
-        SHIFT tail LEFT DELETING LEADING space.
-        SPLIT tail AT 'REF' INTO head tail.
-        SHIFT tail LEFT DELETING LEADING space.
-        SPLIT tail AT 'TO' INTO head tail.
-        SHIFT tail LEFT DELETING LEADING space.
-        IF tail CS period.
-          SPLIT tail AT period INTO head tail.
-        ELSE.
-          IF tail CS comma.
-            SPLIT tail AT comma INTO head tail.
-          ENDIF.
-        ENDIF.
-      ELSE.
+        split waline at type into head tail.
+        shift tail left deleting leading space.
+        split tail at 'REF' into head tail.
+        shift tail left deleting leading space.
+        split tail at 'TO' into head tail.
+        shift tail left deleting leading space.
+        if tail cs period.
+          split tail at period into head tail.
+        else.
+          if tail cs comma.
+            split tail at comma into head tail.
+          endif.
+        endif.
+      else.
 *       Try and find classes which are only referenced through static mehods
-        FIND '=>' IN waline MATCH OFFSET sy-fdpos.
-        IF sy-subrc = 0.
+        find '=>' in waline match offset sy-fdpos.
+        if sy-subrc = 0.
           head = waline+0(sy-fdpos).
-          SHIFT head LEFT DELETING LEADING space.
-          CONDENSE head.
-          FIND 'call method' IN head IGNORING CASE.
-          IF sy-subrc = 0.
-            SHIFT head LEFT DELETING LEADING space.
-            SPLIT head AT space INTO head tail.
-            SPLIT tail AT space INTO head tail.
+          shift head left deleting leading space.
+          condense head.
+          find 'call method' in head ignoring case.
+          if sy-subrc = 0.
+            shift head left deleting leading space.
+            split head at space into head tail.
+            split tail at space into head tail.
 *           Should have the class name here
             head = tail.
-          ELSE.
+          else.
 *           Still have a class name even though it does not have the words call method in front
-            IF waline CS '='.
-              SPLIT waline AT '=' INTO tail head.
-              SHIFT head LEFT DELETING LEADING space.
-              SPLIT head AT '=' INTO head tail.
-            ENDIF.
+            if waline cs '='.
+              split waline at '=' into tail head.
+              shift head left deleting leading space.
+              split head at '=' into head tail.
+            endif.
             sy-subrc = 0.
-          ENDIF.
-        ENDIF.
-      ENDIF.
+          endif.
+        endif.
+      endif.
 
-      IF sy-subrc = 0.
-        TRY.
-            IF head+0(1) = 'Y' OR head+0(1) = 'Z' OR head CS customernamerange.
+      if sy-subrc = 0.
+        try.
+            if head+0(1) = 'Y' or head+0(1) = 'Z' or head cs customernamerange.
 *           We have found a class best append it to our class table if we do not already have it.
-              READ TABLE ilocclasses INTO wasearchclass WITH KEY clsname = head.
-              IF sy-subrc <> 0.
-                IF head+0(3) = 'CX_'
-                   OR head+0(4) = 'ZCX_'
-                   OR head+0(4) = 'YCX_'
-                   OR head CS exceptioncustomernamerange.
+              read table ilocclasses into wasearchclass with key clsname = head.
+              if sy-subrc <> 0.
+                if head+0(3) = 'CX_'
+                   or head+0(4) = 'ZCX_'
+                   or head+0(4) = 'YCX_'
+                   or head cs exceptioncustomernamerange.
 
                   waclass-exceptionclass = true.
-                ENDIF.
+                endif.
 
                 waclass-clsname = head.
 
 *             Check the package
-                IF NOT solocpackage[] IS INITIAL.
-                  SELECT SINGLE obj_name
-                         FROM tadir
-                         INTO waclass-clsname
-                         WHERE pgmid = 'R3TR'
-                           AND object = 'CLAS'
-                           AND obj_name = waclass-clsname
-                           AND devclass IN solocpackage[].
-                  IF sy-subrc = 0.
-                    APPEND waclass TO ilocclasses.
-                  ENDIF.
-                ELSE.
-                  APPEND waclass TO ilocclasses.
-                ENDIF.
-              ENDIF.
-            ENDIF.
-          CATCH cx_sy_range_out_of_bounds.
-        ENDTRY.
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                                "scanForClasses
+                if not solocpackage[] is initial.
+                  select single obj_name
+                         from tadir
+                         into waclass-clsname
+                         where pgmid = 'R3TR'
+                           and object = 'CLAS'
+                           and obj_name = waclass-clsname
+                           and devclass in solocpackage[].
+                  if sy-subrc = 0.
+                    append waclass to ilocclasses.
+                  endif.
+                else.
+                  append waclass to ilocclasses.
+                endif.
+              endif.
+            endif.
+          catch cx_sy_range_out_of_bounds.
+        endtry.
+      endif.
+    endif.
+  endloop.
+endform.                                                                                                "scanForClasses
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanForIncludePrograms... Search each program for include programs
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanforincludeprograms USING value(programname)
+form scanforincludeprograms using value(programname)
                                   value(recursiveincludes)
                                   value(customeronly)
                                   value(customernamerange)
-                                        ilocincludes LIKE dumiincludes[].
+                                        ilocincludes like dumiincludes[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: watokens TYPE stokes.
-  DATA: wainclude TYPE tinclude.
-  DATA: waincludeexists TYPE tinclude.
-  DATA: maxlines TYPE i.
-  DATA: nextline TYPE i.
-  DATA: castprogramname TYPE program.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: watokens type stokes.
+  data: wainclude type tinclude.
+  data: waincludeexists type tinclude.
+  data: maxlines type i.
+  data: nextline type i.
+  data: castprogramname type program.
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO iincludelines.
+  read report castprogramname into iincludelines.
 
-  APPEND include TO ikeywords.
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
+  append include to ikeywords.
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements keywords from ikeywords.
 
-  CLEAR iincludelines[].
+  clear iincludelines[].
 
   maxlines = lines( itokens ).
-  LOOP AT itokens WHERE str = include AND type = 'I'.
+  loop at itokens where str = include and type = 'I'.
     nextline = sy-tabix + 1.
-    IF nextline <= maxlines.
-      READ TABLE itokens INDEX nextline INTO watokens.
+    if nextline <= maxlines.
+      read table itokens index nextline into watokens.
 
 *      Are we only to find customer includes?
-      IF NOT customeronly IS INITIAL.
-        TRY.
-            IF watokens-str+0(1) = 'Y' OR watokens-str+0(1) = 'Z' OR watokens-str CS customernamerange
-               OR watokens-str+0(2) = 'MZ' OR watokens-str+0(2) = 'MY'.
+      if not customeronly is initial.
+        try.
+            if watokens-str+0(1) = 'Y' or watokens-str+0(1) = 'Z' or watokens-str cs customernamerange
+               or watokens-str+0(2) = 'MZ' or watokens-str+0(2) = 'MY'.
 
-            ELSE.
-              CONTINUE.
-            ENDIF.
-          CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-        ENDTRY.
-      ENDIF.
+            else.
+              continue.
+            endif.
+          catch cx_sy_range_out_of_bounds into objruntimeerror.
+        endtry.
+      endif.
 
       wainclude-includename = watokens-str.
 
 *      Best find the program title text as well.
-      PERFORM findprogramorincludetitle USING wainclude-includename
+      perform findprogramorincludetitle using wainclude-includename
                                               wainclude-includetitle.
 
 *      Don't append the include if we already have it listed
-      READ TABLE ilocincludes INTO waincludeexists WITH KEY includename = wainclude-includename.
-      IF sy-subrc <> 0.
-        APPEND wainclude TO ilocincludes.
+      read table ilocincludes into waincludeexists with key includename = wainclude-includename.
+      if sy-subrc <> 0.
+        append wainclude to ilocincludes.
 
-        IF NOT recursiveincludes IS INITIAL.
+        if not recursiveincludes is initial.
 *          Do a recursive search for other includes
-          PERFORM scanforincludeprograms USING wainclude-includename
+          perform scanforincludeprograms using wainclude-includename
                                                recursiveincludes
                                                customeronly
                                                customernamerange
                                                ilocincludes[].
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                        "scanForIncludePrograms
+        endif.
+      endif.
+    endif.
+  endloop.
+endform.                                                                                        "scanForIncludePrograms
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanForIncludePrograms... Search each program for include programs
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanfortransformations USING value(programname)
+form scanfortransformations using value(programname)
                                   value(customeronly)
                                   value(customernamerange)
-                                        iloctransformation LIKE itransformations[].
+                                        iloctransformation like itransformations[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: watokens TYPE stokes.
-  DATA: watransformation TYPE ttransformation.
-  DATA: watransformationexists TYPE ttransformation.
-  DATA: maxlines TYPE i.
-  DATA: nextline TYPE i.
-  DATA: castprogramname TYPE program.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: watokens type stokes.
+  data: watransformation type ttransformation.
+  data: watransformationexists type ttransformation.
+  data: maxlines type i.
+  data: nextline type i.
+  data: castprogramname type program.
 
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO iincludelines.
+  read report castprogramname into iincludelines.
 
-  APPEND 'CALL' TO ikeywords.
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
+  append 'CALL' to ikeywords.
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements keywords from ikeywords.
 
-  CLEAR iincludelines[].
+  clear iincludelines[].
 
   maxlines = lines( itokens ).
-  LOOP AT itokens WHERE str = transformation AND type = 'I'.
+  loop at itokens where str = transformation and type = 'I'.
     nextline = sy-tabix + 1.
-    IF nextline <= maxlines.
-      READ TABLE itokens INDEX nextline INTO watokens.
+    if nextline <= maxlines.
+      read table itokens index nextline into watokens.
 
 *      Are we only to find customer transformations?
-      IF NOT customeronly IS INITIAL.
-        TRY.
-            IF watokens-str+0(1) = 'Y' OR watokens-str+0(1) = 'Z' OR watokens-str CS customernamerange.
-            ELSE.
-              CONTINUE.
-            ENDIF.
-          CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-        ENDTRY.
-      ENDIF.
+      if not customeronly is initial.
+        try.
+            if watokens-str+0(1) = 'Y' or watokens-str+0(1) = 'Z' or watokens-str cs customernamerange.
+            else.
+              continue.
+            endif.
+          catch cx_sy_range_out_of_bounds into objruntimeerror.
+        endtry.
+      endif.
 
       watransformation-xsltname = watokens-str.
 
 *      Don't append the include if we already have it listed
-      READ TABLE iloctransformation INTO watransformationexists WITH KEY xsltname = watransformation-xsltname.
-      IF sy-subrc <> 0.
-        APPEND watransformation TO iloctransformation.
+      read table iloctransformation into watransformationexists with key xsltname = watransformation-xsltname.
+      if sy-subrc <> 0.
+        append watransformation to iloctransformation.
 
-        PERFORM scanfortransincludes USING watransformation-xsltname
+        perform scanfortransincludes using watransformation-xsltname
                                            customeronly
                                            customernamerange
                                            iloctransformation[].
 
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                        "scanForIncludePrograms
+      endif.
+    endif.
+  endloop.
+endform.                                                                                        "scanForIncludePrograms
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanforTransIncludes...
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanfortransincludes USING value(xsltname)
+form scanfortransincludes using value(xsltname)
                                 value(customeronly)
                                 value(customernamerange)
-                                      iloctransformations LIKE itransformations[].
+                                      iloctransformations like itransformations[].
 
-  DATA: ixsltsource TYPE o2pageline_table.
-  DATA: waxsltattributes TYPE o2xsltattr.
-  DATA: waxsltsource LIKE LINE OF ixsltsource.
-  DATA: dummy TYPE string.
-  DATA: watransformationexists TYPE ttransformation.
-  DATA: watransformation TYPE ttransformation.
+  data: ixsltsource type o2pageline_table.
+  data: waxsltattributes type o2xsltattr.
+  data: waxsltsource like line of ixsltsource.
+  data: dummy type string.
+  data: watransformationexists type ttransformation.
+  data: watransformation type ttransformation.
 
-  cl_o2_api_xsltdesc=>load( EXPORTING p_xslt_desc = xsltname
-                           IMPORTING p_source = ixsltsource
+  cl_o2_api_xsltdesc=>load( exporting p_xslt_desc = xsltname
+                           importing p_source = ixsltsource
                                      p_attributes = waxsltattributes
-                           EXCEPTIONS not_existing = 1
+                           exceptions not_existing = 1
                                       permission_failure = 2
                                       error_occured = 3
                                       version_not_found = 4 ).
 
-  LOOP AT ixsltsource INTO waxsltsource.
-    IF waxsltsource-line CS '<xsl:include'.
-      SPLIT waxsltsource-line AT '"' INTO dummy waxsltsource-line.
-      SPLIT waxsltsource-line AT '"' INTO waxsltsource dummy.
+  loop at ixsltsource into waxsltsource.
+    if waxsltsource-line cs '<xsl:include'.
+      split waxsltsource-line at '"' into dummy waxsltsource-line.
+      split waxsltsource-line at '"' into waxsltsource dummy.
 
 *      Are we only to find customer transformations?
-      IF NOT customeronly IS INITIAL.
-        TRY.
-            IF waxsltsource-line+0(1) = 'Y' OR waxsltsource-line+0(1) = 'Z' OR waxsltsource-line CS customernamerange.
-            ELSE.
-              CONTINUE.
-            ENDIF.
-          CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-        ENDTRY.
-      ENDIF.
+      if not customeronly is initial.
+        try.
+            if waxsltsource-line+0(1) = 'Y' or waxsltsource-line+0(1) = 'Z' or waxsltsource-line cs customernamerange.
+            else.
+              continue.
+            endif.
+          catch cx_sy_range_out_of_bounds into objruntimeerror.
+        endtry.
+      endif.
 
 *      Don't append the include if we already have it listed
-      READ TABLE iloctransformations INTO watransformationexists WITH KEY xsltname = waxsltsource-line.
-      IF sy-subrc <> 0.
+      read table iloctransformations into watransformationexists with key xsltname = waxsltsource-line.
+      if sy-subrc <> 0.
         watransformation-xsltname = waxsltsource-line.
-        APPEND watransformation TO iloctransformations.
+        append watransformation to iloctransformations.
 
 *        Ok we have an include.  Are there any sub includes
-        PERFORM scanfortransincludes USING watransformation-xsltname
+        perform scanfortransincludes using watransformation-xsltname
                                            customeronly
                                            customernamerange
                                            iloctransformations[].
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                    "scanforTransIncludes
+      endif.
+    endif.
+  endloop.
+endform.                    "scanforTransIncludes
 
 
 *----------------------------------------------------------------------------------------------------------------------
 * scanForFunctions... Search each program for function modules
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanforfunctions USING value(programname)
+form scanforfunctions using value(programname)
                             value(programlinkname)
                             value(recursiveincludes)
                             value(recursivefunctions)
                             value(customeronly)
                             value(customernamerange)
-                                  ilocfunctions LIKE ifunctions[].
+                                  ilocfunctions like ifunctions[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: watokens TYPE stokes.
-  DATA: wafunction TYPE tfunction.
-  DATA: wafunctioncomparison TYPE tfunction.
-  DATA: maxlines TYPE i.
-  DATA: nextline TYPE i.
-  DATA: castprogramname TYPE program.
-  DATA: skipthisloop TYPE abap_bool.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: watokens type stokes.
+  data: wafunction type tfunction.
+  data: wafunctioncomparison type tfunction.
+  data: maxlines type i.
+  data: nextline type i.
+  data: castprogramname type program.
+  data: skipthisloop type abap_bool.
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO iincludelines.
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements.
-  CLEAR iincludelines[].
+  read report castprogramname into iincludelines.
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements.
+  clear iincludelines[].
 
   maxlines = lines( itokens ).
-  LOOP AT itokens WHERE str = function AND type = 'I'.
+  loop at itokens where str = function and type = 'I'.
 
     nextline = sy-tabix + 1.
-    IF nextline <= maxlines.
-      READ TABLE itokens INDEX nextline INTO watokens.
+    if nextline <= maxlines.
+      read table itokens index nextline into watokens.
 
 *      Are we only to find customer functions
       skipthisloop = false.
-      IF NOT customeronly IS INITIAL.
-        TRY.
-            IF watokens-str+1(1) = 'Y' OR watokens-str+1(1) = 'Z' OR watokens-str CS customernamerange.
-            ELSE.
+      if not customeronly is initial.
+        try.
+            if watokens-str+1(1) = 'Y' or watokens-str+1(1) = 'Z' or watokens-str cs customernamerange.
+            else.
               skipthisloop = true.
-            ENDIF.
-          CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-          CLEANUP.
+            endif.
+          catch cx_sy_range_out_of_bounds into objruntimeerror.
+          cleanup.
             skipthisloop = true.
-        ENDTRY.
-      ENDIF.
+        endtry.
+      endif.
 
-      IF skipthisloop = false.
+      if skipthisloop = false.
         wafunction-functionname = watokens-str.
-        REPLACE ALL OCCURRENCES OF '''' IN wafunction-functionname WITH ' '.
-        CONDENSE wafunction-functionname.
+        replace all occurrences of '''' in wafunction-functionname with ' '.
+        condense wafunction-functionname.
 
 *        Don't add a function if we alread have it listed.
-        READ TABLE ilocfunctions WITH KEY functionname = wafunction-functionname INTO wafunctioncomparison.
-        IF sy-subrc <> 0.
+        read table ilocfunctions with key functionname = wafunction-functionname into wafunctioncomparison.
+        if sy-subrc <> 0.
 *          Add in the link name if the function is linked to a program
           wafunction-programlinkname = programlinkname.
 
 *          Don't download functions which are called through an RFC destination
           nextline = sy-tabix + 2.
-          READ TABLE itokens INDEX nextline INTO watokens.
-          IF watokens-str <> destination.
+          read table itokens index nextline into watokens.
+          if watokens-str <> destination.
 
 *            Find the function group
-            SELECT SINGLE area FROM v_fdir INTO wafunction-functiongroup WHERE funcname = wafunction-functionname.
+            select single area from v_fdir into wafunction-functiongroup where funcname = wafunction-functionname.
 
-            IF sy-subrc = 0.
+            if sy-subrc = 0.
 *              Best find the function number as well.
-              PERFORM retrievefunctiondetail USING wafunction-functionname
+              perform retrievefunctiondetail using wafunction-functionname
                                                    wafunction-progname
                                                    wafunction-includenumber
                                                    wafunction-functiontitle.
 
-              PERFORM findmainfunctioninclude USING wafunction-progname
+              perform findmainfunctioninclude using wafunction-progname
                                                     wafunction-functiongroup
                                                     wafunction-includenumber
                                                     wafunction-functionmaininclude.
 
-              PERFORM findfunctiontopinclude USING wafunction-progname
+              perform findfunctiontopinclude using wafunction-progname
                                                    wafunction-functiongroup
                                                    wafunction-topincludename.
 
 *              Find main message class
-              PERFORM findmainmessageclass USING wafunction-progname
+              perform findmainmessageclass using wafunction-progname
                                                  wafunction-messageclass.
 
-              APPEND wafunction TO ilocfunctions.
+              append wafunction to ilocfunctions.
 
 *              Now lets search a little bit deeper and do a recursive search for other includes
-              IF NOT recursiveincludes IS INITIAL.
-                PERFORM scanforincludeprograms USING wafunction-functionmaininclude
+              if not recursiveincludes is initial.
+                perform scanforincludeprograms using wafunction-functionmaininclude
                                                      recursiveincludes
                                                      customeronly
                                                      customernamerange
                                                      wafunction-iincludes[].
-              ENDIF.
+              endif.
 
 *              Now lets search a little bit deeper and do a recursive search for other functions
-              IF NOT recursivefunctions IS INITIAL.
-                PERFORM scanforfunctions USING wafunction-functionmaininclude
+              if not recursivefunctions is initial.
+                perform scanforfunctions using wafunction-functionmaininclude
                                                space
                                                recursiveincludes
                                                recursivefunctions
                                                customeronly
                                                customernamerange
                                                ilocfunctions[].
-              ENDIF.
-              CLEAR wafunction.
-            ENDIF.
-          ENDIF.
-        ENDIF.
+              endif.
+              clear wafunction.
+            endif.
+          endif.
+        endif.
 
-        CLEAR wafunction.
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                              "scanForFunctions
+        clear wafunction.
+      endif.
+    endif.
+  endloop.
+endform.                                                                                              "scanForFunctions
 
 *----------------------------------------------------------------------------------------------------------------------
 *  scanForFunctionIncludes... Find all user defined includes within the function group
 *----------------------------------------------------------------------------------------------------------------------
-FORM scanforfunctionincludes USING poolname
+form scanforfunctionincludes using poolname
                                    value(customeronly)
                                    value(customernamerange)
-                                   ilocincludes LIKE dumiincludes[].
+                                   ilocincludes like dumiincludes[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: watokens TYPE stokes.
-  DATA: wainclude TYPE tinclude.
-  DATA: waincludeexists TYPE tinclude.
-  DATA: maxlines TYPE i.
-  DATA: nextline TYPE i.
-  DATA: castprogramname TYPE program.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: watokens type stokes.
+  data: wainclude type tinclude.
+  data: waincludeexists type tinclude.
+  data: maxlines type i.
+  data: nextline type i.
+  data: castprogramname type program.
 
 * Read the program code from the textpool.
   castprogramname = poolname.
-  READ REPORT castprogramname INTO iincludelines.
+  read report castprogramname into iincludelines.
 
-  APPEND include TO ikeywords.
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
+  append include to ikeywords.
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements keywords from ikeywords.
 
-  CLEAR iincludelines[].
+  clear iincludelines[].
 
   maxlines = lines( itokens ).
-  LOOP AT itokens WHERE str = include AND type = 'I'.
+  loop at itokens where str = include and type = 'I'.
     nextline = sy-tabix + 1.
-    IF nextline <= maxlines.
-      READ TABLE itokens INDEX nextline INTO watokens.
+    if nextline <= maxlines.
+      read table itokens index nextline into watokens.
 
-      IF watokens-str CP '*F++'.
+      if watokens-str cp '*F++'.
 *        Are we only to find customer includes?
-        IF NOT customeronly IS INITIAL.
-          TRY.
-              IF watokens-str+0(2) = 'LY' OR watokens-str+0(2) = 'LZ' OR watokens-str CS customernamerange.
-              ELSE.
-                CONTINUE.
-              ENDIF.
-            CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-          ENDTRY.
-        ENDIF.
+        if not customeronly is initial.
+          try.
+              if watokens-str+0(2) = 'LY' or watokens-str+0(2) = 'LZ' or watokens-str cs customernamerange.
+              else.
+                continue.
+              endif.
+            catch cx_sy_range_out_of_bounds into objruntimeerror.
+          endtry.
+        endif.
 
         wainclude-includename = watokens-str.
 
 *        Best find the program title text as well.
-        PERFORM findprogramorincludetitle USING wainclude-includename
+        perform findprogramorincludetitle using wainclude-includename
                                                 wainclude-includetitle.
 
 *        Don't append the include if we already have it listed
-        READ TABLE ilocincludes INTO waincludeexists WITH KEY includename = wainclude-includename.
-        IF sy-subrc <> 0.
-          APPEND wainclude TO ilocincludes.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                       "scanForFunctionIncludes
+        read table ilocincludes into waincludeexists with key includename = wainclude-includename.
+        if sy-subrc <> 0.
+          append wainclude to ilocincludes.
+        endif.
+      endif.
+    endif.
+  endloop.
+endform.                                                                                       "scanForFunctionIncludes
 
 *----------------------------------------------------------------------------------------------------------------------
 *  findProgramOrIncludeTitle...   Finds the title text of a program.
 *----------------------------------------------------------------------------------------------------------------------
-FORM findprogramorincludetitle USING value(programname)
+form findprogramorincludetitle using value(programname)
                                            titletext.
 
-  SELECT SINGLE text
-                FROM trdirt
-                INTO titletext
-                WHERE name = programname
-                  AND sprsl = pmlang.
-ENDFORM.                                                                                     "findProgramOrIncludeTitle
+  select single text
+                from trdirt
+                into titletext
+                where name = programname
+                  and sprsl = pmlang.
+endform.                                                                                     "findProgramOrIncludeTitle
 
 *----------------------------------------------------------------------------------------------------------------------
 * retrievePrograms...    find programs and sub objects from SAP DB
 *----------------------------------------------------------------------------------------------------------------------
-FORM retrieveprograms USING ilocprogram LIKE iprograms[]
-                            ilocfunctions LIKE ifunctions[]
-                            rangeprogram LIKE soprogramname[]
-                            rangeauthor LIKE soauthor[]
+form retrieveprograms using ilocprogram like iprograms[]
+                            ilocfunctions like ifunctions[]
+                            rangeprogram like soprogramname[]
+                            rangeauthor like soauthor[]
                             value(custnamerange)
                             value(alsomodifiedbyauthor)
                             value(customerprogsonly)
@@ -2594,36 +2653,36 @@ FORM retrieveprograms USING ilocprogram LIKE iprograms[]
                             value(gettransformations)
                             value(recursivefuncsearch)
                             value(recursiveincludesearch)
-                            value(solocpackage) LIKE sopack[].
+                            value(solocpackage) like sopack[].
 
-  DATA: warangeprogram LIKE LINE OF rangeprogram.
+  data: warangeprogram like line of rangeprogram.
 
-  IF rangeprogram[] IS INITIAL.
+  if rangeprogram[] is initial.
 *   We are finding all programs by an author
-    PERFORM findallprogramsforauthor USING ilocprogram[]
+    perform findallprogramsforauthor using ilocprogram[]
                                            rangeprogram[]
                                            rangeauthor[]
                                            custnamerange
                                            alsomodifiedbyauthor
                                            customerprogsonly
                                            solocpackage[].
-  ELSE.
-    READ TABLE rangeprogram INDEX 1 INTO warangeprogram.
-    IF warangeprogram-low CS asterix.
-      PERFORM findprogramsbywildcard USING ilocprogram[]
+  else.
+    read table rangeprogram index 1 into warangeprogram.
+    if warangeprogram-low cs asterix.
+      perform findprogramsbywildcard using ilocprogram[]
                                            rangeprogram[]
                                            rangeauthor[]
                                            custnamerange
                                            customerprogsonly
                                            solocpackage[].
-    ELSE.
-      PERFORM checkprogramdoesexist USING ilocprogram[]
+    else.
+      perform checkprogramdoesexist using ilocprogram[]
                                           rangeprogram[].
-    ENDIF.
-  ENDIF.
+    endif.
+  endif.
 
 * Find extra items
-  PERFORM scanforadditionalprogstuff USING ilocprogram[]
+  perform scanforadditionalprogstuff using ilocprogram[]
                                            ilocfunctions[]
                                            gettextelements
                                            getmessages
@@ -2636,13 +2695,13 @@ FORM retrieveprograms USING ilocprogram LIKE iprograms[]
                                            custnamerange
                                            recursiveincludesearch
                                            recursivefuncsearch.
-ENDFORM.                                                                               "retrievePrograms
+endform.                                                                               "retrievePrograms
 
 *-------------------------------------------------------------------------------------------------------
 *  scanForAdditionalProgStuff...
 *-------------------------------------------------------------------------------------------------------
-FORM scanforadditionalprogstuff USING ilocprogram LIKE iprograms[]
-                                      ilocfunctions LIKE ifunctions[]
+form scanforadditionalprogstuff using ilocprogram like iprograms[]
+                                      ilocfunctions like ifunctions[]
                                       value(gettextelements)
                                       value(getmessages)
                                       value(getscreens)
@@ -2655,28 +2714,28 @@ FORM scanforadditionalprogstuff USING ilocprogram LIKE iprograms[]
                                       value(recursiveincludesearch)
                                       value(recursivefuncsearch).
 
-  DATA: waprogram TYPE tprogram.
-  DATA: wainclude TYPE tinclude.
-  DATA: mytabix TYPE sytabix.
+  data: waprogram type tprogram.
+  data: wainclude type tinclude.
+  data: mytabix type sytabix.
 
 * Best to find all the includes used in a program first
-  IF NOT getincludes IS INITIAL.
-    LOOP AT ilocprogram INTO waprogram.
+  if not getincludes is initial.
+    loop at ilocprogram into waprogram.
       mytabix = sy-tabix.
-      PERFORM scanforincludeprograms USING waprogram-progname
+      perform scanforincludeprograms using waprogram-progname
                                            recursiveincludesearch
                                            customeronly
                                            customernamerange
                                            waprogram-iincludes[].
 
-      MODIFY ilocprogram FROM waprogram INDEX mytabix.
-    ENDLOOP.
-  ENDIF.
+      modify ilocprogram from waprogram index mytabix.
+    endloop.
+  endif.
 
 * Once we have a list of all the includes we need to loop round them an select all the other objects
-  LOOP AT ilocprogram INTO waprogram.
+  loop at ilocprogram into waprogram.
     mytabix = sy-tabix.
-    PERFORM findprogramdetails USING waprogram-progname
+    perform findprogramdetails using waprogram-progname
                                      waprogram-subc
                                      waprogram-programtitle
                                      waprogram
@@ -2689,12 +2748,12 @@ FORM scanforadditionalprogstuff USING ilocprogram LIKE iprograms[]
                                      customernamerange.
 
 *   Find any screens
-    IF NOT getscreens IS INITIAL.
-      PERFORM findprogramscreenflow USING waprogram.
-    ENDIF.
+    if not getscreens is initial.
+      perform findprogramscreenflow using waprogram.
+    endif.
 
-    LOOP AT waprogram-iincludes INTO wainclude.
-      PERFORM findprogramdetails USING wainclude-includename
+    loop at waprogram-iincludes into wainclude.
+      perform findprogramdetails using wainclude-includename
                                        'I'
                                        wainclude-includetitle
                                        waprogram
@@ -2705,26 +2764,26 @@ FORM scanforadditionalprogstuff USING ilocprogram LIKE iprograms[]
                                        getcustdictstructures
                                        customeronly
                                        customernamerange.
-    ENDLOOP.
+    endloop.
 
-    MODIFY ilocprogram FROM waprogram INDEX mytabix.
-  ENDLOOP.
+    modify ilocprogram from waprogram index mytabix.
+  endloop.
 
 * Now we have all the program includes and details we need to find extra functions
-  IF NOT getfunctions IS INITIAL.
-    LOOP AT ilocprogram INTO waprogram.
+  if not getfunctions is initial.
+    loop at ilocprogram into waprogram.
 *     Find any functions defined in the code
-      PERFORM scanforfunctions USING waprogram-progname
+      perform scanforfunctions using waprogram-progname
                                      waprogram-progname
                                      space
                                      space
                                      customeronly
                                      customernamerange
                                      ilocfunctions[].
-    ENDLOOP.
+    endloop.
 
 *   We have a list of all the functions so lets go and find details and other function calls
-    PERFORM scanforadditionalfuncstuff USING ilocfunctions[]
+    perform scanforadditionalfuncstuff using ilocfunctions[]
                                              recursiveincludesearch
                                              recursivefuncsearch
                                              getincludes
@@ -2734,16 +2793,16 @@ FORM scanforadditionalprogstuff USING ilocprogram LIKE iprograms[]
                                              gettransformations
                                              customeronly
                                              customernamerange.
-  ENDIF.
-ENDFORM.                                                                     "scanForAdditionalProgStuff
+  endif.
+endform.                                                                     "scanForAdditionalProgStuff
 
 *-------------------------------------------------------------------------------------------------------
 *  findProgramDetails...
 *-------------------------------------------------------------------------------------------------------
-FORM findprogramdetails USING value(programname)
+form findprogramdetails using value(programname)
                               value(programtype)
                                     programtitle
-                                    waprogram TYPE tprogram
+                                    waprogram type tprogram
                               value(gettextelements)
                               value(getmessages)
                               value(getscreens)
@@ -2752,506 +2811,506 @@ FORM findprogramdetails USING value(programname)
                               value(customeronly)
                               value(customernamerange).
 
-  PERFORM findprogramorincludetitle USING programname
+  perform findprogramorincludetitle using programname
                                           programtitle.
 
-  IF NOT gettextelements IS INITIAL.
+  if not gettextelements is initial.
 *   Find the program texts from out of the database.
-    PERFORM retrieveprogramtexts USING waprogram-iselectiontexts[]
+    perform retrieveprogramtexts using waprogram-iselectiontexts[]
                                        waprogram-itextelements[]
                                        programname.
-  ENDIF.
+  endif.
 
 * Search for any GUI texts
-  IF NOT getscreens IS INITIAL AND ( programtype = 'M' OR programtype = '1' ).
-    PERFORM retrieveguititles USING waprogram-iguititle[]
+  if not getscreens is initial and ( programtype = 'M' or programtype = '1' ).
+    perform retrieveguititles using waprogram-iguititle[]
                                     programname.
-  ENDIF.
+  endif.
 
 * Find individual messages
-  IF NOT getmessages IS INITIAL.
-    IF programtype = 'M' OR programtype = '1'.
-      PERFORM findmainmessageclass USING programname
+  if not getmessages is initial.
+    if programtype = 'M' or programtype = '1'.
+      perform findmainmessageclass using programname
                                          waprogram-messageclass.
-    ENDIF.
+    endif.
 
-    PERFORM scanformessages USING programname
+    perform scanformessages using programname
                                   waprogram-messageclass
                                   waprogram-imessages[].
-  ENDIF.
+  endif.
 
 * Find any XSLT Transformations
-  IF NOT gettransformations IS INITIAL.
-    PERFORM scanfortransformations USING programname
+  if not gettransformations is initial.
+    perform scanfortransformations using programname
                                          customeronly
                                          customernamerange
                                          waprogram-itransformations[].
-  ENDIF.
+  endif.
 
-  IF NOT getcustdictstructures IS INITIAL.
-    PERFORM scanfortables USING programname
+  if not getcustdictstructures is initial.
+    perform scanfortables using programname
                                 customeronly
                                 customernamerange
                                 waprogram-idictstruct[].
 
-    PERFORM scanforlikeortype USING programname
+    perform scanforlikeortype using programname
                                     customeronly
                                     customernamerange
                                     waprogram-idictstruct[]
                                     waprogram-itabletypes[].
-  ENDIF.
-ENDFORM.                                                                             "findProgramDetails
+  endif.
+endform.                                                                             "findProgramDetails
 
 *-------------------------------------------------------------------------------------------------------
 *  findAllProgramsForAuthor...
 *-------------------------------------------------------------------------------------------------------
-FORM findallprogramsforauthor USING ilocprogram LIKE iprograms[]
-                                    rangeprogram LIKE soprogramname[]
-                                    rangeauthor LIKE soauthor[]
+form findallprogramsforauthor using ilocprogram like iprograms[]
+                                    rangeprogram like soprogramname[]
+                                    rangeauthor like soauthor[]
                                     value(custnamerange)
                                     value(alsomodifiedbyauthor)
                                     value(customerprogsonly)
-                                    value(solocpackage) LIKE sopack[].
+                                    value(solocpackage) like sopack[].
 
-  DATA: altcustomernamerange TYPE string.
-  FIELD-SYMBOLS: <waprogram> TYPE tprogram.
-  DATA: genflag TYPE genflag.
+  data: altcustomernamerange type string.
+  field-symbols: <waprogram> type tprogram.
+  data: genflag type genflag.
 
 * build up the customer name range used for select statements
-  CONCATENATE custnamerange '%' INTO altcustomernamerange.
+  concatenate custnamerange '%' into altcustomernamerange.
 
 * select by name and author
-  IF NOT alsomodifiedbyauthor IS INITIAL.
+  if not alsomodifiedbyauthor is initial.
 *   Programs modified by author
 *   Program to search for is an executable program
-    IF customerprogsonly IS INITIAL.
+    if customerprogsonly is initial.
 *     Select all programs
-      SELECT a~progname
+      select a~progname
              a~subc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             FROM reposrc AS a
-             INNER JOIN tadir AS b
-               ON a~progname = b~obj_name
-             WHERE a~progname IN rangeprogram
-               AND a~cnam IN rangeauthor
-               AND ( a~subc = '1' OR a~subc = 'M' OR a~subc = 'S' )
-               AND b~pgmid = 'R3TR'
-               AND b~object = 'PROG'
-               AND b~devclass IN solocpackage.
+             appending corresponding fields of table ilocprogram
+             from reposrc as a
+             inner join tadir as b
+               on a~progname = b~obj_name
+             where a~progname in rangeprogram
+               and a~cnam in rangeauthor
+               and ( a~subc = '1' or a~subc = 'M' or a~subc = 'S' )
+               and b~pgmid = 'R3TR'
+               and b~object = 'PROG'
+               and b~devclass in solocpackage.
 
-    ELSE.
+    else.
 *     Select only customer specific programs
-      SELECT progname
+      select progname
              subc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             FROM reposrc AS a
-             INNER JOIN tadir AS b
-               ON a~progname = b~obj_name
-             WHERE a~progname  IN rangeprogram
-               AND ( a~progname LIKE altcustomernamerange
-                     OR a~progname LIKE 'Z%'
-                     OR a~progname LIKE 'Y%'
-                     OR a~progname LIKE 'SAPMZ%'
-                     OR a~progname LIKE 'SAPMY%')
-               AND a~cnam IN rangeauthor
-               AND ( a~subc = '1' OR a~subc = 'M' OR a~subc = 'S' )
-               AND b~pgmid = 'R3TR'
-               AND b~object = 'PROG'
-               AND b~devclass IN solocpackage.
-    ENDIF.
-  ELSE.
+             appending corresponding fields of table ilocprogram
+             from reposrc as a
+             inner join tadir as b
+               on a~progname = b~obj_name
+             where a~progname  in rangeprogram
+               and ( a~progname like altcustomernamerange
+                     or a~progname like 'Z%'
+                     or a~progname like 'Y%'
+                     or a~progname like 'SAPMZ%'
+                     or a~progname like 'SAPMY%')
+               and a~cnam in rangeauthor
+               and ( a~subc = '1' or a~subc = 'M' or a~subc = 'S' )
+               and b~pgmid = 'R3TR'
+               and b~object = 'PROG'
+               and b~devclass in solocpackage.
+    endif.
+  else.
 
 *   Programs created by author
-    IF customerprogsonly IS INITIAL.
+    if customerprogsonly is initial.
 *     Select all programs
-      SELECT progname
+      select progname
              subc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             FROM reposrc AS a
-             INNER JOIN tadir AS b
-               ON a~progname = b~obj_name
-             WHERE a~progname IN rangeprogram
-               AND ( a~subc = '1' OR a~subc = 'M' OR a~subc = 'S' )
-               AND ( a~cnam IN rangeauthor OR a~unam IN rangeauthor )
-               AND b~pgmid = 'R3TR'
-               AND b~object = 'PROG'
-               AND b~devclass IN solocpackage.
-    ELSE.
+             appending corresponding fields of table ilocprogram
+             from reposrc as a
+             inner join tadir as b
+               on a~progname = b~obj_name
+             where a~progname in rangeprogram
+               and ( a~subc = '1' or a~subc = 'M' or a~subc = 'S' )
+               and ( a~cnam in rangeauthor or a~unam in rangeauthor )
+               and b~pgmid = 'R3TR'
+               and b~object = 'PROG'
+               and b~devclass in solocpackage.
+    else.
 *     Select only customer specific programs
-      SELECT a~progname
+      select a~progname
              a~subc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             FROM reposrc AS a
-             INNER JOIN tadir AS b
-               ON a~progname = b~obj_name
-             WHERE a~progname IN rangeprogram
-               AND ( a~progname LIKE altcustomernamerange
-                     OR a~progname LIKE 'Z%'
-                     OR a~progname LIKE 'Y%'
-                     OR a~progname LIKE 'SAPMZ%'
-                     OR a~progname LIKE 'SAPMY%')
-               AND ( a~subc = '1' OR a~subc = 'M' OR a~subc = 'S' )
-               AND ( a~cnam IN rangeauthor OR a~unam IN rangeauthor )
-               AND b~pgmid = 'R3TR'
-               AND b~object = 'PROG'
-               AND b~devclass IN solocpackage.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                       "findAllProgramsForAuthor
+             appending corresponding fields of table ilocprogram
+             from reposrc as a
+             inner join tadir as b
+               on a~progname = b~obj_name
+             where a~progname in rangeprogram
+               and ( a~progname like altcustomernamerange
+                     or a~progname like 'Z%'
+                     or a~progname like 'Y%'
+                     or a~progname like 'SAPMZ%'
+                     or a~progname like 'SAPMY%')
+               and ( a~subc = '1' or a~subc = 'M' or a~subc = 'S' )
+               and ( a~cnam in rangeauthor or a~unam in rangeauthor )
+               and b~pgmid = 'R3TR'
+               and b~object = 'PROG'
+               and b~devclass in solocpackage.
+    endif.
+  endif.
+endform.                                                                       "findAllProgramsForAuthor
 
 *-------------------------------------------------------------------------------------------------------
 *  findAllXSLTForAuthor...
 *-------------------------------------------------------------------------------------------------------
-FORM findallxsltforauthor USING iloctransformations  LIKE itransformations[]
-                                rangexslt LIKE soxsltname[]
-                                rangeauthor LIKE soauthor[]
+form findallxsltforauthor using iloctransformations  like itransformations[]
+                                rangexslt like soxsltname[]
+                                rangeauthor like soauthor[]
                                 value(custnamerange)
                                 value(alsomodifiedbyauthor)
                                 value(customerprogsonly)
-                                value(solocpackage) LIKE sopack[].
+                                value(solocpackage) like sopack[].
 
-  DATA: altcustomernamerange TYPE string.
-  DATA: watransformation LIKE LINE OF itransformations.
-  FIELD-SYMBOLS: <waxslt> TYPE ttransformation.
-  DATA: genflag TYPE genflag.
+  data: altcustomernamerange type string.
+  data: watransformation like line of itransformations.
+  field-symbols: <waxslt> type ttransformation.
+  data: genflag type genflag.
 
 * build up the customer name range used for select statements
-  CONCATENATE custnamerange '%' INTO altcustomernamerange.
+  concatenate custnamerange '%' into altcustomernamerange.
 
 * select by name and author
-  IF NOT alsomodifiedbyauthor IS INITIAL.
+  if not alsomodifiedbyauthor is initial.
 *   Programs modified by author
 *   Program to search for is an executable program
-    IF customerprogsonly IS INITIAL.
+    if customerprogsonly is initial.
 *     Select all XSLT programs
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    author    IN rangeauthor
-             AND    obj_name  IN rangexslt
-             AND    devclass  IN solocpackage.
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    author    in rangeauthor
+             and    obj_name  in rangexslt
+             and    devclass  in solocpackage.
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
+        append watransformation to iloctransformations.
+      endselect.
 
-    ELSE.
+    else.
 *     Select only customer specific programs
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    author    IN rangeauthor
-             AND    obj_name  IN rangexslt
-             AND    devclass  IN solocpackage
-             AND ( obj_name LIKE altcustomernamerange
-                   OR obj_name LIKE 'Z%'
-                   OR obj_name LIKE 'Y%').
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    author    in rangeauthor
+             and    obj_name  in rangexslt
+             and    devclass  in solocpackage
+             and ( obj_name like altcustomernamerange
+                   or obj_name like 'Z%'
+                   or obj_name like 'Y%').
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ENDIF.
-  ELSE.
+        append watransformation to iloctransformations.
+      endselect.
+    endif.
+  else.
 *   Programs created by author
-    IF customerprogsonly IS INITIAL.
+    if customerprogsonly is initial.
 *     Select all programs
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    author    IN rangeauthor
-             AND    obj_name  IN rangexslt
-             AND    devclass  IN solocpackage.
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    author    in rangeauthor
+             and    obj_name  in rangexslt
+             and    devclass  in solocpackage.
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ELSE.
+        append watransformation to iloctransformations.
+      endselect.
+    else.
 *     Select only customer specific programs
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    author    IN rangeauthor
-             AND    obj_name  IN rangexslt
-             AND    devclass  IN solocpackage
-             AND ( obj_name LIKE altcustomernamerange
-                   OR obj_name LIKE 'Z%'
-                   OR obj_name LIKE 'Y%').
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    author    in rangeauthor
+             and    obj_name  in rangexslt
+             and    devclass  in solocpackage
+             and ( obj_name like altcustomernamerange
+                   or obj_name like 'Z%'
+                   or obj_name like 'Y%').
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                       "findAllXSLTForAuthor
+        append watransformation to iloctransformations.
+      endselect.
+    endif.
+  endif.
+endform.                                                                       "findAllXSLTForAuthor
 
 *-------------------------------------------------------------------------------------------------------
 *  findXsltByWildcard...
 *-------------------------------------------------------------------------------------------------------
-FORM findxsltbywildcard USING iloctransformations LIKE itransformations[]
-                                  value(rangexslt) LIKE soxsltname[]
-                                  value(rangeauthor) LIKE soauthor[]
+form findxsltbywildcard using iloctransformations like itransformations[]
+                                  value(rangexslt) like soxsltname[]
+                                  value(rangeauthor) like soauthor[]
                                   value(custnamerange)
                                   value(customerprogsonly)
-                                  value(solocpackage) LIKE sopack[].
+                                  value(solocpackage) like sopack[].
 
-  DATA: altcustomernamerange TYPE string.
-  DATA: watransformation LIKE LINE OF iloctransformations.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
-  DATA: genflag TYPE genflag.
+  data: altcustomernamerange type string.
+  data: watransformation like line of iloctransformations.
+  field-symbols: <watransformation> type ttransformation.
+  data: genflag type genflag.
 
-  IF customerprogsonly IS INITIAL.
+  if customerprogsonly is initial.
 *   build up the customer name range used for select statements
-    IF custnamerange <> '^'.
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+    if custnamerange <> '^'.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    obj_name  IN rangexslt
-             AND    obj_name  LIKE altcustomernamerange
-             AND    author    IN rangeauthor.
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    obj_name  in rangexslt
+             and    obj_name  like altcustomernamerange
+             and    author    in rangeauthor.
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ELSE.
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    obj_name  IN rangexslt
-             AND    author    IN rangeauthor.
+        append watransformation to iloctransformations.
+      endselect.
+    else.
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    obj_name  in rangexslt
+             and    author    in rangeauthor.
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ENDIF.
-  ELSE.
+        append watransformation to iloctransformations.
+      endselect.
+    endif.
+  else.
 *   Only customer xslt
-    IF custnamerange <> '^'.
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+    if custnamerange <> '^'.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    obj_name  IN rangexslt
-             AND    obj_name  LIKE altcustomernamerange
-             AND    ( obj_name LIKE 'Z%' OR
-                      obj_name LIKE 'Y%' ).
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    obj_name  in rangexslt
+             and    obj_name  like altcustomernamerange
+             and    ( obj_name like 'Z%' or
+                      obj_name like 'Y%' ).
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ELSE.
-      SELECT obj_name
-             INTO   watransformation-xsltname
-             FROM   tadir
-             WHERE  pgmid     = 'R3TR'
-             AND    object    = 'XSLT'
-             AND    obj_name  IN rangexslt
-             AND    ( obj_name LIKE 'Z%' OR
-                      obj_name LIKE 'Y%' ).
+        append watransformation to iloctransformations.
+      endselect.
+    else.
+      select obj_name
+             into   watransformation-xsltname
+             from   tadir
+             where  pgmid     = 'R3TR'
+             and    object    = 'XSLT'
+             and    obj_name  in rangexslt
+             and    ( obj_name like 'Z%' or
+                      obj_name like 'Y%' ).
 
-        APPEND watransformation TO iloctransformations.
-      ENDSELECT.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                         "findxsltByWildcard
+        append watransformation to iloctransformations.
+      endselect.
+    endif.
+  endif.
+endform.                                                                         "findxsltByWildcard
 
 *-------------------------------------------------------------------------------------------------------
 *  checkXsltDoesExist...
 *-------------------------------------------------------------------------------------------------------
-FORM checkxsltdoesexist USING iloctransformations LIKE itransformations[]
-                              rangexslt LIKE soxsltname[].
+form checkxsltdoesexist using iloctransformations like itransformations[]
+                              rangexslt like soxsltname[].
 
-  DATA: watransformation TYPE ttransformation.
+  data: watransformation type ttransformation.
 
 *-- Make sure XSLT exists
-  SELECT SINGLE obj_name
-         INTO   watransformation-xsltname
-         FROM   tadir
-         WHERE  pgmid     = 'R3TR'
-         AND    object    = 'XSLT'
-         AND    obj_name  IN rangexslt.
+  select single obj_name
+         into   watransformation-xsltname
+         from   tadir
+         where  pgmid     = 'R3TR'
+         and    object    = 'XSLT'
+         and    obj_name  in rangexslt.
 
-  IF sy-subrc = 0.
-    APPEND watransformation TO iloctransformations.
-  ENDIF.
-ENDFORM.                                                                          "checkxsltDoesExist
+  if sy-subrc = 0.
+    append watransformation to iloctransformations.
+  endif.
+endform.                                                                          "checkxsltDoesExist
 
 *-------------------------------------------------------------------------------------------------------
 *  checkProgramDoesExist...
 *-------------------------------------------------------------------------------------------------------
-FORM checkprogramdoesexist USING ilocprogram LIKE iprograms[]
-                                 rangeprogram LIKE soprogramname[].
+form checkprogramdoesexist using ilocprogram like iprograms[]
+                                 rangeprogram like soprogramname[].
 
 *  Check to see if the program is an executable program
-  SELECT progname
+  select progname
          subc
-         INTO CORRESPONDING FIELDS OF TABLE ilocprogram
-         FROM reposrc
-         WHERE progname IN rangeprogram
-           AND ( subc = '1' OR
-                 subc = 'I' OR
-                 subc = 'M' OR
+         into corresponding fields of table ilocprogram
+         from reposrc
+         where progname in rangeprogram
+           and ( subc = '1' or
+                 subc = 'I' or
+                 subc = 'M' or
                  subc = 'S' ).
-ENDFORM.                                                                          "checkProgramDoesExist
+endform.                                                                          "checkProgramDoesExist
 
 *-------------------------------------------------------------------------------------------------------
 *  findProgramsByWildcard.. Search in the system for programs
 *-------------------------------------------------------------------------------------------------------
-FORM checkandaddtabletype USING wadictionary-tablename
-                                iloctabletypes LIKE itabletypes[].
+form checkandaddtabletype using wadictionary-tablename
+                                iloctabletypes like itabletypes[].
 
-  SELECT *
-         INTO CORRESPONDING FIELDS OF TABLE iloctabletypes
-         FROM dd40l AS a
-         INNER JOIN dd40t AS t
-            ON a~typename = t~typename
-         WHERE a~typename = wadictionary-tablename
-           AND t~ddlanguage EQ sy-langu
-           AND a~as4local = 'A'.
-ENDFORM.                    "checkAndAddTableType
+  select *
+         into corresponding fields of table iloctabletypes
+         from dd40l as a
+         inner join dd40t as t
+            on a~typename = t~typename
+         where a~typename = wadictionary-tablename
+           and t~ddlanguage eq sy-langu
+           and a~as4local = 'A'.
+endform.                    "checkAndAddTableType
 
 *-------------------------------------------------------------------------------------------------------
 *  findProgramsByWildcard.. Search in the system for programs
 *-------------------------------------------------------------------------------------------------------
-FORM findprogramsbywildcard USING ilocprogram LIKE iprograms[]
-                                  value(rangeprogram) LIKE soprogramname[]
-                                  value(rangeauthor) LIKE soauthor[]
+form findprogramsbywildcard using ilocprogram like iprograms[]
+                                  value(rangeprogram) like soprogramname[]
+                                  value(rangeauthor) like soauthor[]
                                   value(custnamerange)
                                   value(customerprogsonly)
-                                  value(solocpackage) LIKE sopack[].
+                                  value(solocpackage) like sopack[].
 
-  DATA: altcustomernamerange TYPE string.
-  FIELD-SYMBOLS: <waprogram> TYPE tprogram.
-  DATA: genflag TYPE genflag.
+  data: altcustomernamerange type string.
+  field-symbols: <waprogram> type tprogram.
+  data: genflag type genflag.
 
-  IF customerprogsonly IS INITIAL.
+  if customerprogsonly is initial.
 *   build up the customer name range used for select statements
-    IF custnamerange <> '^'.
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+    if custnamerange <> '^'.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT progname
+      select progname
              subc
-             FROM reposrc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             WHERE progname  IN rangeprogram
-               AND progname LIKE altcustomernamerange
-               AND ( subc = '1' OR subc = 'M' OR subc = 'S' )
-               AND ( cnam IN rangeauthor OR unam IN rangeauthor ).
-    ELSE.
-      SELECT progname
+             from reposrc
+             appending corresponding fields of table ilocprogram
+             where progname  in rangeprogram
+               and progname like altcustomernamerange
+               and ( subc = '1' or subc = 'M' or subc = 'S' )
+               and ( cnam in rangeauthor or unam in rangeauthor ).
+    else.
+      select progname
              subc
-             FROM reposrc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             WHERE progname  IN rangeprogram
-               AND ( subc = '1' OR subc = 'M' OR subc = 'S' )
-               AND ( cnam IN rangeauthor OR unam IN rangeauthor ).
-    ENDIF.
-  ELSE.
+             from reposrc
+             appending corresponding fields of table ilocprogram
+             where progname  in rangeprogram
+               and ( subc = '1' or subc = 'M' or subc = 'S' )
+               and ( cnam in rangeauthor or unam in rangeauthor ).
+    endif.
+  else.
 *   Only customer programs
-    IF custnamerange <> '^'.
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+    if custnamerange <> '^'.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT progname
+      select progname
              subc
-             FROM reposrc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             WHERE progname  IN rangeprogram
-               AND ( progname LIKE altcustomernamerange
-                     OR progname LIKE 'Z%'
-                     OR progname LIKE 'Y%'
-                     OR progname LIKE 'SAPMZ%'
-                     OR progname LIKE 'SAPMY%')
-               AND ( subc = '1' OR subc = 'M' OR subc = 'S' )
-               AND ( cnam IN rangeauthor OR unam IN rangeauthor ).
-    ELSE.
-      SELECT progname
+             from reposrc
+             appending corresponding fields of table ilocprogram
+             where progname  in rangeprogram
+               and ( progname like altcustomernamerange
+                     or progname like 'Z%'
+                     or progname like 'Y%'
+                     or progname like 'SAPMZ%'
+                     or progname like 'SAPMY%')
+               and ( subc = '1' or subc = 'M' or subc = 'S' )
+               and ( cnam in rangeauthor or unam in rangeauthor ).
+    else.
+      select progname
              subc
-             FROM reposrc
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocprogram
-             WHERE progname  IN rangeprogram
-             AND ( progname LIKE 'Z%'
-                   OR progname LIKE 'Y%'
-                   OR progname LIKE 'SAPMZ%'
-                   OR progname LIKE 'SAPMY%')
-             AND ( subc = '1' OR subc = 'M' OR subc = 'S' )
-             AND ( cnam IN rangeauthor OR unam IN rangeauthor ).
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                         "findProgramsByWildcard
+             from reposrc
+             appending corresponding fields of table ilocprogram
+             where progname  in rangeprogram
+             and ( progname like 'Z%'
+                   or progname like 'Y%'
+                   or progname like 'SAPMZ%'
+                   or progname like 'SAPMY%')
+             and ( subc = '1' or subc = 'M' or subc = 'S' )
+             and ( cnam in rangeauthor or unam in rangeauthor ).
+    endif.
+  endif.
+endform.                                                                         "findProgramsByWildcard
 
 *-------------------------------------------------------------------------------------------------------
 *  retrieveProgramTexts... Find the text elements and selection texts for a program
 *-------------------------------------------------------------------------------------------------------
-FORM retrieveprogramtexts USING ilocselectiontexts LIKE dumitexttab[]
-                                iloctextelements LIKE dumitexttab[]
+form retrieveprogramtexts using ilocselectiontexts like dumitexttab[]
+                                iloctextelements like dumitexttab[]
                                 value(programname).
 
-  DATA: itexttable TYPE STANDARD TABLE OF ttexttable WITH HEADER LINE.
-  DATA: watexts TYPE ttexttable.
-  DATA: castprogramname(50).
+  data: itexttable type standard table of ttexttable with header line.
+  data: watexts type ttexttable.
+  data: castprogramname(50).
 
-  MOVE programname TO castprogramname.
+  move programname to castprogramname.
 
-  READ TEXTPOOL castprogramname INTO itexttable LANGUAGE pmlang.
-  DELETE itexttable WHERE key = 'R'.
+  read textpool castprogramname into itexttable language pmlang.
+  delete itexttable where key = 'R'.
 
 * Selection texts.
-  LOOP AT itexttable WHERE id = 'S'.
-    MOVE itexttable-key TO watexts-key.
-    MOVE itexttable-entry TO watexts-entry.
-    APPEND watexts TO ilocselectiontexts.
-    CLEAR watexts.
-  ENDLOOP.
+  loop at itexttable where id = 'S'.
+    move itexttable-key to watexts-key.
+    move itexttable-entry to watexts-entry.
+    append watexts to ilocselectiontexts.
+    clear watexts.
+  endloop.
 
 * Text elements.
-  DELETE itexttable WHERE key = 'S'.
-  LOOP AT itexttable WHERE id = 'I'.
-    MOVE itexttable-key TO watexts-key.
-    MOVE itexttable-entry TO watexts-entry.
-    APPEND watexts TO iloctextelements.
-  ENDLOOP.
-ENDFORM.                                                                           "retrieveProgramTexts
+  delete itexttable where key = 'S'.
+  loop at itexttable where id = 'I'.
+    move itexttable-key to watexts-key.
+    move itexttable-entry to watexts-entry.
+    append watexts to iloctextelements.
+  endloop.
+endform.                                                                           "retrieveProgramTexts
 
 *-------------------------------------------------------------------------------------------------------
 *  retrieveGUITitles...  Search for any GUI texts
 *-------------------------------------------------------------------------------------------------------
-FORM retrieveguititles USING ilocguititle LIKE dumiguititle[]
+form retrieveguititles using ilocguititle like dumiguititle[]
                              value(programname).
 
-  SELECT obj_code
+  select obj_code
          text
-         FROM d347t
-         APPENDING CORRESPONDING FIELDS OF TABLE ilocguititle
-         WHERE progname = programname.
-ENDFORM.                                                                              "retrieveGUITitles
+         from d347t
+         appending corresponding fields of table ilocguititle
+         where progname = programname.
+endform.                                                                              "retrieveGUITitles
 
 *-------------------------------------------------------------------------------------------------------
 *   findMainMessageClass... find the message class stated at the top of  program.
 *-------------------------------------------------------------------------------------------------------
-FORM findmainmessageclass USING value(programname)
+form findmainmessageclass using value(programname)
                                       messageclass.
 
-  SELECT SINGLE msgid
-                FROM trdire INTO messageclass
-                WHERE report = programname.
-ENDFORM.                                                                           "findMainMessageClass
+  select single msgid
+                from trdire into messageclass
+                where report = programname.
+endform.                                                                           "findMainMessageClass
 
 *-------------------------------------------------------------------------------------------------------
 * retrieveClasses...    find classes and sub objects from SAP DB
 *-------------------------------------------------------------------------------------------------------
-FORM retrieveclasses USING ilocclasses LIKE iclasses[]
-                           ilocfunctions LIKE ifunctions[]
-                           rangeclass LIKE soclassname[]
-                           rangeauthor LIKE soauthor[]
+form retrieveclasses using ilocclasses like iclasses[]
+                           ilocfunctions like ifunctions[]
+                           rangeclass like soclassname[]
+                           rangeauthor like soauthor[]
                            value(custnamerange)
                            value(alsomodifiedbyauthor)
                            value(customerprogsonly)
@@ -3265,54 +3324,54 @@ FORM retrieveclasses USING ilocclasses LIKE iclasses[]
                            value(recursiveincludesearch)
                            value(recursiveclasssearch)
                            value(language)
-                           value(solocpackage) LIKE sopack[].
+                           value(solocpackage) like sopack[].
 
-  DATA: warangeclass LIKE LINE OF rangeclass.
-  DATA: waclass LIKE LINE OF ilocclasses[].
+  data: warangeclass like line of rangeclass.
+  data: waclass like line of ilocclasses[].
 
-  IF rangeclass[] IS INITIAL.
+  if rangeclass[] is initial.
 *   We are finding all programs by an author
-    PERFORM findallclassesforauthor USING ilocclasses[]
+    perform findallclassesforauthor using ilocclasses[]
                                            rangeclass[]
                                            rangeauthor[]
                                            custnamerange
                                            alsomodifiedbyauthor
                                            customerprogsonly
                                            language.
-  ELSE.
-    READ TABLE rangeclass INDEX 1 INTO warangeclass.
-    IF warangeclass-low CS asterix.
-      PERFORM findclassesbywildcard USING ilocclasses[]
+  else.
+    read table rangeclass index 1 into warangeclass.
+    if warangeclass-low cs asterix.
+      perform findclassesbywildcard using ilocclasses[]
                                           rangeclass[]
                                           rangeauthor[]
                                           custnamerange
                                           customerprogsonly
                                           language.
-    ELSE.
-      PERFORM checkclassdoesexist USING ilocclasses[]
+    else.
+      perform checkclassdoesexist using ilocclasses[]
                                         rangeclass[].
-    ENDIF.
-  ENDIF.
+    endif.
+  endif.
 
 * Check the package
-  IF NOT solocpackage[] IS INITIAL.
-    LOOP AT ilocclasses INTO waclass.
-      SELECT SINGLE obj_name
-             FROM tadir
-             INTO waclass-clsname
-             WHERE pgmid = 'R3TR'
-               AND object = 'CLAS'
-               AND obj_name = waclass-clsname
-               AND devclass IN solocpackage[].
-      IF sy-subrc <> 0.
-        DELETE ilocclasses.
-      ENDIF.
-    ENDLOOP.
-  ENDIF.
+  if not solocpackage[] is initial.
+    loop at ilocclasses into waclass.
+      select single obj_name
+             from tadir
+             into waclass-clsname
+             where pgmid = 'R3TR'
+               and object = 'CLAS'
+               and obj_name = waclass-clsname
+               and devclass in solocpackage[].
+      if sy-subrc <> 0.
+        delete ilocclasses.
+      endif.
+    endloop.
+  endif.
 
 * Find extra items
-  IF NOT ilocclasses[] IS INITIAL.
-    PERFORM scanforadditionalclassstuff USING ilocclasses[]
+  if not ilocclasses[] is initial.
+    perform scanforadditionalclassstuff using ilocclasses[]
                                               ilocfunctions[]
                                               gettextelements
                                               getmessages
@@ -3326,275 +3385,275 @@ FORM retrieveclasses USING ilocclasses LIKE iclasses[]
                                               recursivefuncsearch
                                               recursiveclasssearch
                                               solocpackage[].
-  ENDIF.
-ENDFORM.                                                                                "retrieveClasses
+  endif.
+endform.                                                                                "retrieveClasses
 
 *-------------------------------------------------------------------------------------------------------
 *  findAllClassesForAuthor...
 *-------------------------------------------------------------------------------------------------------
-FORM findallclassesforauthor USING ilocclass LIKE iclasses[]
-                                   rangeclass LIKE soclassname[]
-                                   rangeauthor LIKE soauthor[]
+form findallclassesforauthor using ilocclass like iclasses[]
+                                   rangeclass like soclassname[]
+                                   rangeauthor like soauthor[]
                                    value(custnamerange)
                                    value(alsomodifiedbyauthor)
                                    value(customerclassesonly)
                                    value(language).
 
-  DATA: altcustomernamerange TYPE string.
+  data: altcustomernamerange type string.
 
 * build up the customer name range used for select statements
-  CONCATENATE custnamerange '%' INTO altcustomernamerange.
+  concatenate custnamerange '%' into altcustomernamerange.
 
 * select by name and author
-  IF NOT alsomodifiedbyauthor IS INITIAL.
+  if not alsomodifiedbyauthor is initial.
 *   Classes modified by author
-    IF customerclassesonly IS INITIAL.
+    if customerclassesonly is initial.
 *     Select all classes
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND langu = language
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and langu = language
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
 
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-               AND langu = language
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ELSE.
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+               and langu = language
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    else.
 *     Select only customer specific classes
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND ( clsname LIKE altcustomernamerange
-                     OR clsname LIKE 'Z%'
-                     OR clsname LIKE 'Y%')
-               AND langu = language
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and ( clsname like altcustomernamerange
+                     or clsname like 'Z%'
+                     or clsname like 'Y%')
+               and langu = language
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
 
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND ( clsname LIKE altcustomernamerange
-                       OR clsname LIKE 'Z%'
-                       OR clsname LIKE 'Y%')
-                 AND langu = language
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ENDIF.
-  ELSE.
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and ( clsname like altcustomernamerange
+                       or clsname like 'Z%'
+                       or clsname like 'Y%')
+                 and langu = language
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    endif.
+  else.
 *   Programs created by author
-    IF customerclassesonly IS INITIAL.
+    if customerclassesonly is initial.
 *     Select all classes
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND langu = language
-               AND author IN rangeauthor
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and langu = language
+               and author in rangeauthor
+               and version = '1'
+               and ( state = '0' or state = '1' ).
 
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND langu = language
-                 AND author IN rangeauthor
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ELSE.
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and langu = language
+                 and author in rangeauthor
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    else.
 *     Select only customer specific classes
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND ( clsname LIKE altcustomernamerange
-                     OR clsname LIKE 'Z%'
-                     OR clsname LIKE 'Y%')
-               AND langu = language
-               AND author IN rangeauthor
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and ( clsname like altcustomernamerange
+                     or clsname like 'Z%'
+                     or clsname like 'Y%')
+               and langu = language
+               and author in rangeauthor
+               and version = '1'
+               and ( state = '0' or state = '1' ).
 
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND ( clsname LIKE altcustomernamerange
-                       OR clsname LIKE 'Z%'
-                       OR clsname LIKE 'Y%')
-                 AND langu = language
-                 AND author IN rangeauthor
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                        "findAllClassesForAuthor
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and ( clsname like altcustomernamerange
+                       or clsname like 'Z%'
+                       or clsname like 'Y%')
+                 and langu = language
+                 and author in rangeauthor
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    endif.
+  endif.
+endform.                                                                        "findAllClassesForAuthor
 
 *-------------------------------------------------------------------------------------------------------
 *  findClassesByWildcard...  Find classes using a wildcard search
 *-------------------------------------------------------------------------------------------------------
-FORM findclassesbywildcard USING ilocclass LIKE iclasses[]
-                                 rangeclass LIKE soclassname[]
-                                 value(rangeauthor) LIKE soauthor[]
+form findclassesbywildcard using ilocclass like iclasses[]
+                                 rangeclass like soclassname[]
+                                 value(rangeauthor) like soauthor[]
                                  value(custnamerange)
                                  value(customerclassesonly)
                                  value(language).
 
-  DATA: altcustomernamerange TYPE string.
+  data: altcustomernamerange type string.
 
-  IF customerclassesonly IS INITIAL.
+  if customerclassesonly is initial.
 *   Searching for customer and SAP classes
-    IF custnamerange <> '^'.
+    if custnamerange <> '^'.
 *     build up the customer name range used for select statements
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND clsname LIKE custnamerange
-               AND langu = language
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND clsname LIKE custnamerange
-                 AND langu = language
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ELSE.
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and clsname like custnamerange
+               and langu = language
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and clsname like custnamerange
+                 and langu = language
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    else.
 *     Searching using normal name ranges
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND langu = language
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND langu = language
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ENDIF.
-  ELSE.
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and langu = language
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and langu = language
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    endif.
+  else.
 *   searching for only customer classes
-    IF custnamerange <> '^'.
+    if custnamerange <> '^'.
 *     build up the customer name range used for select statements
-      CONCATENATE custnamerange '%' INTO altcustomernamerange.
+      concatenate custnamerange '%' into altcustomernamerange.
 
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND clsname LIKE custnamerange
-               AND langu = language
-               AND ( clsname LIKE 'ZC%' OR clsname LIKE 'YC%' )
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND langu = language
-                 AND ( clsname LIKE 'ZC%' OR clsname LIKE 'YC%' )
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ELSE.
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and clsname like custnamerange
+               and langu = language
+               and ( clsname like 'ZC%' or clsname like 'YC%' )
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and langu = language
+                 and ( clsname like 'ZC%' or clsname like 'YC%' )
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    else.
 *     Searching using normal name ranges
-      SELECT clsname descript msg_id
-             FROM vseoclass
-             APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-             WHERE clsname IN rangeclass
-               AND ( clsname LIKE 'ZC%' OR clsname LIKE 'YC%' )
-               AND ( author IN rangeauthor OR changedby IN rangeauthor )
-               AND version = '1'
-               AND ( state = '0' OR state = '1' ).
-      IF sy-subrc <> 0.
-        SELECT clsname descript msg_id
-               FROM vseoclass
-               APPENDING CORRESPONDING FIELDS OF TABLE ilocclass
-               WHERE clsname IN rangeclass
-                 AND ( clsname LIKE 'ZC%' OR clsname LIKE 'YC%' )
-                 AND ( author IN rangeauthor OR changedby IN rangeauthor )
-                 AND version = '0'
-                 AND ( state = '0' OR state = '1' ).
-      ENDIF.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                          "findClassesByWildcard
+      select clsname descript msg_id
+             from vseoclass
+             appending corresponding fields of table ilocclass
+             where clsname in rangeclass
+               and ( clsname like 'ZC%' or clsname like 'YC%' )
+               and ( author in rangeauthor or changedby in rangeauthor )
+               and version = '1'
+               and ( state = '0' or state = '1' ).
+      if sy-subrc <> 0.
+        select clsname descript msg_id
+               from vseoclass
+               appending corresponding fields of table ilocclass
+               where clsname in rangeclass
+                 and ( clsname like 'ZC%' or clsname like 'YC%' )
+                 and ( author in rangeauthor or changedby in rangeauthor )
+                 and version = '0'
+                 and ( state = '0' or state = '1' ).
+      endif.
+    endif.
+  endif.
+endform.                                                                          "findClassesByWildcard
 
 *-------------------------------------------------------------------------------------------------------
 *  checkClassDoesExist...
 *-------------------------------------------------------------------------------------------------------
-FORM checkclassdoesexist USING ilocclass LIKE iclasses[]
-                               rangeclass LIKE soclassname[].
+form checkclassdoesexist using ilocclass like iclasses[]
+                               rangeclass like soclassname[].
 
-  DATA: waclass TYPE tclass.
+  data: waclass type tclass.
 
-  SELECT SINGLE clsname descript msg_id
-         FROM vseoclass
-         INTO CORRESPONDING FIELDS OF waclass
-         WHERE clsname IN rangeclass
-           AND version = '1'
-           AND ( state = '0' OR state = '1' ).
+  select single clsname descript msg_id
+         from vseoclass
+         into corresponding fields of waclass
+         where clsname in rangeclass
+           and version = '1'
+           and ( state = '0' or state = '1' ).
 
-  IF sy-subrc <> 0.
-    SELECT SINGLE clsname descript msg_id
-         FROM vseoclass
-         INTO CORRESPONDING FIELDS OF waclass
-         WHERE clsname IN rangeclass
-           AND version = '0'
-           AND ( state = '0' OR state = '1' ).
-  ENDIF.
+  if sy-subrc <> 0.
+    select single clsname descript msg_id
+         from vseoclass
+         into corresponding fields of waclass
+         where clsname in rangeclass
+           and version = '0'
+           and ( state = '0' or state = '1' ).
+  endif.
 
-  IF NOT waclass-clsname IS INITIAL.
-    APPEND waclass TO ilocclass.
-  ENDIF.
-ENDFORM.                                                                            "checkClassDoesExist
+  if not waclass-clsname is initial.
+    append waclass to ilocclass.
+  endif.
+endform.                                                                            "checkClassDoesExist
 
 *-------------------------------------------------------------------------------------------------------
 *  scanForAdditionalClassStuff...
 *-------------------------------------------------------------------------------------------------------
-FORM scanforadditionalclassstuff USING ilocclasses LIKE iclasses[]
-                                       ilocfunctions LIKE ifunctions[]
+form scanforadditionalclassstuff using ilocclasses like iclasses[]
+                                       ilocfunctions like ifunctions[]
                                        value(gettextelements)
                                        value(getmessages)
                                        value(getcustdictstructures)
@@ -3606,19 +3665,19 @@ FORM scanforadditionalclassstuff USING ilocclasses LIKE iclasses[]
                                        value(recursiveincludesearch)
                                        value(recursivefuncsearch)
                                        value(recursiveclasssearch)
-                                       value(solocpackage) LIKE sopack[].
+                                       value(solocpackage) like sopack[].
 
-  DATA: waclass TYPE tclass.
-  DATA: wamethod TYPE tmethod.
-  DATA: mytabix TYPE sytabix.
-  DATA: scanningforclasses TYPE abap_bool VALUE false.
-  DATA: classnewlines TYPE i VALUE 0.
-  DATA: classcurrentlines TYPE i VALUE 0.
+  data: waclass type tclass.
+  data: wamethod type tmethod.
+  data: mytabix type sytabix.
+  data: scanningforclasses type abap_bool value false.
+  data: classnewlines type i value 0.
+  data: classcurrentlines type i value 0.
 
-  LOOP AT ilocclasses INTO waclass WHERE scanned IS INITIAL.
+  loop at ilocclasses into waclass where scanned is initial.
 *  Once we have a list of all the classes we need to loop round them an select all the other objects
     mytabix = sy-tabix.
-    PERFORM findclassdetails USING waclass-clsname
+    perform findclassdetails using waclass-clsname
                                    waclass
                                    ilocfunctions[]
                                    gettextelements
@@ -3631,53 +3690,53 @@ FORM scanforadditionalclassstuff USING ilocclasses LIKE iclasses[]
 
 *   Set the scanned class so we do not check them again when running recursively.
     waclass-scanned = 'X'.
-    MODIFY ilocclasses FROM waclass INDEX mytabix.
-  ENDLOOP.
+    modify ilocclasses from waclass index mytabix.
+  endloop.
 
 * Now we have all the classes and details we need to find extra classes
-  IF NOT recursiveclasssearch IS INITIAL.
+  if not recursiveclasssearch is initial.
     classcurrentlines = lines( ilocclasses ).
-    LOOP AT ilocclasses INTO waclass.
+    loop at ilocclasses into waclass.
 *     Don't try and find any other details for an exception class
-      IF ( waclass-clsname NS 'ZCX_' OR waclass-clsname NS 'CX_'  ).
+      if ( waclass-clsname ns 'ZCX_' or waclass-clsname ns 'CX_'  ).
 *       Find any classes defined in the main class definition
-        PERFORM scanforclasses USING waclass-privateclasskey
+        perform scanforclasses using waclass-privateclasskey
                                      waclass-clsname
                                      customeronly
                                      customernamerange
                                      ilocclasses[]
                                      solocpackage[].
 
-        PERFORM scanforclasses USING waclass-publicclasskey
+        perform scanforclasses using waclass-publicclasskey
                                      waclass-clsname
                                      customeronly
                                      customernamerange
                                      ilocclasses[]
                                      solocpackage[].
 
-        PERFORM scanforclasses USING waclass-protectedclasskey
+        perform scanforclasses using waclass-protectedclasskey
                                      waclass-clsname
                                      customeronly
                                      customernamerange
                                      ilocclasses[]
                                      solocpackage[].
 
-        LOOP AT waclass-imethods INTO wamethod.
+        loop at waclass-imethods into wamethod.
 *         Find any classes defined in any of the methods
-          PERFORM scanforclasses USING wamethod-methodkey
+          perform scanforclasses using wamethod-methodkey
                                        waclass-clsname
                                        customeronly
                                        customernamerange
                                        ilocclasses[]
                                        solocpackage[].
-        ENDLOOP.
-      ENDIF.
-    ENDLOOP.
+        endloop.
+      endif.
+    endloop.
 
 *   We have a list of all the classes so lets go and find their details
     classnewlines = lines( ilocclasses ).
-    IF classnewlines > classcurrentlines.
-      PERFORM scanforadditionalclassstuff USING ilocclasses[]
+    if classnewlines > classcurrentlines.
+      perform scanforadditionalclassstuff using ilocclasses[]
                                                 ilocfunctions[]
                                                 gettextelements
                                                 getmessages
@@ -3691,16 +3750,16 @@ FORM scanforadditionalclassstuff USING ilocclasses LIKE iclasses[]
                                                 recursivefuncsearch
                                                 recursiveclasssearch
                                                 solocpackage[].
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                   "scanForAdditionalClassStuff
+    endif.
+  endif.
+endform.                                                                   "scanForAdditionalClassStuff
 
 *-------------------------------------------------------------------------------------------------------
 *  findClassDetails...
 *-------------------------------------------------------------------------------------------------------
-FORM findclassdetails USING value(classname)
-                                  waclass TYPE tclass
-                                  ilocfunctions LIKE ifunctions[]
+form findclassdetails using value(classname)
+                                  waclass type tclass
+                                  ilocfunctions like ifunctions[]
                                   value(gettextelements)
                                   value(getmessages)
                                   value(getfunctions)
@@ -3709,1064 +3768,1064 @@ FORM findclassdetails USING value(classname)
                                   value(customeronly)
                                   value(customernamerange).
 
-  DATA: iemptyselectiontexts TYPE STANDARD TABLE OF ttexttable.
-  DATA: mytabix TYPE sytabix.
-  DATA: wamethod TYPE tmethod.
-  DATA: rnblankauthor LIKE soauthor[].
-  DATA: rnblankpackage LIKE sopack[].
-  DATA: wainterface TYPE tinterface.
+  data: iemptyselectiontexts type standard table of ttexttable.
+  data: mytabix type sytabix.
+  data: wamethod type tmethod.
+  data: rnblankauthor like soauthor[].
+  data: rnblankpackage like sopack[].
+  data: wainterface type tinterface.
 
 * Build up the keys we will use for finding data
-  PERFORM buildclasskeys USING waclass.
+  perform buildclasskeys using waclass.
 
-  IF waclass-descript IS INITIAL.
-    PERFORM findclassdescription USING classname
+  if waclass-descript is initial.
+    perform findclassdescription using classname
                                        waclass-descript.
-  ENDIF.
+  endif.
 
 * Find the class attributes.
-  SELECT SINGLE exposure msg_id state clsfinal r3release
-                FROM vseoclass
-                INTO (waclass-exposure, waclass-msg_id, waclass-state,
+  select single exposure msg_id state clsfinal r3release
+                from vseoclass
+                into (waclass-exposure, waclass-msg_id, waclass-state,
                       waclass-clsfinal, waclass-r3release)
-                WHERE clsname = waclass-clsname.
+                where clsname = waclass-clsname.
 
 * Don't try and find any other details for an exception class
-  IF ( waclass-clsname CS 'ZCX_' OR waclass-clsname CS 'CX_'  ).
+  if ( waclass-clsname cs 'ZCX_' or waclass-clsname cs 'CX_'  ).
 *   Exception texts
-    PERFORM findexceptiontexts USING waclass-publicclasskey
+    perform findexceptiontexts using waclass-publicclasskey
                                      waclass-iconcepts[].
     waclass-scanned = 'X'.
-  ELSE.
-    IF NOT gettextelements IS INITIAL.
+  else.
+    if not gettextelements is initial.
 *     Find the class texts from out of the database.
-      PERFORM retrieveprogramtexts USING iemptyselectiontexts[]
+      perform retrieveprogramtexts using iemptyselectiontexts[]
                                          waclass-itextelements[]
                                          waclass-textelementkey.
-    ENDIF.
+    endif.
 
 *   Find any declared dictionary structures
-    IF NOT getcustdictstructures IS INITIAL.
-      PERFORM scanfortables USING waclass-privateclasskey
+    if not getcustdictstructures is initial.
+      perform scanfortables using waclass-privateclasskey
                                   customeronly
                                   customernamerange
                                   waclass-idictstruct[].
 
-      PERFORM scanfortables USING waclass-publicclasskey
+      perform scanfortables using waclass-publicclasskey
                                   customeronly
                                   customernamerange
                                   waclass-idictstruct[].
 
-      PERFORM scanfortables USING waclass-protectedclasskey
+      perform scanfortables using waclass-protectedclasskey
                                   customeronly
                                   customernamerange
                                   waclass-idictstruct[].
 
-      PERFORM scanfortables USING waclass-typesclasskey
+      perform scanfortables using waclass-typesclasskey
                                   customeronly
                                   customernamerange
                                   waclass-idictstruct[].
 
-      PERFORM scanforlikeortype USING waclass-privateclasskey
+      perform scanforlikeortype using waclass-privateclasskey
                                       customeronly
                                       customernamerange
                                       waclass-idictstruct[]
                                       waclass-itabletypes[].
 
-      PERFORM scanforlikeortype USING waclass-publicclasskey
+      perform scanforlikeortype using waclass-publicclasskey
                                       customeronly
                                       customernamerange
                                       waclass-idictstruct[]
                                       waclass-itabletypes[].
 
-      PERFORM scanforlikeortype USING waclass-protectedclasskey
+      perform scanforlikeortype using waclass-protectedclasskey
                                       customeronly
                                       customernamerange
                                       waclass-idictstruct[]
                                       waclass-itabletypes[].
 
-      PERFORM scanforlikeortype USING waclass-typesclasskey
+      perform scanforlikeortype using waclass-typesclasskey
                                       customeronly
                                       customernamerange
                                       waclass-idictstruct[]
                                       waclass-itabletypes[].
-    ENDIF.
+    endif.
 
 *   Find all the interfaces used in this class
-    PERFORM findclassinterfaces USING classname
+    perform findclassinterfaces using classname
                                       waclass-iinterfaces[].
 
 *   Find all the methods defined by the interfaces
-    PERFORM findinterfacemethods USING classname
+    perform findinterfacemethods using classname
                                        waclass-iinterfaces[]
                                        waclass-imethods[].
 
 *   Methods
 *   Find all the methods for this class
-    PERFORM findclassmethods USING classname
+    perform findclassmethods using classname
                                    waclass-imethods[].
 
-    LOOP AT waclass-imethods[] INTO wamethod.
+    loop at waclass-imethods[] into wamethod.
       mytabix = sy-tabix.
 *     Find individual messages
-      IF NOT getmessages IS INITIAL.
-        PERFORM scanformessages USING wamethod-methodkey
+      if not getmessages is initial.
+        perform scanformessages using wamethod-methodkey
                                       waclass-msg_id
                                       waclass-imessages[].
-      ENDIF.
+      endif.
 
-      IF NOT getcustdictstructures IS INITIAL.
+      if not getcustdictstructures is initial.
 *       Find any declared dictionary structures
-        PERFORM scanfortables USING wamethod-methodkey
+        perform scanfortables using wamethod-methodkey
                                     customeronly
                                     customernamerange
                                     waclass-idictstruct[].
 
-        PERFORM scanforlikeortype USING wamethod-methodkey
+        perform scanforlikeortype using wamethod-methodkey
                                         customeronly
                                         customernamerange
                                         waclass-idictstruct[]
                                         waclass-itabletypes[].
-      ENDIF.
+      endif.
 
-      IF NOT getfunctions IS INITIAL.
-        PERFORM scanforfunctions USING wamethod-methodkey
+      if not getfunctions is initial.
+        perform scanforfunctions using wamethod-methodkey
                                        waclass-clsname
                                        space
                                        space
                                        customeronly
                                        customernamerange
                                        ilocfunctions[].
-      ENDIF.
+      endif.
 
 *     Find any XSLT Transformations
-      IF NOT gettransformations IS INITIAL.
-        PERFORM scanfortransformations USING wamethod-methodkey
+      if not gettransformations is initial.
+        perform scanfortransformations using wamethod-methodkey
                                              customeronly
                                              customernamerange
                                              waclass-itransformations[].
-      ENDIF.
+      endif.
 
-      MODIFY waclass-imethods FROM wamethod INDEX mytabix.
-    ENDLOOP.
+      modify waclass-imethods from wamethod index mytabix.
+    endloop.
 
 *   If the class has specified a message class but were unable to find any specific messages
 *   then retrieve the whole message class.
-    IF ( NOT waclass-msg_id IS INITIAL AND waclass-imessages[] IS INITIAL ).
-      PERFORM retrievemessageclass USING waclass-imessages[]
+    if ( not waclass-msg_id is initial and waclass-imessages[] is initial ).
+      perform retrievemessageclass using waclass-imessages[]
                                          rnblankauthor[]
                                          waclass-msg_id
                                          pmlang
                                          ''
                                          rnblankpackage[].
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                               "findClassDetails
+    endif.
+  endif.
+endform.                                                                               "findClassDetails
 
 *----------------------------------------------------------------------------------------------------------------------
 * Find all interface methods used by the class
 *----------------------------------------------------------------------------------------------------------------------
-FORM findinterfacemethods USING value(classname)
-                                      ilocinterfaces LIKE dumiinterfaces[]
-                                      ilocmethods LIKE dumimethods[].
+form findinterfacemethods using value(classname)
+                                      ilocinterfaces like dumiinterfaces[]
+                                      ilocmethods like dumimethods[].
 
-  TYPES: BEGIN OF tintmethod,
-           interfacename LIKE vseomethod-clsname,
-           cmpname LIKE vseomethod-cmpname,
-           exposure LIKE vseomethod-exposure,
-         END OF tintmethod.
-  DATA: wamethod TYPE tmethod.
-  DATA: wainterface LIKE LINE OF ilocinterfaces.
-  DATA: iintmethod TYPE STANDARD TABLE OF tintmethod WITH HEADER LINE.
+  types: begin of tintmethod,
+           interfacename like vseomethod-clsname,
+           cmpname like vseomethod-cmpname,
+           exposure like vseomethod-exposure,
+         end of tintmethod.
+  data: wamethod type tmethod.
+  data: wainterface like line of ilocinterfaces.
+  data: iintmethod type standard table of tintmethod with header line.
 
-  LOOP AT ilocinterfaces INTO wainterface.
-    SELECT a~clsname AS interfacename
+  loop at ilocinterfaces into wainterface.
+    select a~clsname as interfacename
            a~cmpname
            b~exposure
-           APPENDING TABLE iintmethod
-           FROM seocompo AS a
-           INNER JOIN seocompodf AS b
-             ON a~clsname = b~clsname
-             AND a~cmpname = b~cmpname
-           WHERE a~clsname = wainterface-interfacename.
-  ENDLOOP.
+           appending table iintmethod
+           from seocompo as a
+           inner join seocompodf as b
+             on a~clsname = b~clsname
+             and a~cmpname = b~cmpname
+           where a~clsname = wainterface-interfacename.
+  endloop.
 
-  LOOP AT iintmethod.
-    CONCATENATE iintmethod-interfacename '~' iintmethod-cmpname INTO wamethod-cmpname.
+  loop at iintmethod.
+    concatenate iintmethod-interfacename '~' iintmethod-cmpname into wamethod-cmpname.
     wamethod-exposure = iintmethod-exposure.
 
-    SELECT SINGLE descript
-           FROM seocompotx
-           INTO wamethod-descript
-           WHERE clsname = iintmethod-interfacename
-             AND cmpname = iintmethod-cmpname
-             AND langu = pmlang.
+    select single descript
+           from seocompotx
+           into wamethod-descript
+           where clsname = iintmethod-interfacename
+             and cmpname = iintmethod-cmpname
+             and langu = pmlang.
 
-    PERFORM findmethodkey USING classname
+    perform findmethodkey using classname
                                 wamethod-cmpname
                                 wamethod-methodkey.
 
-    IF NOT wamethod-methodkey IS INITIAL.
-      APPEND wamethod TO ilocmethods.
-    ENDIF.
+    if not wamethod-methodkey is initial.
+      append wamethod to ilocmethods.
+    endif.
 
-    CLEAR wamethod.
-  ENDLOOP.
-ENDFORM.                    "findInterfaceMethods
+    clear wamethod.
+  endloop.
+endform.                    "findInterfaceMethods
 
 *----------------------------------------------------------------------------------------------------------------------
 *   Check to see if their are any interfaces being used by this class
 *----------------------------------------------------------------------------------------------------------------------
-FORM findclassinterfaces USING value(classname)
-                                     ilocinterfaces LIKE dumiinterfaces[].
+form findclassinterfaces using value(classname)
+                                     ilocinterfaces like dumiinterfaces[].
 
-  DATA: isinheritance TYPE abap_bool VALUE abap_true.
-  DATA: iinterfaces TYPE STANDARD TABLE OF vseoimplem WITH HEADER LINE.
-  DATA: walocinterface LIKE LINE OF ilocinterfaces.
+  data: isinheritance type abap_bool value abap_true.
+  data: iinterfaces type standard table of vseoimplem with header line.
+  data: walocinterface like line of ilocinterfaces.
 
-  SELECT * FROM vseoimplem
-           INTO TABLE iinterfaces
-           WHERE clsname = classname.
+  select * from vseoimplem
+           into table iinterfaces
+           where clsname = classname.
 
-  WHILE isinheritance = abap_true.
-    PERFORM findclassparent USING classname
+  while isinheritance = abap_true.
+    perform findclassparent using classname
                                   classname.
 
-    IF classname IS INITIAL.
+    if classname is initial.
       isinheritance = abap_false.
-    ELSE.
-      SELECT * FROM vseoimplem
-               APPENDING TABLE iinterfaces
-               WHERE clsname = classname.
-    ENDIF.
-  ENDWHILE.
+    else.
+      select * from vseoimplem
+               appending table iinterfaces
+               where clsname = classname.
+    endif.
+  endwhile.
 
-  IF NOT iinterfaces[] IS INITIAL.
-    SORT iinterfaces ASCENDING BY refclsname.
-    DELETE ADJACENT DUPLICATES FROM iinterfaces COMPARING refclsname.
+  if not iinterfaces[] is initial.
+    sort iinterfaces ascending by refclsname.
+    delete adjacent duplicates from iinterfaces comparing refclsname.
 
-    LOOP AT iinterfaces.
+    loop at iinterfaces.
       walocinterface-interfacename = iinterfaces-refclsname.
-      APPEND walocinterface TO ilocinterfaces.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                    "findClassInterfaces
+      append walocinterface to ilocinterfaces.
+    endloop.
+  endif.
+endform.                    "findClassInterfaces
 
 *----------------------------------------------------------------------------------------------------------------------
 *  Find the parent of the current class
 *----------------------------------------------------------------------------------------------------------------------
-FORM findclassparent USING value(classname)
+form findclassparent using value(classname)
                                  parentclassname.
 
-  DATA: wainheritance TYPE seor_inheritance_r.
-  DATA: clskey TYPE seoclskey.
+  data: wainheritance type seor_inheritance_r.
+  data: clskey type seoclskey.
 
   clskey-clsname = classname.
 
-  CALL FUNCTION 'SEO_INHERITANC_READ'
-    EXPORTING
+  call function 'SEO_INHERITANC_READ'
+    exporting
       clskey             = clskey
       version            = seoc_version_active
-    IMPORTING
+    importing
       inheritance        = wainheritance
 *     redefinitions      = redefinitions
-    EXCEPTIONS
+    exceptions
       class_not_existing = 1.
 
   parentclassname = wainheritance-refclsname.
-ENDFORM.                    "findClassParent
+endform.                    "findClassParent
 
 *-------------------------------------------------------------------------------------------------------
 *  buildClassKeys...   Finds the title text of a class.
 *-------------------------------------------------------------------------------------------------------
-FORM buildclasskeys USING waclass TYPE tclass.
+form buildclasskeys using waclass type tclass.
 
-  DATA: classnamelength TYPE i.
-  DATA: loops TYPE i.
+  data: classnamelength type i.
+  data: loops type i.
 
   classnamelength = strlen( waclass-clsname ).
 
-  cl_oo_classname_service=>get_pubsec_name( EXPORTING clsname = waclass-clsname
-                                            RECEIVING result = waclass-publicclasskey ).
+  cl_oo_classname_service=>get_pubsec_name( exporting clsname = waclass-clsname
+                                            receiving result = waclass-publicclasskey ).
 
-  cl_oo_classname_service=>get_prisec_name( EXPORTING clsname = waclass-clsname
-                                            RECEIVING result = waclass-privateclasskey ).
+  cl_oo_classname_service=>get_prisec_name( exporting clsname = waclass-clsname
+                                            receiving result = waclass-privateclasskey ).
 
-  cl_oo_classname_service=>get_prosec_name( EXPORTING clsname = waclass-clsname
-                                            RECEIVING result = waclass-protectedclasskey ).
+  cl_oo_classname_service=>get_prosec_name( exporting clsname = waclass-clsname
+                                            receiving result = waclass-protectedclasskey ).
 
 
 * Text element key - length of text element key has to be 32 characters.
   loops = 30 - classnamelength.
   waclass-textelementkey = waclass-clsname.
-  DO loops TIMES.
-    CONCATENATE waclass-textelementkey '=' INTO waclass-textelementkey.
-  ENDDO.
+  do loops times.
+    concatenate waclass-textelementkey '=' into waclass-textelementkey.
+  enddo.
 * Save this for later.
-  CONCATENATE waclass-textelementkey 'CP' INTO waclass-textelementkey.
+  concatenate waclass-textelementkey 'CP' into waclass-textelementkey.
 
 * Types Class key - length of class name has to be 32 characters.
   loops = 30 - classnamelength.
   waclass-typesclasskey = waclass-clsname.
-  DO loops TIMES.
-    CONCATENATE waclass-typesclasskey '=' INTO waclass-typesclasskey.
-  ENDDO.
+  do loops times.
+    concatenate waclass-typesclasskey '=' into waclass-typesclasskey.
+  enddo.
 * Save this for later
-  CONCATENATE waclass-typesclasskey 'CT' INTO waclass-typesclasskey.
-ENDFORM.                                                                                 "buildClassKeys
+  concatenate waclass-typesclasskey 'CT' into waclass-typesclasskey.
+endform.                                                                                 "buildClassKeys
 
 *-------------------------------------------------------------------------------------------------------
 *  findClassDescription...   Finds the title text of a class.
 *-------------------------------------------------------------------------------------------------------
-FORM findclassdescription USING value(classname)
+form findclassdescription using value(classname)
                                       titletext.
 
-  SELECT SINGLE descript
-                FROM vseoclass
-                INTO titletext
-                WHERE clsname = classname
-                  AND langu = pmlang.
-  IF sy-subrc <> 0.
-    SELECT SINGLE descript
-                  FROM vseoclass
-                  INTO titletext
-                  WHERE clsname = classname.
-  ENDIF.
-ENDFORM.                                                                           "findClassDescription
+  select single descript
+                from vseoclass
+                into titletext
+                where clsname = classname
+                  and langu = pmlang.
+  if sy-subrc <> 0.
+    select single descript
+                  from vseoclass
+                  into titletext
+                  where clsname = classname.
+  endif.
+endform.                                                                           "findClassDescription
 
 *-------------------------------------------------------------------------------------------------------
 *  findExceptionTexts...   Fiond the texts of an exception class.
 *-------------------------------------------------------------------------------------------------------
-FORM findexceptiontexts USING publicclasskey
-                              iconcepts LIKE dumiconcepts[].
+form findexceptiontexts using publicclasskey
+                              iconcepts like dumiconcepts[].
 
-  DATA: castclassname TYPE program.
-  DATA: itemplines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: watokens TYPE stokes.
-  DATA: wacurrenttoken TYPE stokes.
-  DATA: waconcept LIKE LINE OF iconcepts.
-  DATA: tokenlength TYPE i.
-  DATA: myrow TYPE i.
+  data: castclassname type program.
+  data: itemplines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: watokens type stokes.
+  data: wacurrenttoken type stokes.
+  data: waconcept like line of iconcepts.
+  data: tokenlength type i.
+  data: myrow type i.
 
   castclassname = publicclasskey.
-  READ REPORT castclassname INTO itemplines.
+  read report castclassname into itemplines.
 
-  APPEND 'CONSTANTS' TO ikeywords.
-  SCAN ABAP-SOURCE itemplines TOKENS INTO itokens STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
+  append 'CONSTANTS' to ikeywords.
+  scan abap-source itemplines tokens into itokens statements into istatements keywords from ikeywords.
 
-  DELETE itokens WHERE str = 'CONSTANTS'.
-  DELETE itokens WHERE str = 'VALUE'.
-  DELETE itokens WHERE str = 'TYPE'.
+  delete itokens where str = 'CONSTANTS'.
+  delete itokens where str = 'VALUE'.
+  delete itokens where str = 'TYPE'.
 
-  LOOP AT itokens INTO watokens WHERE str = 'SOTR_CONC'.
+  loop at itokens into watokens where str = 'SOTR_CONC'.
 *   The loop before holds the constant name
     myrow = sy-tabix - 1.
-    READ TABLE itokens INDEX myrow INTO wacurrenttoken.
+    read table itokens index myrow into wacurrenttoken.
     waconcept-constname = wacurrenttoken-str.
 
 *   The loop after holds the constant name
     myrow = myrow + 2.
-    READ TABLE itokens INDEX myrow INTO wacurrenttoken.
+    read table itokens index myrow into wacurrenttoken.
     tokenlength = strlen( wacurrenttoken-str ).
-    IF tokenlength = 34.
+    if tokenlength = 34.
 *     Most likely an exception text.
-      REPLACE ALL OCCURRENCES OF '''' IN wacurrenttoken-str WITH ' ' .
+      replace all occurrences of '''' in wacurrenttoken-str with ' ' .
       waconcept-concept = wacurrenttoken-str.
-      APPEND waconcept TO iconcepts.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                    "findExceptionTexts
+      append waconcept to iconcepts.
+    endif.
+  endloop.
+endform.                    "findExceptionTexts
 
 *-------------------------------------------------------------------------------------------------------
 *  findClassMethods...   Finds the methods of a class.
 *-------------------------------------------------------------------------------------------------------
-FORM findclassmethods USING value(classname)
-                            ilocmethods LIKE dumimethods[].
+form findclassmethods using value(classname)
+                            ilocmethods like dumimethods[].
 
-  DATA: imethods TYPE STANDARD TABLE OF tmethod WITH HEADER LINE.
-  DATA: iredefinedmethods TYPE STANDARD TABLE OF seoredef WITH HEADER LINE.
-  DATA: originalclassname TYPE seoclsname.
-  DATA: wamethod LIKE LINE OF imethods.
+  data: imethods type standard table of tmethod with header line.
+  data: iredefinedmethods type standard table of seoredef with header line.
+  data: originalclassname type seoclsname.
+  data: wamethod like line of imethods.
 
-  SELECT cmpname descript exposure
-         FROM vseomethod
-         INTO CORRESPONDING FIELDS OF TABLE imethods
-           WHERE clsname = classname
-             AND version = '1'
-             AND langu = pmlang
-             AND ( state = '0' OR state = '1' ).
+  select cmpname descript exposure
+         from vseomethod
+         into corresponding fields of table imethods
+           where clsname = classname
+             and version = '1'
+             and langu = pmlang
+             and ( state = '0' or state = '1' ).
 
-  IF sy-subrc <> 0.
-    SELECT cmpname descript exposure
-           FROM vseomethod
-           INTO CORRESPONDING FIELDS OF TABLE imethods
-           WHERE clsname = classname
-             AND version = '0'
-             AND langu = pmlang
-             AND ( state = '0' OR state = '1' ).
-  ENDIF.
+  if sy-subrc <> 0.
+    select cmpname descript exposure
+           from vseomethod
+           into corresponding fields of table imethods
+           where clsname = classname
+             and version = '0'
+             and langu = pmlang
+             and ( state = '0' or state = '1' ).
+  endif.
 
-  SELECT *
-         FROM seoredef
-         INTO TABLE iredefinedmethods
-         WHERE clsname = classname
-           AND version = '1'.
+  select *
+         from seoredef
+         into table iredefinedmethods
+         where clsname = classname
+           and version = '1'.
 
 *  For Each method we must find the original class the method was created in
-  LOOP AT iredefinedmethods.
-    PERFORM findredefinitionclass USING iredefinedmethods-refclsname
+  loop at iredefinedmethods.
+    perform findredefinitionclass using iredefinedmethods-refclsname
                                         iredefinedmethods-mtdname
                                         originalclassname.
 
     wamethod-cmpname = iredefinedmethods-mtdname.
 
-    SELECT SINGLE descript exposure
-        FROM vseomethod
-        INTO CORRESPONDING FIELDS OF  wamethod
-          WHERE clsname = originalclassname
-            AND cmpname = iredefinedmethods-mtdname
-            AND version = '1'
-            AND langu = pmlang
-            AND ( state = '0' OR state = '1' ).
+    select single descript exposure
+        from vseomethod
+        into corresponding fields of  wamethod
+          where clsname = originalclassname
+            and cmpname = iredefinedmethods-mtdname
+            and version = '1'
+            and langu = pmlang
+            and ( state = '0' or state = '1' ).
 
-    CONCATENATE `Redefined: ` wamethod-descript INTO wamethod-descript.
-    APPEND wamethod TO imethods.
-  ENDLOOP.
+    concatenate `Redefined: ` wamethod-descript into wamethod-descript.
+    append wamethod to imethods.
+  endloop.
 
 * Find the method key so that we can acces the source code later
-  LOOP AT imethods.
-    PERFORM findmethodkey USING classname
+  loop at imethods.
+    perform findmethodkey using classname
                                 imethods-cmpname
                                 imethods-methodkey.
-    APPEND imethods TO ilocmethods.
-  ENDLOOP.
-ENDFORM.                                                                               "findClassMethods
+    append imethods to ilocmethods.
+  endloop.
+endform.                                                                               "findClassMethods
 
 *-------------------------------------------------------------------------------------------------------
 * findRedefinitionClass... find the original class the method was redefined from
 *-------------------------------------------------------------------------------------------------------
-FORM findredefinitionclass USING value(redefinedclassname) TYPE seoclsname
-                                 value(methodname) TYPE seocpdname
-                                       originalclassname TYPE seoclsname.
+form findredefinitionclass using value(redefinedclassname) type seoclsname
+                                 value(methodname) type seocpdname
+                                       originalclassname type seoclsname.
 
-  DATA: waredef TYPE seoredef.
+  data: waredef type seoredef.
 
-  SELECT SINGLE *
-         FROM seoredef
-         INTO waredef
-         WHERE refclsname = redefinedclassname
-           AND mtdname = methodname.
+  select single *
+         from seoredef
+         into waredef
+         where refclsname = redefinedclassname
+           and mtdname = methodname.
 
-  IF sy-subrc = 0.
+  if sy-subrc = 0.
 *   There is a higher class still.
     originalclassname = waredef-refclsname.
-    PERFORM findredefinitionclassrecur USING waredef-refclsname
+    perform findredefinitionclassrecur using waredef-refclsname
                                              waredef-mtdname
                                              originalclassname.
-  ELSE.
+  else.
 *   We are at the higher class.
     originalclassname = waredef-refclsname.
-  ENDIF.
-ENDFORM.                    "findRedefinitionClass
+  endif.
+endform.                    "findRedefinitionClass
 
 *-------------------------------------------------------------------------------------------------------
 * findRedefinitionClassRecur... Recursively find the original class the method was redefined from
 *-------------------------------------------------------------------------------------------------------
-FORM findredefinitionclassrecur USING value(redefinedclassname) TYPE seoclsname
-                                 value(methodname) TYPE seocpdname
-                                       originalclassname TYPE seoclsname.
+form findredefinitionclassrecur using value(redefinedclassname) type seoclsname
+                                 value(methodname) type seocpdname
+                                       originalclassname type seoclsname.
 
-  DATA: waredef TYPE seoredef.
+  data: waredef type seoredef.
 
-  SELECT SINGLE *
-         FROM seoredef
-         INTO waredef
-         WHERE clsname = redefinedclassname
-           AND mtdname = methodname.
+  select single *
+         from seoredef
+         into waredef
+         where clsname = redefinedclassname
+           and mtdname = methodname.
 
-  IF sy-subrc = 0.
+  if sy-subrc = 0.
 *   There is a higher class still.
     originalclassname = waredef-refclsname.
-    PERFORM findredefinitionclassrecur USING waredef-refclsname
+    perform findredefinitionclassrecur using waredef-refclsname
                                              waredef-mtdname
                                              originalclassname.
-  ENDIF.
-ENDFORM.                    "findRedefinitionClassRecur
+  endif.
+endform.                    "findRedefinitionClassRecur
 
 *-------------------------------------------------------------------------------------------------------
 * findMethodKey... find the unique key which identifes this method
 *-------------------------------------------------------------------------------------------------------
-FORM findmethodkey USING value(classname)
+form findmethodkey using value(classname)
                          value(methodname)
                                methodkey.
 
-  DATA: methodid TYPE seocpdkey.
-  DATA: locmethodkey TYPE program.
+  data: methodid type seocpdkey.
+  data: locmethodkey type program.
 
   methodid-clsname = classname.
   methodid-cpdname = methodname.
 
-  cl_oo_classname_service=>get_method_include( EXPORTING mtdkey = methodid
-                                               RECEIVING result = locmethodkey
-                                               EXCEPTIONS class_not_existing = 1
+  cl_oo_classname_service=>get_method_include( exporting mtdkey = methodid
+                                               receiving result = locmethodkey
+                                               exceptions class_not_existing = 1
                                                           method_not_existing = 2 ).
 
   methodkey = locmethodkey.
-ENDFORM.                                                                                  "findMethodKey
+endform.                                                                                  "findMethodKey
 
 *-------------------------------------------------------------------------------------------------------
 * scanForMessages... Search each program for messages
 *-------------------------------------------------------------------------------------------------------
-FORM scanformessages USING value(programname)
+form scanformessages using value(programname)
                            value(mainmessageclass)
-                                 ilocmessages LIKE imessages[].
+                                 ilocmessages like imessages[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: wamessage TYPE tmessage.
-  DATA: wamessagecomparison TYPE tmessage.
-  DATA: watokens TYPE stokes.
-  DATA: nextline TYPE i.
-  DATA: stringlength TYPE i VALUE 0.
-  DATA: workingonmessage TYPE abap_bool VALUE false.
-  DATA: castprogramname TYPE program.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: wamessage type tmessage.
+  data: wamessagecomparison type tmessage.
+  data: watokens type stokes.
+  data: nextline type i.
+  data: stringlength type i value 0.
+  data: workingonmessage type abap_bool value false.
+  data: castprogramname type program.
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO iincludelines.
+  read report castprogramname into iincludelines.
 
-  APPEND message TO ikeywords.
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
+  append message to ikeywords.
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements keywords from ikeywords.
 
-  CLEAR iincludelines[].
+  clear iincludelines[].
 
-  LOOP AT itokens.
-    IF itokens-str = message.
+  loop at itokens.
+    if itokens-str = message.
       workingonmessage = true.
-      CONTINUE.
-    ENDIF.
+      continue.
+    endif.
 
-    IF workingonmessage = true.
+    if workingonmessage = true.
       stringlength = strlen( itokens-str ).
 
 *     Message declaration 1
-      IF stringlength = 4 AND itokens-str+0(1) CA sy-abcde.
+      if stringlength = 4 and itokens-str+0(1) ca sy-abcde.
         wamessage-msgnr = itokens-str+1(3).
         wamessage-arbgb = mainmessageclass.
-      ELSE.
-        IF itokens-str CS '''' OR itokens-str CS '`'.
+      else.
+        if itokens-str cs '''' or itokens-str cs '`'.
 *         Message declaration 2
-          TRANSLATE itokens-str USING ''' '.
-          TRANSLATE itokens-str USING '` '.
-          CONDENSE itokens-str.
-          SHIFT itokens-str LEFT DELETING LEADING space.
+          translate itokens-str using ''' '.
+          translate itokens-str using '` '.
+          condense itokens-str.
+          shift itokens-str left deleting leading space.
           wamessage-text = itokens-str.
           wamessage-arbgb = 'Hard coded'.
-        ELSE.
-          IF itokens-str = 'ID'.
+        else.
+          if itokens-str = 'ID'.
 *           Message declaration 3
             nextline = sy-tabix + 1.
-            READ TABLE itokens INDEX nextline INTO watokens.
-            TRANSLATE watokens-str USING ''' '.
-            CONDENSE itokens-str.
-            SHIFT watokens-str LEFT DELETING LEADING space.
-            IF NOT watokens-str = 'SY-MSGID'.
+            read table itokens index nextline into watokens.
+            translate watokens-str using ''' '.
+            condense itokens-str.
+            shift watokens-str left deleting leading space.
+            if not watokens-str = 'SY-MSGID'.
               wamessage-arbgb = watokens-str.
 
               nextline = nextline + 4.
-              READ TABLE itokens INDEX nextline INTO watokens.
-              TRANSLATE watokens-str USING ''' '.
-              CONDENSE watokens-str.
-              SHIFT watokens-str LEFT DELETING LEADING space.
+              read table itokens index nextline into watokens.
+              translate watokens-str using ''' '.
+              condense watokens-str.
+              shift watokens-str left deleting leading space.
               wamessage-msgnr = watokens-str.
-            ELSE.
+            else.
               workingonmessage = false.
-            ENDIF.
-          ELSE.
-            IF stringlength >= 5 AND itokens-str+4(1) = '('.
+            endif.
+          else.
+            if stringlength >= 5 and itokens-str+4(1) = '('.
 *              Message declaration 4
               wamessage-msgnr = itokens-str+1(3).
-              SHIFT itokens-str LEFT UP TO '('.
-              REPLACE '(' INTO itokens-str WITH space.
-              REPLACE ')' INTO itokens-str WITH space.
-              CONDENSE itokens-str.
+              shift itokens-str left up to '('.
+              replace '(' into itokens-str with space.
+              replace ')' into itokens-str with space.
+              condense itokens-str.
               wamessage-arbgb = itokens-str.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
+            endif.
+          endif.
+        endif.
+      endif.
 
 *      find the message text
-      IF NOT wamessage-arbgb IS INITIAL AND NOT wamessage-msgnr IS INITIAL AND wamessage-text IS INITIAL.
-        SELECT SINGLE text
-                      FROM t100
-                      INTO wamessage-text
-                      WHERE sprsl = pmlang
-                        AND arbgb = wamessage-arbgb
-                        AND msgnr = wamessage-msgnr.
-      ENDIF.
+      if not wamessage-arbgb is initial and not wamessage-msgnr is initial and wamessage-text is initial.
+        select single text
+                      from t100
+                      into wamessage-text
+                      where sprsl = pmlang
+                        and arbgb = wamessage-arbgb
+                        and msgnr = wamessage-msgnr.
+      endif.
 
 *      Append the message
-      IF NOT wamessage IS INITIAL.
-        IF NOT wamessage-text IS INITIAL.
+      if not wamessage is initial.
+        if not wamessage-text is initial.
 *          Don't append the message if we already have it listed
-          READ TABLE ilocmessages WITH KEY arbgb = wamessage-arbgb
+          read table ilocmessages with key arbgb = wamessage-arbgb
                                            msgnr = wamessage-msgnr
-                                           INTO wamessagecomparison.
-          IF sy-subrc <> 0.
-            APPEND wamessage TO ilocmessages.
-          ENDIF.
-        ENDIF.
-        CLEAR wamessage.
+                                           into wamessagecomparison.
+          if sy-subrc <> 0.
+            append wamessage to ilocmessages.
+          endif.
+        endif.
+        clear wamessage.
         workingonmessage = false.
-      ENDIF.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                 "scanForMessages
+      endif.
+    endif.
+  endloop.
+endform.                                                                                 "scanForMessages
 
 *-------------------------------------------------------------------------------------------------------
 * scanForTables... Search each program for dictionary tables
 *-------------------------------------------------------------------------------------------------------
-FORM scanfortables USING value(programname)
+form scanfortables using value(programname)
                          value(customeronly)
                          value(customernamerange)
-                               ilocdictionary LIKE idictionary[].
+                               ilocdictionary like idictionary[].
 
-  DATA: iincludelines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itokens TYPE STANDARD TABLE OF stokes WITH HEADER LINE.
-  DATA: istatements TYPE STANDARD TABLE OF sstmnt WITH HEADER LINE.
-  DATA: ikeywords TYPE STANDARD TABLE OF text20 WITH HEADER LINE.
-  DATA: wadictionary TYPE tdicttable.
-  DATA: wadictionarycomparison TYPE tdicttable.
-  DATA: castprogramname TYPE program.
+  data: iincludelines type standard table of string with header line.
+  data: itokens type standard table of stokes with header line.
+  data: istatements type standard table of sstmnt with header line.
+  data: ikeywords type standard table of text20 with header line.
+  data: wadictionary type tdicttable.
+  data: wadictionarycomparison type tdicttable.
+  data: castprogramname type program.
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO iincludelines.
+  read report castprogramname into iincludelines.
 
-  APPEND tables TO ikeywords.
+  append tables to ikeywords.
 
-  SCAN ABAP-SOURCE iincludelines TOKENS INTO itokens WITH INCLUDES STATEMENTS INTO istatements KEYWORDS FROM ikeywords.
-  CLEAR iincludelines[].
+  scan abap-source iincludelines tokens into itokens with includes statements into istatements keywords from ikeywords.
+  clear iincludelines[].
 
-  SORT itokens ASCENDING BY str.
-  DELETE itokens WHERE str = tables.
+  sort itokens ascending by str.
+  delete itokens where str = tables.
 
-  LOOP AT itokens.
-    IF NOT customeronly IS INITIAL.
-      TRY.
-          CASE itokens-str+0(1).
-            WHEN 'Y' OR 'Z' OR customernamerange.
-            WHEN OTHERS.
-              CONTINUE.
-          ENDCASE.
+  loop at itokens.
+    if not customeronly is initial.
+      try.
+          case itokens-str+0(1).
+            when 'Y' or 'Z' or customernamerange.
+            when others.
+              continue.
+          endcase.
 *        if ( iTokens-str+0(1) <> 'Y' or iTokens-str+0(1) <> 'Z' or iTokens-str ns customerNameRange ).
 *          continue.
 *        endif.
-        CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-      ENDTRY.
-    ENDIF.
+        catch cx_sy_range_out_of_bounds into objruntimeerror.
+      endtry.
+    endif.
 
     wadictionary-tablename = itokens-str.
 *   Don't append the object if we already have it listed
-    READ TABLE ilocdictionary INTO wadictionarycomparison WITH KEY tablename = wadictionary-tablename.
-    IF sy-subrc <> 0.
-      PERFORM findtabledescription USING wadictionary-tablename
+    read table ilocdictionary into wadictionarycomparison with key tablename = wadictionary-tablename.
+    if sy-subrc <> 0.
+      perform findtabledescription using wadictionary-tablename
                                          wadictionary-tabletitle.
 
-      PERFORM findtabledefinition USING wadictionary-tablename
+      perform findtabledefinition using wadictionary-tablename
                                         wadictionary-istructure[].
 
-      APPEND wadictionary TO ilocdictionary.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                 "scanForTables
+      append wadictionary to ilocdictionary.
+    endif.
+  endloop.
+endform.                                                                                 "scanForTables
 
 *-------------------------------------------------------------------------------------------------------
 *  findProgramScreenFlow...
 *-------------------------------------------------------------------------------------------------------
-FORM findprogramscreenflow USING waprogram TYPE tprogram.
+form findprogramscreenflow using waprogram type tprogram.
 
-  DATA: iflow TYPE STANDARD TABLE OF tscreenflow WITH HEADER LINE.
+  data: iflow type standard table of tscreenflow with header line.
 
-  CALL FUNCTION 'DYNPRO_PROCESSINGLOGIC'
-    EXPORTING
+  call function 'DYNPRO_PROCESSINGLOGIC'
+    exporting
       rep_name  = waprogram-progname
-    TABLES
+    tables
       scr_logic = iflow.
 
-  SORT iflow ASCENDING BY screen.
-  DELETE ADJACENT DUPLICATES FROM iflow COMPARING screen.
-  IF waprogram-subc <> 'M'.
-    DELETE iflow WHERE screen >= '1000' AND screen <= '1099'.
-  ENDIF.
+  sort iflow ascending by screen.
+  delete adjacent duplicates from iflow comparing screen.
+  if waprogram-subc <> 'M'.
+    delete iflow where screen >= '1000' and screen <= '1099'.
+  endif.
 
-  LOOP AT iflow.
-    APPEND iflow TO waprogram-iscreenflow.
-  ENDLOOP.
-ENDFORM.                                                                          "findProgramScreenFlow
+  loop at iflow.
+    append iflow to waprogram-iscreenflow.
+  endloop.
+endform.                                                                          "findProgramScreenFlow
 
 *----------------------------------------------------------------------------------------------------------------------
 *  findMainFunctionInclude...  Find the main include that contains the source code
 *----------------------------------------------------------------------------------------------------------------------
-FORM findmainfunctioninclude USING value(programname)
+form findmainfunctioninclude using value(programname)
                                    value(functiongroup)
                                    value(functionincludeno)
                                          functionincludename.
 
-  DATA: namespace TYPE string,
-        iresults TYPE match_result_tab,
-        waresult TYPE match_result,
-        startingposition TYPE i.
+  data: namespace type string,
+        iresults type match_result_tab,
+        waresult type match_result,
+        startingposition type i.
 
-  FIND ALL OCCURRENCES OF '/' IN functiongroup RESULTS iresults.
-  IF sy-subrc = 0.
-    READ TABLE iresults INDEX sy-tfill INTO waresult.
+  find all occurrences of '/' in functiongroup results iresults.
+  if sy-subrc = 0.
+    read table iresults index sy-tfill into waresult.
     startingposition = waresult-offset + 1.
     namespace = functiongroup+0(startingposition).
     functiongroup = functiongroup+startingposition.
-  ENDIF.
+  endif.
 
-  CONCATENATE namespace 'L' functiongroup 'U' functionincludeno INTO functionincludename.
-ENDFORM.                                                                                       "findMainFunctionInclude
+  concatenate namespace 'L' functiongroup 'U' functionincludeno into functionincludename.
+endform.                                                                                       "findMainFunctionInclude
 
 *----------------------------------------------------------------------------------------------------------------------
 *  findFunctionTopInclude...  Find the top include for the function group
 *----------------------------------------------------------------------------------------------------------------------
-FORM findfunctiontopinclude USING value(programname)
+form findfunctiontopinclude using value(programname)
                                   value(functiongroup)
                                         topincludename.
 
-  DATA: namespace TYPE string,
-        iresults TYPE match_result_tab,
-        waresult TYPE match_result,
-        startingposition TYPE i.
+  data: namespace type string,
+        iresults type match_result_tab,
+        waresult type match_result,
+        startingposition type i.
 
-  FIND ALL OCCURRENCES OF '/' IN functiongroup RESULTS iresults.
-  IF sy-subrc = 0.
-    READ TABLE iresults INDEX sy-tfill INTO waresult.
+  find all occurrences of '/' in functiongroup results iresults.
+  if sy-subrc = 0.
+    read table iresults index sy-tfill into waresult.
     startingposition = waresult-offset + 1.
     namespace = functiongroup+0(startingposition).
     functiongroup = functiongroup+startingposition.
-  ENDIF.
+  endif.
 
-  CONCATENATE namespace 'L' functiongroup 'TOP' INTO topincludename.
-ENDFORM.                                                                                        "findFunctionTopInclude
+  concatenate namespace 'L' functiongroup 'TOP' into topincludename.
+endform.                                                                                        "findFunctionTopInclude
 
 *-------------------------------------------------------------------------------------------------------
 *  findFunctionScreenFlow...
 *-------------------------------------------------------------------------------------------------------
-FORM findfunctionscreenflow USING wafunction TYPE tfunction.
+form findfunctionscreenflow using wafunction type tfunction.
 
-  DATA: iflow TYPE STANDARD TABLE OF tscreenflow WITH HEADER LINE.
+  data: iflow type standard table of tscreenflow with header line.
 
-  CALL FUNCTION 'DYNPRO_PROCESSINGLOGIC'
-    EXPORTING
+  call function 'DYNPRO_PROCESSINGLOGIC'
+    exporting
       rep_name  = wafunction-progname
-    TABLES
+    tables
       scr_logic = iflow.
 
-  SORT iflow ASCENDING BY screen.
-  DELETE ADJACENT DUPLICATES FROM iflow COMPARING screen.
+  sort iflow ascending by screen.
+  delete adjacent duplicates from iflow comparing screen.
 
-  LOOP AT iflow.
-    APPEND iflow TO wafunction-iscreenflow.
-  ENDLOOP.
-ENDFORM.                                                                          "findFunctionScreenFlow
+  loop at iflow.
+    append iflow to wafunction-iscreenflow.
+  endloop.
+endform.                                                                          "findFunctionScreenFlow
 
 *-------------------------------------------------------------------------------------------------------
 * scanForLikeOrType... Look for any dictionary objects referenced by a like or type statement
 *-------------------------------------------------------------------------------------------------------
-FORM scanforlikeortype USING value(programname)
+form scanforlikeortype using value(programname)
                              value(customeronly)
                              value(customernamerange)
-                             ilocdictionary LIKE idictionary[]
-                             iloctabletypes LIKE itabletypes[].
+                             ilocdictionary like idictionary[]
+                             iloctabletypes like itabletypes[].
 
-  DATA ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: head TYPE string.
-  DATA: tail TYPE string.
-  DATA: junk TYPE string.
-  DATA: linetype TYPE string.
-  DATA: linelength TYPE i VALUE 0.
-  DATA: endofline TYPE abap_bool VALUE true.
-  DATA: wadictionary TYPE tdicttable.
-  DATA: wadictionarycomparison TYPE tdicttable.
-  DATA: waline TYPE string.
-  DATA: castprogramname TYPE program.
+  data ilines type standard table of string with header line.
+  data: head type string.
+  data: tail type string.
+  data: junk type string.
+  data: linetype type string.
+  data: linelength type i value 0.
+  data: endofline type abap_bool value true.
+  data: wadictionary type tdicttable.
+  data: wadictionarycomparison type tdicttable.
+  data: waline type string.
+  data: castprogramname type program.
 
 
 * Read the program code from the textpool.
   castprogramname = programname.
-  READ REPORT castprogramname INTO ilines.
+  read report castprogramname into ilines.
 
-  LOOP AT ilines INTO waline.
+  loop at ilines into waline.
 *   Find custom tables.
     linelength = strlen( waline ).
-    IF linelength > 0.
-      IF waline(1) = asterix.
-        CONTINUE.
-      ENDIF.
+    if linelength > 0.
+      if waline(1) = asterix.
+        continue.
+      endif.
 
-      TRANSLATE waline TO UPPER CASE.
+      translate waline to upper case.
 
 *     Determine the lineType.
-      IF endofline = true.
-        SHIFT waline UP TO like.
-        IF sy-subrc = 0.
+      if endofline = true.
+        shift waline up to like.
+        if sy-subrc = 0.
           linetype = like.
-        ELSE.
-          SHIFT waline UP TO type.
-          IF sy-subrc = 0.
-            FIND 'BEGIN OF' IN waline.
-            IF sy-subrc <> 0.
-              FIND 'END OF' IN waline.
-              IF sy-subrc <> 0.
-                FIND 'VALUE' IN waline.
-                IF sy-subrc <> 0.
+        else.
+          shift waline up to type.
+          if sy-subrc = 0.
+            find 'BEGIN OF' in waline.
+            if sy-subrc <> 0.
+              find 'END OF' in waline.
+              if sy-subrc <> 0.
+                find 'VALUE' in waline.
+                if sy-subrc <> 0.
                   linetype = type.
-                ENDIF.
-              ENDIF.
-            ENDIF.
-          ELSE.
-            SHIFT waline UP TO include.
-            IF sy-subrc = 0.
-              SPLIT waline AT space INTO junk ilines.
-            ENDIF.
+                endif.
+              endif.
+            endif.
+          else.
+            shift waline up to include.
+            if sy-subrc = 0.
+              split waline at space into junk ilines.
+            endif.
 
-            SHIFT waline UP TO structure.
-            IF sy-subrc = 0.
+            shift waline up to structure.
+            if sy-subrc = 0.
               linetype = structure.
-            ELSE.
-              CONTINUE.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ELSE.
+            else.
+              continue.
+            endif.
+          endif.
+        endif.
+      else.
         linetype = comma.
-      ENDIF.
+      endif.
 
-      CASE linetype.
-        WHEN like OR type OR structure.
+      case linetype.
+        when like or type or structure.
 *         Work on the appropriate lineType
-          SHIFT waline UP TO space.
-          SHIFT waline LEFT DELETING LEADING space.
-          IF waline CS table.
-            SPLIT waline AT table INTO head tail.
-            SPLIT tail AT 'OF' INTO head tail.
+          shift waline up to space.
+          shift waline left deleting leading space.
+          if waline cs table.
+            split waline at table into head tail.
+            split tail at 'OF' into head tail.
             waline = tail.
-            SHIFT waline LEFT DELETING LEADING space.
-            REPLACE ALL OCCURRENCES OF 'WITH HEADER LINE' IN waline WITH ''.
-          ENDIF.
+            shift waline left deleting leading space.
+            replace all occurrences of 'WITH HEADER LINE' in waline with ''.
+          endif.
 
 *         Are we only to download SAP dictionary structures.
-          IF NOT customeronly IS INITIAL.
-            TRY.
-                IF waline+0(1) = 'Y' OR waline+0(1) = 'Z' OR waline CS customernamerange.
-                ELSE.
+          if not customeronly is initial.
+            try.
+                if waline+0(1) = 'Y' or waline+0(1) = 'Z' or waline cs customernamerange.
+                else.
                   linetype = ''.
-                  CONTINUE.
-                ENDIF.
-              CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-            ENDTRY.
-          ENDIF.
+                  continue.
+                endif.
+              catch cx_sy_range_out_of_bounds into objruntimeerror.
+            endtry.
+          endif.
 
-          IF waline CS comma.
-            SPLIT waline AT comma INTO head tail.
-            IF waline CS dash.
-              SPLIT head AT dash INTO head tail.
-            ENDIF.
-            IF waline CS occurs.
-              SPLIT waline AT space INTO head tail.
-            ENDIF.
-          ELSE.
-            IF waline CS period.
-              SPLIT waline AT period INTO head tail.
-              IF waline CS dash.
-                SPLIT head AT dash INTO head tail.
-              ENDIF.
-              IF waline CS occurs.
-                SPLIT waline AT space INTO head tail.
-              ENDIF.
-            ELSE.
-              SPLIT waline AT space INTO head tail.
-              IF waline CS dash.
-                SPLIT head AT dash INTO head tail.
-              ENDIF.
-            ENDIF.
-          ENDIF.
+          if waline cs comma.
+            split waline at comma into head tail.
+            if waline cs dash.
+              split head at dash into head tail.
+            endif.
+            if waline cs occurs.
+              split waline at space into head tail.
+            endif.
+          else.
+            if waline cs period.
+              split waline at period into head tail.
+              if waline cs dash.
+                split head at dash into head tail.
+              endif.
+              if waline cs occurs.
+                split waline at space into head tail.
+              endif.
+            else.
+              split waline at space into head tail.
+              if waline cs dash.
+                split head at dash into head tail.
+              endif.
+            endif.
+          endif.
 
-          IF NOT head IS INITIAL.
+          if not head is initial.
             wadictionary-tablename = head.
 *           Don't append the object if we already have it listed
-            READ TABLE ilocdictionary INTO wadictionarycomparison
-                                      WITH KEY tablename = wadictionary-tablename.
-            IF sy-subrc <> 0.
-              PERFORM findtabledescription USING wadictionary-tablename
+            read table ilocdictionary into wadictionarycomparison
+                                      with key tablename = wadictionary-tablename.
+            if sy-subrc <> 0.
+              perform findtabledescription using wadictionary-tablename
                                                  wadictionary-tabletitle.
 
-              PERFORM findtabledefinition USING wadictionary-tablename
+              perform findtabledefinition using wadictionary-tablename
                                                 wadictionary-istructure[].
 
 *             Only append if the item is a table and not a structure or data element
-              IF wadictionary-istructure[] IS INITIAL.
+              if wadictionary-istructure[] is initial.
 *               Not a table, but is it a table type?
-                PERFORM checkandaddtabletype USING wadictionary-tablename
+                perform checkandaddtabletype using wadictionary-tablename
                                                    iloctabletypes[].
-              ELSE.
+              else.
 *               It is a table
-                APPEND wadictionary TO ilocdictionary.
-              ENDIF.
-            ENDIF.
-            CLEAR wadictionary.
-          ENDIF.
+                append wadictionary to ilocdictionary.
+              endif.
+            endif.
+            clear wadictionary.
+          endif.
 
           linetype = ''.
-      ENDCASE.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                              "scanForLikeOrType
+      endcase.
+    endif.
+  endloop.
+endform.                                                                              "scanForLikeOrType
 
 *-------------------------------------------------------------------------------------------------------
 *  displayStatus...
 *-------------------------------------------------------------------------------------------------------
-FORM displaystatus USING value(message)
+form displaystatus using value(message)
                          value(delay).
 
-  CALL FUNCTION 'SAPGUI_PROGRESS_INDICATOR'
-    EXPORTING
+  call function 'SAPGUI_PROGRESS_INDICATOR'
+    exporting
       percentage = 0
       text       = message
-    EXCEPTIONS
-      OTHERS     = 1.
+    exceptions
+      others     = 1.
 
-  IF delay > 0.
-    WAIT UP TO delay SECONDS.
-  ENDIF.
-ENDFORM.                                                                                  "displayStatus
+  if delay > 0.
+    wait up to delay seconds.
+  endif.
+endform.                                                                                  "displayStatus
 
 *-------------------------------------------------------------------------------------------------------
 *  removeLeadingZeros...
 *-------------------------------------------------------------------------------------------------------
-FORM removeleadingzeros CHANGING myvalue.
+form removeleadingzeros changing myvalue.
 
-  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
-    EXPORTING
+  call function 'CONVERSION_EXIT_ALPHA_OUTPUT'
+    exporting
       input  = myvalue
-    IMPORTING
+    importing
       output = myvalue
-    EXCEPTIONS
-      OTHERS = 1.
-ENDFORM.                                                                             "removeLeadingZeros
+    exceptions
+      others = 1.
+endform.                                                                             "removeLeadingZeros
 
 *-------------------------------------------------------------------------------------------------------
 * determineFrontendOPSystem.... Determine the frontend operating system type.
 *-------------------------------------------------------------------------------------------------------
-FORM determinefrontendopsystem USING separator
+form determinefrontendopsystem using separator
                                      operatingsystem.
 
-  DATA: platformid TYPE i VALUE 0.
+  data: platformid type i value 0.
 
-  CREATE OBJECT objfile.
+  create object objfile.
 
-  CALL METHOD objfile->get_platform
-    RECEIVING
+  call method objfile->get_platform
+    receiving
       platform             = platformid
-    EXCEPTIONS
+    exceptions
       cntl_error           = 1
       error_no_gui         = 2
       not_supported_by_gui = 3.
-  CASE platformid.
-    WHEN objfile->platform_windows95
-         OR objfile->platform_windows98
-         OR objfile->platform_nt351
-         OR objfile->platform_nt40
-         OR objfile->platform_nt50
-         OR objfile->platform_mac
-         OR objfile->platform_os2
-         OR 14.      "XP
+  case platformid.
+    when objfile->platform_windows95
+         or objfile->platform_windows98
+         or objfile->platform_nt351
+         or objfile->platform_nt40
+         or objfile->platform_nt50
+         or objfile->platform_mac
+         or objfile->platform_os2
+         or 14.      "XP
       separator = '\'.
       operatingsystem = non_unix.
-    WHEN OTHERS.
+    when others.
       separator = '/'.
       operatingsystem = unix.
-  ENDCASE.
-ENDFORM.                                                                      "determineFrontendOpSystem
+  endcase.
+endform.                                                                      "determineFrontendOpSystem
 
 *-------------------------------------------------------------------------------------------------------
 * determineServerOPSystem.... Determine the server operating system type.
 *-------------------------------------------------------------------------------------------------------
-FORM determineserveropsystem USING separator
+form determineserveropsystem using separator
                                    serverfilesystem
                                    serveropsystem.
 
 * Find the file system
-  SELECT SINGLE filesys
-                FROM opsystem
-                INTO serverfilesystem
-                WHERE opsys = sy-opsys.
+  select single filesys
+                from opsystem
+                into serverfilesystem
+                where opsys = sy-opsys.
 
-  FIND 'WINDOWS' IN serverfilesystem IGNORING CASE.
-  IF sy-subrc = 0.
+  find 'WINDOWS' in serverfilesystem ignoring case.
+  if sy-subrc = 0.
     separator = '\'.
     serveropsystem = non_unix.
     serverfilesystem = 'Windows NT'.
-  ELSE.
-    FIND 'DOS' IN serverfilesystem IGNORING CASE.
-    IF sy-subrc = 0.
+  else.
+    find 'DOS' in serverfilesystem ignoring case.
+    if sy-subrc = 0.
       separator = '\'.
       serveropsystem = non_unix.
-    ELSE.
+    else.
       separator = '/'.
       serveropsystem = unix.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                        "determineServerOpSystem
+    endif.
+  endif.
+endform.                                                                        "determineServerOpSystem
 
 *-------------------------------------------------------------------------------------------------------
 * findExternalCommand.... Determine if the external command exists.  If it doesn't then disable the
 *                         server input field
 *-------------------------------------------------------------------------------------------------------
-FORM findexternalcommand USING value(locserverfilesystem).
+form findexternalcommand using value(locserverfilesystem).
 
-  DATA: castserveropsys TYPE syopsys.
+  data: castserveropsys type syopsys.
 
   castserveropsys = locserverfilesystem.
 
-  CALL FUNCTION 'SXPG_COMMAND_CHECK'
-    EXPORTING
+  call function 'SXPG_COMMAND_CHECK'
+    exporting
       commandname       = 'ZDTX_MKDIR'
       operatingsystem   = castserveropsys
-    EXCEPTIONS
+    exceptions
       command_not_found = 1
-      OTHERS            = 0.
+      others            = 0.
 
-  IF sy-subrc <> 0.
-    LOOP AT SCREEN.
-      IF screen-name = 'PLOGICAL'.
+  if sy-subrc <> 0.
+    loop at screen.
+      if screen-name = 'PLOGICAL'.
         screen-input = 0.
-        MODIFY SCREEN.
-      ENDIF.
+        modify screen.
+      endif.
 
-      IF screen-name = 'PSERV'.
+      if screen-name = 'PSERV'.
         screen-input = 0.
-        MODIFY SCREEN.
-      ENDIF.
+        modify screen.
+      endif.
 
-      IF screen-name = 'PPC'.
+      if screen-name = 'PPC'.
         screen-input = 0.
-        MODIFY SCREEN.
-      ENDIF.
-    ENDLOOP.
+        modify screen.
+      endif.
+    endloop.
 
-    MESSAGE s000(oo) WITH 'Download to server disabled,' 'external command ZDTX_MKDIR not defined.'.
-  ENDIF.
-ENDFORM.                    "findExternalCommand
+    message s000(oo) with 'Download to server disabled,' 'external command ZDTX_MKDIR not defined.'.
+  endif.
+endform.                    "findExternalCommand
 
 ********************************************************************************************************
 *****************************************DOWNLOAD ROUTINES**********************************************
@@ -4775,8 +4834,8 @@ ENDFORM.                    "findExternalCommand
 *-------------------------------------------------------------------------------------------------------
 * downloadDDStructures... download database objects to file
 *-------------------------------------------------------------------------------------------------------
-FORM downloadddstructures USING ilocdictionary LIKE idictionary[]
-                                ilocdictionaryfilename LIKE idictfilename[]
+form downloadddstructures using ilocdictionary like idictionary[]
+                                ilocdictionaryfilename like idictfilename[]
                                 value(pathname)
                                 value(htmlfileextension)
                                 value(subdir)
@@ -4785,21 +4844,21 @@ FORM downloadddstructures USING ilocdictionary LIKE idictionary[]
                                 value(savetoserver)
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
 
-  FIELD-SYMBOLS: <wadictionary> TYPE tdicttable.
-  DATA: tablefilename TYPE string.
-  DATA: tablefilenamewithpath TYPE string.
-  DATA: ihtmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: newsubdirectory TYPE string.
-  DATA: completesavepath TYPE string.
-  DATA: wadictfilename LIKE LINE OF ilocdictionaryfilename.
+  field-symbols: <wadictionary> type tdicttable.
+  data: tablefilename type string.
+  data: tablefilenamewithpath type string.
+  data: ihtmltable type standard table of string with header line.
+  data: newsubdirectory type string.
+  data: completesavepath type string.
+  data: wadictfilename like line of ilocdictionaryfilename.
 
-  LOOP AT ilocdictionary ASSIGNING <wadictionary>.
-    PERFORM buildfilename USING pathname
+  loop at ilocdictionary assigning <wadictionary>.
+    perform buildfilename using pathname
                                 subdir
                                 <wadictionary>-tablename
                                 space
@@ -4813,18 +4872,18 @@ FORM downloadddstructures USING ilocdictionary LIKE idictionary[]
                                 newsubdirectory
                                 completesavepath.
 
-    READ TABLE ilocdictionaryfilename INTO wadictfilename WITH KEY tablename = <wadictionary>-tablename
+    read table ilocdictionaryfilename into wadictfilename with key tablename = <wadictionary>-tablename
                                                                    filename = completesavepath.
-    IF sy-subrc <> 0.
+    if sy-subrc <> 0.
 *     Try and import a converted table to memory as it will be much quicker than converting it again
-      IMPORT ihtmltable FROM MEMORY ID <wadictionary>-tablename.
-      IF sy-subrc <> 0.
-        IF displayprogressmessage = abap_true.
-          CONCATENATE 'Converting table' <wadictionary>-tablename 'to html' INTO statusbarmessage SEPARATED BY space.
-          PERFORM displaystatus USING statusbarmessage 0.
-        ENDIF.
+      import ihtmltable from memory id <wadictionary>-tablename.
+      if sy-subrc <> 0.
+        if displayprogressmessage = abap_true.
+          concatenate 'Converting table' <wadictionary>-tablename 'to html' into statusbarmessage separated by space.
+          perform displaystatus using statusbarmessage 0.
+        endif.
 
-        PERFORM convertddtohtml USING <wadictionary>-istructure[]
+        perform convertddtohtml using <wadictionary>-istructure[]
                                       ihtmltable[]
                                       <wadictionary>-tablename
                                       <wadictionary>-tabletitle
@@ -4833,40 +4892,40 @@ FORM downloadddstructures USING ilocdictionary LIKE idictionary[]
                                       externalcss
                                       newtemplate.
 
-        EXPORT ihtmltable TO MEMORY ID <wadictionary>-tablename.
-      ENDIF.
+        export ihtmltable to memory id <wadictionary>-tablename.
+      endif.
 
-      IF savetoserver IS INITIAL.
-        PERFORM savefiletopc USING ihtmltable[]
+      if savetoserver is initial.
+        perform savefiletopc using ihtmltable[]
                                    tablefilenamewithpath
                                    tablefilename
                                    space
                                    space
                                    displayprogressmessage.
-      ELSE.
-        PERFORM savefiletoserver USING ihtmltable[]
+      else.
+        perform savefiletoserver using ihtmltable[]
                                        tablefilenamewithpath
                                        tablefilename
                                        completesavepath
                                        displayprogressmessage
                                        locserverfilesystem.
-      ENDIF.
+      endif.
 
       wadictfilename-tablename = <wadictionary>-tablename.
       wadictfilename-filename = completesavepath.
-      APPEND wadictfilename TO ilocdictionaryfilename.
-      CLEAR wadictfilename.
-    ENDIF.
+      append wadictfilename to ilocdictionaryfilename.
+      clear wadictfilename.
+    endif.
 
-    CLEAR ihtmltable[].
-  ENDLOOP.
-ENDFORM.                                                                           "downloadDDStructures
+    clear ihtmltable[].
+  endloop.
+endform.                                                                           "downloadDDStructures
 
 *----------------------------------------------------------------------------------------------------------------------
 *  downloadDDTableTypes
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadddtabletypes USING iloctabletypes LIKE itabletypes[]
-                                iloctabletypefilename LIKE idictfilename[]
+form downloadddtabletypes using iloctabletypes like itabletypes[]
+                                iloctabletypefilename like idictfilename[]
                                 value(pathname)
                                 value(htmlfileextension)
                                 value(subdir)
@@ -4875,20 +4934,20 @@ FORM downloadddtabletypes USING iloctabletypes LIKE itabletypes[]
                                 value(savetoserver)
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
-  FIELD-SYMBOLS: <watabletypes> LIKE LINE OF iloctabletypes.
-  FIELD-SYMBOLS <wattfilename> LIKE LINE OF iloctabletypefilename[].
-  DATA: tablefilename TYPE string.
-  DATA: tablefilenamewithpath TYPE string.
-  DATA: ihtmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: newsubdirectory TYPE string.
-  DATA: completesavepath TYPE string.
+  field-symbols: <watabletypes> like line of iloctabletypes.
+  field-symbols <wattfilename> like line of iloctabletypefilename[].
+  data: tablefilename type string.
+  data: tablefilenamewithpath type string.
+  data: ihtmltable type standard table of string with header line.
+  data: newsubdirectory type string.
+  data: completesavepath type string.
 
-  LOOP AT iloctabletypes ASSIGNING <watabletypes>.
-    PERFORM buildfilename USING pathname
+  loop at iloctabletypes assigning <watabletypes>.
+    perform buildfilename using pathname
                                 subdir
                                 <watabletypes>-typename
                                 space
@@ -4902,19 +4961,19 @@ FORM downloadddtabletypes USING iloctabletypes LIKE itabletypes[]
                                 newsubdirectory
                                 completesavepath.
 
-    READ TABLE iloctabletypefilename INTO <wattfilename> WITH KEY tablename = <watabletypes>-typename
+    read table iloctabletypefilename into <wattfilename> with key tablename = <watabletypes>-typename
                                                                    filename = completesavepath.
-    IF sy-subrc <> 0.
+    if sy-subrc <> 0.
 *     Try and import a converted table to memory as it will be much quicker than converting it again
-      IMPORT ihtmltable FROM MEMORY ID <watabletypes>-typename.
-      IF sy-subrc <> 0.
-        IF displayprogressmessage = abap_true.
-          CONCATENATE 'Converting table type' <watabletypes>-typename 'to html' INTO statusbarmessage SEPARATED BY space.
-          PERFORM displaystatus USING statusbarmessage 0.
-        ENDIF.
+      import ihtmltable from memory id <watabletypes>-typename.
+      if sy-subrc <> 0.
+        if displayprogressmessage = abap_true.
+          concatenate 'Converting table type' <watabletypes>-typename 'to html' into statusbarmessage separated by space.
+          perform displaystatus using statusbarmessage 0.
+        endif.
 
 *    --     Need a specific routine for table types.  All data is in the table
-        PERFORM converttabletypetohtml USING iloctabletypes[]
+        perform converttabletypetohtml using iloctabletypes[]
                                              ihtmltable[]
                                              <watabletypes>-typename
                                              <watabletypes>-ddtext
@@ -4923,31 +4982,31 @@ FORM downloadddtabletypes USING iloctabletypes LIKE itabletypes[]
                                              externalcss
                                              newtemplate.
 
-        IF savetoserver IS INITIAL.
-          PERFORM savefiletopc USING ihtmltable[]
+        if savetoserver is initial.
+          perform savefiletopc using ihtmltable[]
                                      tablefilenamewithpath
                                      tablefilename
                                      space
                                      space
                                      displayprogressmessage.
-        ELSE.
-          PERFORM savefiletoserver USING ihtmltable[]
+        else.
+          perform savefiletoserver using ihtmltable[]
                                          tablefilenamewithpath
                                          tablefilename
                                          completesavepath
                                          displayprogressmessage
                                          locserverfilesystem.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-    CLEAR ihtmltable[].
-  ENDLOOP.
-ENDFORM.                    "downloadDDTableTypes
+        endif.
+      endif.
+    endif.
+    clear ihtmltable[].
+  endloop.
+endform.                    "downloadDDTableTypes
 
 *-------------------------------------------------------------------------------------------------------
 * downloadMessageClass...
 *-------------------------------------------------------------------------------------------------------
-FORM downloadmessageclass USING ilocmessages LIKE imessages[]
+form downloadmessageclass using ilocmessages like imessages[]
                                 value(messageclassname)
                                 value(userfilepath)
                                 value(fileextension)
@@ -4961,33 +5020,33 @@ FORM downloadmessageclass USING ilocmessages LIKE imessages[]
                                 value(savetoserver)
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(highlight) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
-  DATA: htmlpagename TYPE string.
-  DATA: newfilenameonly TYPE string.
-  DATA: newfilenamewithpath TYPE string.
-  DATA: ihtmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: newsubdirectory TYPE string.
-  DATA: completesavepath TYPE string.
+  data: htmlpagename type string.
+  data: newfilenameonly type string.
+  data: newfilenamewithpath type string.
+  data: ihtmltable type standard table of string with header line.
+  data: newsubdirectory type string.
+  data: completesavepath type string.
 
-  PERFORM appendmessagestofile USING ilocmessages[]
+  perform appendmessagestofile using ilocmessages[]
                                      ihtmltable[]
                                      userhasselectedmessageclasses.
 
 
-  CONCATENATE `message class ` messageclassname INTO htmlpagename.
+  concatenate `message class ` messageclassname into htmlpagename.
 
-  IF htmlfileflag IS INITIAL.
-    APPEND '' TO ihtmltable.
-    APPEND  '----------------------------------------------------------------------------------' TO ihtmltable.
+  if htmlfileflag is initial.
+    append '' to ihtmltable.
+    append  '----------------------------------------------------------------------------------' to ihtmltable.
 
-    PERFORM buildfootermessage USING ihtmltable.
-    APPEND ihtmltable.
-  ELSE.
-    PERFORM convertcodetohtml USING ihtmltable[]
+    perform buildfootermessage using ihtmltable.
+    append ihtmltable.
+  else.
+    perform convertcodetohtml using ihtmltable[]
                                     htmlpagename
                                     space
                                     is_messageclass
@@ -5002,9 +5061,9 @@ FORM downloadmessageclass USING ilocmessages LIKE imessages[]
                                     highlight
                                     text_mode
                                     newtemplate.
-  ENDIF.
+  endif.
 
-  PERFORM buildfilename USING userfilepath
+  perform buildfilename using userfilepath
                               subdir
                               messageclassname
                               space
@@ -5018,79 +5077,79 @@ FORM downloadmessageclass USING ilocmessages LIKE imessages[]
                               newsubdirectory
                               completesavepath.
 
-  IF savetoserver IS INITIAL.
-    PERFORM savefiletopc USING ihtmltable[]
+  if savetoserver is initial.
+    perform savefiletopc using ihtmltable[]
                                newfilenamewithpath
                                newfilenameonly
                                space
                                space
                                displayprogressmessage.
-  ELSE.
+  else.
 *     Save the file to the SAP server
-    PERFORM savefiletoserver USING ihtmltable[]
+    perform savefiletoserver using ihtmltable[]
                                    newfilenamewithpath
                                    newfilenameonly
                                    completesavepath
                                    displayprogressmessage
                                    locserverfilesystem.
-  ENDIF.
-ENDFORM.                                                                          "downloadMessageClass
+  endif.
+endform.                                                                          "downloadMessageClass
 
 *-------------------------------------------------------------------------------------------------------
 *  appendMessagesToFile
 *-------------------------------------------------------------------------------------------------------
-FORM appendmessagestofile USING ilocmessages LIKE imessages[]
-                                ilochtml LIKE dumihtml[]
+form appendmessagestofile using ilocmessages like imessages[]
+                                ilochtml like dumihtml[]
                                 value(userhasselectedmessageclasses).
 
-  DATA: previousmessageid LIKE imessages-arbgb.
-  FIELD-SYMBOLS: <wamessage> TYPE tmessage.
-  DATA: wahtml TYPE string.
+  data: previousmessageid like imessages-arbgb.
+  field-symbols: <wamessage> type tmessage.
+  data: wahtml type string.
 
-  SORT ilocmessages ASCENDING BY arbgb msgnr.
+  sort ilocmessages ascending by arbgb msgnr.
 
-  IF NOT ilocmessages[] IS INITIAL.
-    IF userhasselectedmessageclasses IS INITIAL.
+  if not ilocmessages[] is initial.
+    if userhasselectedmessageclasses is initial.
 *     Only add these extra lines if we are actually appending them to the end of some program code
-      APPEND wahtml TO ilochtml.
-      APPEND wahtml TO ilochtml.
+      append wahtml to ilochtml.
+      append wahtml to ilochtml.
 
-      APPEND '*Messages' TO ilochtml.
-      APPEND '*----------------------------------------------------------' TO ilochtml.
-    ENDIF.
+      append '*Messages' to ilochtml.
+      append '*----------------------------------------------------------' to ilochtml.
+    endif.
 
-    LOOP AT ilocmessages ASSIGNING <wamessage>.
-      IF ( <wamessage>-arbgb <> previousmessageid ).
+    loop at ilocmessages assigning <wamessage>.
+      if ( <wamessage>-arbgb <> previousmessageid ).
 
-        IF userhasselectedmessageclasses IS INITIAL.
+        if userhasselectedmessageclasses is initial.
 *         Only add this extra lines if we are actually appending them to the end of some program code
-          APPEND '*' TO ilochtml.
-          CONCATENATE `* Message class: ` <wamessage>-arbgb INTO wahtml.
-          APPEND wahtml TO ilochtml.
-        ENDIF.
+          append '*' to ilochtml.
+          concatenate `* Message class: ` <wamessage>-arbgb into wahtml.
+          append wahtml to ilochtml.
+        endif.
 
         previousmessageid = <wamessage>-arbgb.
-        CLEAR wahtml.
-      ENDIF.
+        clear wahtml.
+      endif.
 
-      IF userhasselectedmessageclasses IS INITIAL.
+      if userhasselectedmessageclasses is initial.
 *       Only add this extra lines if we are actually appending them to the end of some program code
-        CONCATENATE '*' <wamessage>-msgnr `   ` <wamessage>-text INTO wahtml.
-      ELSE.
-        CONCATENATE <wamessage>-msgnr `   ` <wamessage>-text INTO wahtml.
-      ENDIF.
+        concatenate '*' <wamessage>-msgnr `   ` <wamessage>-text into wahtml.
+      else.
+        concatenate <wamessage>-msgnr `   ` <wamessage>-text into wahtml.
+      endif.
 
-      APPEND wahtml TO ilochtml.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                           "appendMessagesToFile
+      append wahtml to ilochtml.
+    endloop.
+  endif.
+endform.                                                                           "appendMessagesToFile
 
 *-------------------------------------------------------------------------------------------------------
 *  downloadFunctions...       Download function modules to file.
 *-------------------------------------------------------------------------------------------------------
-FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
-                             ilocdictionaryfilename LIKE idictfilename[]
-                             iloctabletypefilename LIKE itabletypefilename[]
+form downloadfunctions using ilocfunctions like ifunctions[]
+                             ilocdictionaryfilename like idictfilename[]
+                             iloctabletypefilename like itabletypefilename[]
                              value(userfilepath)
                              value(fileextension)
                              value(subdir)
@@ -5106,33 +5165,33 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                              value(savetoserver)
                              value(displayprogressmessage)
                              value(locserverfilesystem)
-                             value(addbackground) TYPE abap_bool
-                             value(externalcss) TYPE abap_bool
-                             value(highlight) TYPE abap_bool
-                             value(newtemplate) TYPE abap_bool.
+                             value(addbackground) type abap_bool
+                             value(externalcss) type abap_bool
+                             value(highlight) type abap_bool
+                             value(newtemplate) type abap_bool.
 
-  DATA: mainsubdir TYPE string.
-  DATA: incsubdir TYPE string.
-  FIELD-SYMBOLS: <wafunction> TYPE tfunction.
-  FIELD-SYMBOLS: <wainclude> TYPE tinclude.
-  DATA: iemptytextelements TYPE STANDARD TABLE OF ttexttable.
-  DATA: iemptyselectiontexts TYPE STANDARD TABLE OF ttexttable.
-  DATA: iemptymessages TYPE STANDARD TABLE OF tmessage.
-  DATA: iemptyguititles TYPE STANDARD TABLE OF tguititle.
-  DATA: functiondocumentationexists TYPE abap_bool VALUE false.
+  data: mainsubdir type string.
+  data: incsubdir type string.
+  field-symbols: <wafunction> type tfunction.
+  field-symbols: <wainclude> type tinclude.
+  data: iemptytextelements type standard table of ttexttable.
+  data: iemptyselectiontexts type standard table of ttexttable.
+  data: iemptymessages type standard table of tmessage.
+  data: iemptyguititles type standard table of tguititle.
+  data: functiondocumentationexists type abap_bool value false.
 
 
-  LOOP AT ilocfunctions ASSIGNING <wafunction>.
-    IF subdir IS INITIAL.
+  loop at ilocfunctions assigning <wafunction>.
+    if subdir is initial.
       incsubdir = <wafunction>-functionname.
       mainsubdir = ''.
-    ELSE.
-      CONCATENATE subdir <wafunction>-functionname INTO incsubdir SEPARATED BY slashseparator.
+    else.
+      concatenate subdir <wafunction>-functionname into incsubdir separated by slashseparator.
       mainsubdir = subdir.
-    ENDIF.
+    endif.
 
-    IF NOT downloaddocumentation IS INITIAL.
-      PERFORM downloadfunctiondocs USING <wafunction>-functionname
+    if not downloaddocumentation is initial.
+      perform downloadfunctiondocs using <wafunction>-functionname
                                          <wafunction>-functiontitle
                                          userfilepath
                                          fileextension
@@ -5146,10 +5205,10 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download main source code
-    PERFORM readfunctionanddownload USING <wafunction>-itextelements[]
+    perform readfunctionanddownload using <wafunction>-itextelements[]
                                           <wafunction>-iselectiontexts[]
                                           <wafunction>-imessages[]
                                           <wafunction>-functionname
@@ -5173,7 +5232,7 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                           newtemplate.
 
 *   Download top include
-    PERFORM readincludeanddownload USING iemptytextelements[]
+    perform readincludeanddownload using iemptytextelements[]
                                          iemptyselectiontexts[]
                                          iemptymessages[]
                                          iemptyguititles[]
@@ -5198,8 +5257,8 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                          newtemplate.
 
 *   Download screens.
-    IF NOT <wafunction>-iscreenflow[] IS INITIAL.
-      PERFORM downloadscreens USING <wafunction>-iscreenflow[]
+    if not <wafunction>-iscreenflow[] is initial.
+      perform downloadscreens using <wafunction>-iscreenflow[]
                                     <wafunction>-progname
                                     userfilepath
                                     textfileextension
@@ -5208,11 +5267,11 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                     savetoserver
                                     displayprogressmessage
                                     locserverfilesystem.
-    ENDIF.
+    endif.
 
 *   Download GUI titles
-    IF NOT <wafunction>-iguititle[] IS INITIAL.
-      PERFORM downloadguititles USING <wafunction>-iguititle
+    if not <wafunction>-iguititle[] is initial.
+      perform downloadguititles using <wafunction>-iguititle
                                       userfilepath
                                       textfileextension
                                       mainsubdir
@@ -5220,11 +5279,11 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                       savetoserver
                                       displayprogressmessage
                                       locserverfilesystem.
-    ENDIF.
+    endif.
 
 *   Download all other includes
-    LOOP AT <wafunction>-iincludes ASSIGNING <wainclude>.
-      PERFORM readincludeanddownload USING iemptytextelements[]
+    loop at <wafunction>-iincludes assigning <wainclude>.
+      perform readincludeanddownload using iemptytextelements[]
                                            iemptyselectiontexts[]
                                            iemptymessages[]
                                            iemptyguititles[]
@@ -5248,11 +5307,11 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                            highlight
                                            newtemplate.
 
-    ENDLOOP.
+    endloop.
 
 *   Download all dictionary structures
-    IF NOT <wafunction>-idictstruct[] IS INITIAL.
-      PERFORM downloadddstructures USING <wafunction>-idictstruct[]
+    if not <wafunction>-idictstruct[] is initial.
+      perform downloadddstructures using <wafunction>-idictstruct[]
                                          ilocdictionaryfilename[]
                                          userfilepath
                                          htmlfileextension
@@ -5265,11 +5324,11 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download all Table Types
-    IF NOT <wafunction>-itabletypes[] IS INITIAL.
-      PERFORM downloadddtabletypes USING <wafunction>-itabletypes[]
+    if not <wafunction>-itabletypes[] is initial.
+      perform downloadddtabletypes using <wafunction>-itabletypes[]
                                          iloctabletypefilename[]
                                          userfilepath
                                          htmlfileextension
@@ -5282,11 +5341,11 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download Transformations
-    IF NOT <wafunction>-itransformations[] IS INITIAL.
-      PERFORM downloadxslt USING <wafunction>-itransformations[]
+    if not <wafunction>-itransformations[] is initial.
+      perform downloadxslt using <wafunction>-itransformations[]
                                  userfilepath
                                  fileextension
                                  htmlfileextension
@@ -5302,17 +5361,17 @@ FORM downloadfunctions USING ilocfunctions LIKE ifunctions[]
                                  externalcss
                                  highlight
                                  newtemplate.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                              "downloadFunctions
+    endif.
+  endloop.
+endform.                                                                              "downloadFunctions
 
 *-------------------------------------------------------------------------------------------------------
 *   readIcludeAndDownload...
 *-------------------------------------------------------------------------------------------------------
-FORM readincludeanddownload USING iloctextelements LIKE dumitexttab[]
-                                  ilocselectiontexts LIKE dumitexttab[]
-                                  ilocmessages LIKE imessages[]
-                                  ilocguititles LIKE dumiguititle[]
+form readincludeanddownload using iloctextelements like dumitexttab[]
+                                  ilocselectiontexts like dumitexttab[]
+                                  ilocmessages like imessages[]
+                                  ilocguititles like dumiguititle[]
                                   value(programname)
                                   value(functionname)
                                   value(programdescription)
@@ -5328,80 +5387,89 @@ FORM readincludeanddownload USING iloctextelements LIKE dumitexttab[]
                                   value(savetoserver)
                                   value(displayprogressmessage)
                                   value(locserverfilesystem)
-                                  value(addbackground) TYPE abap_bool
-                                  value(externalcss) TYPE abap_bool
-                                  value(highlight) TYPE abap_bool
-                                  value(newtemplate) TYPE abap_bool.
+                                  value(addbackground) type abap_bool
+                                  value(externalcss) type abap_bool
+                                  value(highlight) type abap_bool
+                                  value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: localfilenamewithpath TYPE string.
-  DATA: localfilenameonly TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: objectname TYPE string.
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: localfilenamewithpath type string.
+  data: localfilenameonly type string.
+  data: newsubdirectory type string.
+  data: objectname type string.
+  data: completesavepath type string.
 
-  READ REPORT programname INTO ilines.
+  read report programname into ilines.
 
-* Download GUI titles for main program
-  IF NOT ilocguititles[] IS INITIAL.
-    PERFORM appendguititles USING ilocguititles[]
-                                  ilines[].
-  ENDIF.
+**** Download GUI titles for main program
+***  if not ilocguititles[] is initial.
+***    perform appendguititles using ilocguititles[]
+***                                  ilines[].
+***  endif.
+***
+**** Download text elements for main program
+***  if not iloctextelements[] is initial.
+***    perform appendtextelements using iloctextelements[]
+***                                     ilines[].
+***  endif.
+***
+**** Download selection texts for main program
+***  if not ilocselectiontexts[] is initial.
+***    perform appendselectiontexts using ilocselectiontexts[]
+***                                       ilines[].
+***  endif.
+***
+**** Download messages classes for main program.
+***  if not ilocmessages[] is initial.
+***    perform appendmessagestofile using ilocmessages[]
+***                                       ilines[]
+***                                       space.
+***  endif.
+***
+***  if converttohtml is initial.
+***    append '' to ilines.
+***    append '----------------------------------------------------------------------------------' to ilines.
+***    perform buildfootermessage using ilines.
+***    append ilines.
+***  else.
+***    perform convertcodetohtml using ilines[]
+***                                    programname
+***                                    programdescription
+***                                    overideprogtype
+***                                    space
+***                                    space
+***                                    fileextension
+***                                    customernamerange
+***                                    getincludes
+***                                    getdictstructures
+***                                    addbackground
+***                                    externalcss
+***                                    highlight
+***                                    abap_mode
+***                                    newtemplate.
+***  endif.
+  data: lo_xml type ref to gc_output_xml.
+  create object lo_xml.
 
-* Download text elements for main program
-  IF NOT iloctextelements[] IS INITIAL.
-    PERFORM appendtextelements USING iloctextelements[]
-                                     ilines[].
-  ENDIF.
+  lo_xml->gv_program_name = programname.
+  lo_xml->gv_program_description = programdescription.
+  lo_xml->generate(
+    importing
+      et_lines = ilines[] ).
 
-* Download selection texts for main program
-  IF NOT ilocselectiontexts[] IS INITIAL.
-    PERFORM appendselectiontexts USING ilocselectiontexts[]
-                                       ilines[].
-  ENDIF.
 
-* Download messages classes for main program.
-  IF NOT ilocmessages[] IS INITIAL.
-    PERFORM appendmessagestofile USING ilocmessages[]
-                                       ilines[]
-                                       space.
-  ENDIF.
-
-  IF converttohtml IS INITIAL.
-    APPEND '' TO ilines.
-    APPEND '----------------------------------------------------------------------------------' TO ilines.
-    PERFORM buildfootermessage USING ilines.
-    APPEND ilines.
-  ELSE.
-    PERFORM convertcodetohtml USING ilines[]
-                                    programname
-                                    programdescription
-                                    overideprogtype
-                                    space
-                                    space
-                                    fileextension
-                                    customernamerange
-                                    getincludes
-                                    getdictstructures
-                                    addbackground
-                                    externalcss
-                                    highlight
-                                    abap_mode
-                                    newtemplate.
-  ENDIF.
-
-  IF functionname IS INITIAL.
+  if functionname is initial.
     objectname = programname.
-  ELSE.
+  else.
     objectname = functionname.
-  ENDIF.
+  endif.
 
-  PERFORM buildfilename USING userfilepath
+  perform buildfilename using userfilepath
                               additionalsubdir
                               objectname
                               space
                               programname
-                              fileextension
+                              'xml' "fileextension
                               overideprogtype
                               savetoserver
                               slashseparator
@@ -5410,27 +5478,27 @@ FORM readincludeanddownload USING iloctextelements LIKE dumitexttab[]
                               newsubdirectory
                               completesavepath.
 
-  IF savetoserver IS INITIAL.
-    PERFORM savefiletopc USING ilines[]
+  if savetoserver is initial.
+    perform savefiletopc using ilines[]
                                localfilenamewithpath
                                localfilenameonly
                                space
                                space
                                displayprogressmessage.
-  ELSE.
-    PERFORM savefiletoserver USING ilines[]
+  else.
+    perform savefiletoserver using ilines[]
                                    localfilenamewithpath
                                    localfilenameonly
                                    completesavepath
                                    displayprogressmessage
                                    locserverfilesystem.
-  ENDIF.
-ENDFORM.                                                                         "readIncludeAndDownload
+  endif.
+endform.                                                                         "readIncludeAndDownload
 
 *-------------------------------------------------------------------------------------------------------
 *   readClassAndDownload...
 *-------------------------------------------------------------------------------------------------------
-FORM readclassanddownload USING walocclass TYPE tclass
+form readclassanddownload using walocclass type tclass
                                 value(classname)
                                 value(functionname)
                                 value(overideprogtype)
@@ -5445,127 +5513,127 @@ FORM readclassanddownload USING walocclass TYPE tclass
                                 value(savetoserver)
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(highlight) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
-  DATA: itemplines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: localfilenamewithpath TYPE string.
-  DATA: localfilenameonly TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: objectname TYPE string.
-  DATA: castclassname TYPE program.
-  DATA: completesavepath TYPE string.
+  data: itemplines type standard table of string with header line.
+  data: ilines type standard table of string with header line.
+  data: localfilenamewithpath type string.
+  data: localfilenameonly type string.
+  data: newsubdirectory type string.
+  data: objectname type string.
+  data: castclassname type program.
+  data: completesavepath type string.
 
 * Build up attribute comments
-  APPEND '**************************************************************************' TO ilines.
-  APPEND '*   Class attributes.                                                    *' TO ilines.
-  APPEND '**************************************************************************' TO ilines.
-  CASE walocclass-exposure.
-    WHEN 0.
-      APPEND `Instantiation: Private` TO ilines.
-    WHEN 1.
-      APPEND `Instantiation: Protected` TO ilines.
-    WHEN 2.
-      APPEND `Instantiation: Public` TO ilines.
-  ENDCASE.
-  CONCATENATE `Message class: ` walocclass-msg_id INTO ilines.
-  APPEND ilines.
-  CASE walocclass-state.
-    WHEN 0.
-      APPEND `State: Only Modelled` TO ilines.
-    WHEN 1.
-      APPEND `State: Implemented` TO ilines.
-  ENDCASE.
-  CONCATENATE `Final Indicator: ` walocclass-clsfinal INTO ilines.
-  APPEND ilines.
-  CONCATENATE `R/3 Release: ` walocclass-r3release INTO ilines.
-  APPEND ilines.
-  CLEAR ilines.
-  APPEND ilines.
+  append '**************************************************************************' to ilines.
+  append '*   Class attributes.                                                    *' to ilines.
+  append '**************************************************************************' to ilines.
+  case walocclass-exposure.
+    when 0.
+      append `Instantiation: Private` to ilines.
+    when 1.
+      append `Instantiation: Protected` to ilines.
+    when 2.
+      append `Instantiation: Public` to ilines.
+  endcase.
+  concatenate `Message class: ` walocclass-msg_id into ilines.
+  append ilines.
+  case walocclass-state.
+    when 0.
+      append `State: Only Modelled` to ilines.
+    when 1.
+      append `State: Implemented` to ilines.
+  endcase.
+  concatenate `Final Indicator: ` walocclass-clsfinal into ilines.
+  append ilines.
+  concatenate `R/3 Release: ` walocclass-r3release into ilines.
+  append ilines.
+  clear ilines.
+  append ilines.
 
   castclassname = walocclass-publicclasskey.
-  READ REPORT castclassname INTO itemplines.
-  IF sy-subrc = 0.
-    PERFORM reformatclasscode USING itemplines[].
+  read report castclassname into itemplines.
+  if sy-subrc = 0.
+    perform reformatclasscode using itemplines[].
 
-    APPEND '**************************************************************************' TO ilines.
-    APPEND '*   Public section of class.                                             *' TO ilines.
-    APPEND '**************************************************************************' TO ilines.
-    LOOP AT itemplines.
-      APPEND itemplines TO ilines.
-    ENDLOOP.
-  ENDIF.
+    append '**************************************************************************' to ilines.
+    append '*   Public section of class.                                             *' to ilines.
+    append '**************************************************************************' to ilines.
+    loop at itemplines.
+      append itemplines to ilines.
+    endloop.
+  endif.
 
   castclassname = walocclass-privateclasskey.
-  READ REPORT castclassname INTO itemplines.
-  IF sy-subrc = 0.
-    PERFORM reformatclasscode USING itemplines[].
+  read report castclassname into itemplines.
+  if sy-subrc = 0.
+    perform reformatclasscode using itemplines[].
 
-    APPEND ilines.
-    APPEND '**************************************************************************' TO ilines.
-    APPEND '*   Private section of class.                                            *' TO ilines.
-    APPEND '**************************************************************************' TO ilines.
-    LOOP AT itemplines.
-      APPEND itemplines TO ilines.
-    ENDLOOP.
-  ENDIF.
+    append ilines.
+    append '**************************************************************************' to ilines.
+    append '*   Private section of class.                                            *' to ilines.
+    append '**************************************************************************' to ilines.
+    loop at itemplines.
+      append itemplines to ilines.
+    endloop.
+  endif.
 
   castclassname = walocclass-protectedclasskey.
-  READ REPORT castclassname INTO itemplines.
-  IF sy-subrc = 0.
-    PERFORM reformatclasscode USING itemplines[].
+  read report castclassname into itemplines.
+  if sy-subrc = 0.
+    perform reformatclasscode using itemplines[].
 
-    APPEND ilines.
-    APPEND '**************************************************************************' TO ilines.
-    APPEND '*   Protected section of class.                                          *' TO ilines.
-    APPEND '**************************************************************************' TO ilines.
-    LOOP AT itemplines.
-      APPEND itemplines TO ilines.
-    ENDLOOP.
-  ENDIF.
+    append ilines.
+    append '**************************************************************************' to ilines.
+    append '*   Protected section of class.                                          *' to ilines.
+    append '**************************************************************************' to ilines.
+    loop at itemplines.
+      append itemplines to ilines.
+    endloop.
+  endif.
 
   castclassname = walocclass-typesclasskey.
-  READ REPORT castclassname INTO itemplines.
-  IF sy-subrc = 0.
-    APPEND ilines.
-    APPEND '**************************************************************************' TO ilines.
-    APPEND '*   Types section of class.                                              *' TO ilines.
-    APPEND '**************************************************************************' TO ilines.
-    LOOP AT itemplines.
-      APPEND itemplines TO ilines.
-    ENDLOOP.
-  ENDIF.
+  read report castclassname into itemplines.
+  if sy-subrc = 0.
+    append ilines.
+    append '**************************************************************************' to ilines.
+    append '*   Types section of class.                                              *' to ilines.
+    append '**************************************************************************' to ilines.
+    loop at itemplines.
+      append itemplines to ilines.
+    endloop.
+  endif.
 
 * Download text elements for this class
-  IF NOT walocclass-itextelements[] IS INITIAL.
-    PERFORM appendtextelements USING walocclass-itextelements[]
+  if not walocclass-itextelements[] is initial.
+    perform appendtextelements using walocclass-itextelements[]
                                      ilines[].
-  ENDIF.
+  endif.
 
 * Download messages classes for this class.
-  IF NOT walocclass-imessages[] IS INITIAL.
-    PERFORM appendmessagestofile USING walocclass-imessages[]
+  if not walocclass-imessages[] is initial.
+    perform appendmessagestofile using walocclass-imessages[]
                                        ilines[]
                                        space.
-  ENDIF.
+  endif.
 
 * Download exception texts for this class
-  IF NOT walocclass-iconcepts[] IS INITIAL.
-    PERFORM appendexceptiontexts USING walocclass-iconcepts[]
+  if not walocclass-iconcepts[] is initial.
+    perform appendexceptiontexts using walocclass-iconcepts[]
                                        ilines[].
-  ENDIF.
+  endif.
 
 
-  IF converttohtml IS INITIAL.
-    APPEND '' TO ilines.
-    APPEND '----------------------------------------------------------------------------------' TO ilines.
-    PERFORM buildfootermessage USING ilines.
-    APPEND ilines.
-  ELSE.
-    PERFORM convertclasstohtml USING ilines[]
+  if converttohtml is initial.
+    append '' to ilines.
+    append '----------------------------------------------------------------------------------' to ilines.
+    perform buildfootermessage using ilines.
+    append ilines.
+  else.
+    perform convertclasstohtml using ilines[]
                                     classname
                                     walocclass-descript
                                     overideprogtype
@@ -5576,15 +5644,15 @@ FORM readclassanddownload USING walocclass TYPE tclass
                                     externalcss
                                     highlight
                                     newtemplate.
-  ENDIF.
+  endif.
 
-  IF functionname IS INITIAL.
+  if functionname is initial.
     objectname = classname.
-  ELSE.
+  else.
     objectname = functionname.
-  ENDIF.
+  endif.
 
-  PERFORM buildfilename USING userfilepath
+  perform buildfilename using userfilepath
                               additionalsubdir
                               objectname
                               space
@@ -5598,27 +5666,27 @@ FORM readclassanddownload USING walocclass TYPE tclass
                               newsubdirectory
                               completesavepath.
 
-  IF savetoserver IS INITIAL.
-    PERFORM savefiletopc USING ilines[]
+  if savetoserver is initial.
+    perform savefiletopc using ilines[]
                                localfilenamewithpath
                                localfilenameonly
                                space
                                space
                                displayprogressmessage.
-  ELSE.
-    PERFORM savefiletoserver USING ilines[]
+  else.
+    perform savefiletoserver using ilines[]
                                    localfilenamewithpath
                                    localfilenameonly
                                    completesavepath
                                    displayprogressmessage
                                    locserverfilesystem.
-  ENDIF.
-ENDFORM.                                                                           "readClassAndDownload
+  endif.
+endform.                                                                           "readClassAndDownload
 
 *-------------------------------------------------------------------------------------------------------
 *   readMethodAndDownload...
 *-------------------------------------------------------------------------------------------------------
-FORM readmethodanddownload USING walocmethod TYPE tmethod
+form readmethodanddownload using walocmethod type tmethod
                                 value(methodname)
                                 value(methodkey)
                                 value(functionname)
@@ -5634,48 +5702,48 @@ FORM readmethodanddownload USING walocmethod TYPE tmethod
                                 value(savetoserver)
                                 value(displayprogressmessage)
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(highlight) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(highlight) type abap_bool
+                                value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: itemplines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: localfilenamewithpath TYPE string.
-  DATA: localfilenameonly TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: objectname TYPE string.
-  DATA: castmethodkey TYPE program.
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: itemplines type standard table of string with header line.
+  data: localfilenamewithpath type string.
+  data: localfilenameonly type string.
+  data: newsubdirectory type string.
+  data: objectname type string.
+  data: castmethodkey type program.
+  data: completesavepath type string.
 
 * Add the method scope to the downloaded file
-  APPEND '**************************************************************************' TO ilines.
-  APPEND '*   Method attributes.                                                   *' TO ilines.
-  APPEND '**************************************************************************' TO ilines.
-  CASE walocmethod-exposure.
-    WHEN 0.
-      APPEND `Instantiation: Private` TO ilines.
-    WHEN 1.
-      APPEND `Instantiation: Protected` TO ilines.
-    WHEN 2.
-      APPEND `Instantiation: Public` TO ilines.
-  ENDCASE.
-  APPEND '**************************************************************************' TO ilines.
-  APPEND '' TO ilines.
+  append '**************************************************************************' to ilines.
+  append '*   Method attributes.                                                   *' to ilines.
+  append '**************************************************************************' to ilines.
+  case walocmethod-exposure.
+    when 0.
+      append `Instantiation: Private` to ilines.
+    when 1.
+      append `Instantiation: Protected` to ilines.
+    when 2.
+      append `Instantiation: Public` to ilines.
+  endcase.
+  append '**************************************************************************' to ilines.
+  append '' to ilines.
 
   castmethodkey = walocmethod-methodkey.
-  READ REPORT castmethodkey INTO itemplines.
-  LOOP AT itemplines.
-    APPEND itemplines TO ilines.
-  ENDLOOP.
+  read report castmethodkey into itemplines.
+  loop at itemplines.
+    append itemplines to ilines.
+  endloop.
 
-  IF converttohtml IS INITIAL.
-    APPEND '' TO ilines.
-    APPEND '----------------------------------------------------------------------------------' TO ilines.
-    PERFORM buildfootermessage USING ilines.
-    APPEND ilines.
-  ELSE.
-    PERFORM convertcodetohtml USING ilines[]
+  if converttohtml is initial.
+    append '' to ilines.
+    append '----------------------------------------------------------------------------------' to ilines.
+    perform buildfootermessage using ilines.
+    append ilines.
+  else.
+    perform convertcodetohtml using ilines[]
                                     methodname
                                     walocmethod-descript
                                     overideprogtype
@@ -5690,27 +5758,27 @@ FORM readmethodanddownload USING walocmethod TYPE tmethod
                                     highlight
                                     abap_mode
                                     newtemplate.
-  ENDIF.
+  endif.
 
-  IF functionname IS INITIAL.
+  if functionname is initial.
     objectname = methodname.
-  ELSE.
+  else.
     objectname = functionname.
-  ENDIF.
+  endif.
 
-  CASE walocmethod-exposure.
-    WHEN 0.
+  case walocmethod-exposure.
+    when 0.
 *     Private
-      CONCATENATE additionalsubdir slashseparator 'private_methods' INTO additionalsubdir.
-    WHEN 1.
+      concatenate additionalsubdir slashseparator 'private_methods' into additionalsubdir.
+    when 1.
 *     Protected
-      CONCATENATE additionalsubdir slashseparator 'protected_methods' INTO additionalsubdir.
-    WHEN 2.
+      concatenate additionalsubdir slashseparator 'protected_methods' into additionalsubdir.
+    when 2.
 *     Public
-      CONCATENATE additionalsubdir slashseparator 'public_methods' INTO additionalsubdir.
-  ENDCASE.
+      concatenate additionalsubdir slashseparator 'public_methods' into additionalsubdir.
+  endcase.
 
-  PERFORM buildfilename USING userfilepath
+  perform buildfilename using userfilepath
                               additionalsubdir
                               objectname
                               space
@@ -5724,27 +5792,27 @@ FORM readmethodanddownload USING walocmethod TYPE tmethod
                               newsubdirectory
                               completesavepath.
 
-  IF savetoserver IS INITIAL.
-    PERFORM savefiletopc USING ilines[]
+  if savetoserver is initial.
+    perform savefiletopc using ilines[]
                                localfilenamewithpath
                                localfilenameonly
                                space
                                space
                                displayprogressmessage.
-  ELSE.
-    PERFORM savefiletoserver USING ilines[]
+  else.
+    perform savefiletoserver using ilines[]
                                    localfilenamewithpath
                                    localfilenameonly
                                    completesavepath
                                    displayprogressmessage
                                    locserverfilesystem.
-  ENDIF.
-ENDFORM.                                                                          "readMethodAndDownload
+  endif.
+endform.                                                                          "readMethodAndDownload
 
 *-------------------------------------------------------------------------------------------------------
 *   readXsltAndDownload...
 *-------------------------------------------------------------------------------------------------------
-FORM readxsltanddownload USING value(xsltname)
+form readxsltanddownload using value(xsltname)
                                      xsltdescription
                                value(userfilepath)
                                value(fileextension)
@@ -5755,40 +5823,40 @@ FORM readxsltanddownload USING value(xsltname)
                                value(subdir)
                                value(displayprogressmessage)
                                value(locserverfilesystem)
-                               value(addbackground) TYPE abap_bool
-                               value(externalcss) TYPE abap_bool
-                               value(highlight) TYPE abap_bool
-                               value(newtemplate) TYPE abap_bool.
+                               value(addbackground) type abap_bool
+                               value(externalcss) type abap_bool
+                               value(highlight) type abap_bool
+                               value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: ilocxsltsource TYPE o2pageline_table.
-  DATA: waxsltattributes TYPE o2xsltattr.
-  DATA: localfilenamewithpath TYPE string.
-  DATA: localfilenameonly TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: objectname TYPE string.
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: ilocxsltsource type o2pageline_table.
+  data: waxsltattributes type o2xsltattr.
+  data: localfilenamewithpath type string.
+  data: localfilenameonly type string.
+  data: newsubdirectory type string.
+  data: objectname type string.
+  data: completesavepath type string.
 
-  cl_o2_api_xsltdesc=>load( EXPORTING p_xslt_desc = xsltname
-                            IMPORTING p_source = ilocxsltsource
+  cl_o2_api_xsltdesc=>load( exporting p_xslt_desc = xsltname
+                            importing p_source = ilocxsltsource
                                       p_attributes = waxsltattributes
-                            EXCEPTIONS not_existing = 1
+                            exceptions not_existing = 1
                                        permission_failure = 2
                                        error_occured = 3
                                        version_not_found = 4 ).
 
-  IF sy-subrc = 0.
+  if sy-subrc = 0.
     xsltdescription = waxsltattributes-descript.
 
-    APPEND LINES OF ilocxsltsource TO ilines.
+    append lines of ilocxsltsource to ilines.
 
-    IF converttohtml IS INITIAL.
-      APPEND '' TO ilines.
-      APPEND '----------------------------------------------------------------------------------' TO ilines.
-      PERFORM buildfootermessage USING ilines.
-      APPEND ilines.
-    ELSE.
-      PERFORM convertcodetohtml USING ilines[]
+    if converttohtml is initial.
+      append '' to ilines.
+      append '----------------------------------------------------------------------------------' to ilines.
+      perform buildfootermessage using ilines.
+      append ilines.
+    else.
+      perform convertcodetohtml using ilines[]
                                       xsltname
                                       waxsltattributes-descript
                                       space
@@ -5803,9 +5871,9 @@ FORM readxsltanddownload USING value(xsltname)
                                       highlight
                                       xslt_mode
                                       newtemplate.
-    ENDIF.
+    endif.
 
-    PERFORM buildfilename USING userfilepath
+    perform buildfilename using userfilepath
                                 subdir
                                 xsltname
                                 space
@@ -5819,30 +5887,30 @@ FORM readxsltanddownload USING value(xsltname)
                                 newsubdirectory
                                 completesavepath.
 
-    IF savetoserver IS INITIAL.
-      PERFORM savefiletopc USING ilines[]
+    if savetoserver is initial.
+      perform savefiletopc using ilines[]
                                  localfilenamewithpath
                                  localfilenameonly
                                  space
                                  space
                                  displayprogressmessage.
-    ELSE.
-      PERFORM savefiletoserver USING ilines[]
+    else.
+      perform savefiletoserver using ilines[]
                                      localfilenamewithpath
                                      localfilenameonly
                                      completesavepath
                                      displayprogressmessage
                                      locserverfilesystem.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                         "readXSLTAndDownload
+    endif.
+  endif.
+endform.                                                                         "readXSLTAndDownload
 
 *-------------------------------------------------------------------------------------------------------
 *   readFunctionAndDownload...
 *-------------------------------------------------------------------------------------------------------
-FORM readfunctionanddownload USING iloctextelements LIKE dumitexttab[]
-                                   ilocselectiontexts LIKE dumitexttab[]
-                                   ilocmessages LIKE imessages[]
+form readfunctionanddownload using iloctextelements like dumitexttab[]
+                                   ilocselectiontexts like dumitexttab[]
+                                   ilocmessages like imessages[]
                                    value(functionname)
                                    value(functioninternalname)
                                    value(shorttext)
@@ -5858,39 +5926,39 @@ FORM readfunctionanddownload USING iloctextelements LIKE dumitexttab[]
                                    value(savetoserver)
                                    value(displayprogressmessage)
                                    value(locserverfilesystem)
-                                   value(addbackground) TYPE abap_bool
-                                   value(externalcss) TYPE abap_bool
-                                   value(highlight) TYPE abap_bool
-                                   value(newtemplate) TYPE abap_bool.
+                                   value(addbackground) type abap_bool
+                                   value(externalcss) type abap_bool
+                                   value(highlight) type abap_bool
+                                   value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: localfilenamewithpath TYPE string.
-  DATA: localfilenameonly TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: localfilenamewithpath type string.
+  data: localfilenameonly type string.
+  data: newsubdirectory type string.
+  data: completesavepath type string.
 
-  READ REPORT functioninternalname INTO ilines.
+  read report functioninternalname into ilines.
 
 * If we found any text elements for this function then we ought to append them to the main include.
-  IF NOT iloctextelements[] IS INITIAL.
-    PERFORM appendtextelements USING iloctextelements[]
+  if not iloctextelements[] is initial.
+    perform appendtextelements using iloctextelements[]
                                      ilines[].
-  ENDIF.
+  endif.
 
 * If we found any message classes for this function then we ought to append them to the main include.
-  IF NOT ilocmessages[] IS INITIAL.
-    PERFORM appendmessagestofile USING ilocmessages[]
+  if not ilocmessages[] is initial.
+    perform appendmessagestofile using ilocmessages[]
                                        ilines[]
                                        space.
-  ENDIF.
+  endif.
 
-  IF converttohtml IS INITIAL.
-    APPEND '' TO ilines.
-    APPEND '----------------------------------------------------------------------------------' TO ilines.
-    PERFORM buildfootermessage USING ilines.
-    APPEND ilines.
-  ELSE.
-    PERFORM convertfunctiontohtml USING ilines[]
+  if converttohtml is initial.
+    append '' to ilines.
+    append '----------------------------------------------------------------------------------' to ilines.
+    perform buildfootermessage using ilines.
+    append ilines.
+  else.
+    perform convertfunctiontohtml using ilines[]
                                         functionname
                                         shorttext
                                         is_function
@@ -5904,9 +5972,9 @@ FORM readfunctionanddownload USING iloctextelements LIKE dumitexttab[]
                                         externalcss
                                         highlight
                                         newtemplate.
-  ENDIF.
+  endif.
 
-  PERFORM buildfilename USING userfilepath
+  perform buildfilename using userfilepath
                               subdir
                               functionname
                               space
@@ -5920,27 +5988,27 @@ FORM readfunctionanddownload USING iloctextelements LIKE dumitexttab[]
                               newsubdirectory
                               completesavepath.
 
-  IF savetoserver IS INITIAL.
-    PERFORM savefiletopc USING ilines[]
+  if savetoserver is initial.
+    perform savefiletopc using ilines[]
                                localfilenamewithpath
                                localfilenameonly
                                space
                                space
                                displayprogressmessage.
-  ELSE.
-    PERFORM savefiletoserver USING ilines[]
+  else.
+    perform savefiletoserver using ilines[]
                                    localfilenamewithpath
                                    localfilenameonly
                                    completesavepath
                                    displayprogressmessage
                                    locserverfilesystem.
-  ENDIF.
-ENDFORM.                                                                        "readFunctionAndDownload
+  endif.
+endform.                                                                        "readFunctionAndDownload
 
 *-------------------------------------------------------------------------------------------------------
 *  buildFilename...
 *-------------------------------------------------------------------------------------------------------
-FORM buildfilename USING value(userpath)
+form buildfilename using value(userpath)
                          value(additionalsubdirectory)
                          value(objectname)
                          value(mainfunctionno)
@@ -5955,328 +6023,328 @@ FORM buildfilename USING value(userpath)
                                completepath.
 
 * If we are running on a non UNIX environment we will need to remove forward slashes from the additional path.
-  IF downloadtoserver IS INITIAL.
-    IF frontendopsystem = non_unix.
-      IF NOT additionalsubdirectory IS INITIAL.
-        TRANSLATE additionalsubdirectory USING '/_'.
-        IF additionalsubdirectory+0(1) = '_'.
-          SHIFT additionalsubdirectory LEFT BY 1 PLACES.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ELSE.
-    IF serveropsystem = non_unix.
-      IF NOT additionalsubdirectory IS INITIAL.
-        TRANSLATE additionalsubdirectory USING '/_'.
-        IF additionalsubdirectory+0(1) = '_'.
-          SHIFT additionalsubdirectory LEFT BY 1 PLACES.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ENDIF.
+  if downloadtoserver is initial.
+    if frontendopsystem = non_unix.
+      if not additionalsubdirectory is initial.
+        translate additionalsubdirectory using '/_'.
+        if additionalsubdirectory+0(1) = '_'.
+          shift additionalsubdirectory left by 1 places.
+        endif.
+      endif.
+    endif.
+  else.
+    if serveropsystem = non_unix.
+      if not additionalsubdirectory is initial.
+        translate additionalsubdirectory using '/_'.
+        if additionalsubdirectory+0(1) = '_'.
+          shift additionalsubdirectory left by 1 places.
+        endif.
+      endif.
+    endif.
+  endif.
 
-  CASE downloadtype.
+  case downloadtype.
 *   Programs
-    WHEN is_program.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator objectname period fileextension INTO newfilenamewithpath.
-        CONCATENATE userpath slashseparator INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
-                             slashseparator objectname period fileextension INTO newfilenamewithpath.
-        CONCATENATE userpath slashseparator additionalsubdirectory INTO completepath.
-      ENDIF.
+    when is_program.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator objectname period fileextension into newfilenamewithpath.
+        concatenate userpath slashseparator into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
+                             slashseparator objectname period fileextension into newfilenamewithpath.
+        concatenate userpath slashseparator additionalsubdirectory into completepath.
+      endif.
 
 *   Function Modules
-    WHEN is_function.
-      IF additionalsubdirectory IS INITIAL.
-        FIND 'top' IN includename IGNORING CASE.
-        IF sy-subrc = 0.
-          CONCATENATE userpath slashseparator objectname
+    when is_function.
+      if additionalsubdirectory is initial.
+        find 'top' in includename ignoring case.
+        if sy-subrc = 0.
+          concatenate userpath slashseparator objectname
                                slashseparator 'Global-' objectname
                                period fileextension
-                               INTO newfilenamewithpath.
-        ELSE.
-          IF includename CS mainfunctionno AND NOT mainfunctionno IS INITIAL.
-            CONCATENATE userpath slashseparator objectname
+                               into newfilenamewithpath.
+        else.
+          if includename cs mainfunctionno and not mainfunctionno is initial.
+            concatenate userpath slashseparator objectname
                                  slashseparator objectname
                                  period fileextension
-                                 INTO newfilenamewithpath.
-          ELSE.
-            CONCATENATE userpath slashseparator objectname
+                                 into newfilenamewithpath.
+          else.
+            concatenate userpath slashseparator objectname
                                  slashseparator objectname
                                  period fileextension
-                                 INTO newfilenamewithpath.
-          ENDIF.
-        ENDIF.
+                                 into newfilenamewithpath.
+          endif.
+        endif.
         newsubdirectory = objectname.
-        CONCATENATE userpath
+        concatenate userpath
                     slashseparator
                     newsubdirectory
-                    slashseparator INTO completepath.
-      ELSE.
-        FIND 'top' IN includename IGNORING CASE.
-        IF sy-subrc = 0.
-          CONCATENATE userpath slashseparator additionalsubdirectory
+                    slashseparator into completepath.
+      else.
+        find 'top' in includename ignoring case.
+        if sy-subrc = 0.
+          concatenate userpath slashseparator additionalsubdirectory
                                slashseparator objectname
                                slashseparator 'Global-' objectname
                                period fileextension
-                               INTO newfilenamewithpath.
-        ELSE.
-          IF includename CS mainfunctionno AND NOT mainfunctionno IS INITIAL.
-            CONCATENATE userpath slashseparator additionalsubdirectory
+                               into newfilenamewithpath.
+        else.
+          if includename cs mainfunctionno and not mainfunctionno is initial.
+            concatenate userpath slashseparator additionalsubdirectory
                                  slashseparator objectname
                                  slashseparator objectname
                                  period fileextension
-                                 INTO newfilenamewithpath.
-          ELSE.
-            CONCATENATE userpath slashseparator additionalsubdirectory
+                                 into newfilenamewithpath.
+          else.
+            concatenate userpath slashseparator additionalsubdirectory
                                  slashseparator objectname
                                  slashseparator objectname
                                  period fileextension
-                                 INTO newfilenamewithpath.
-          ENDIF.
-        ENDIF.
-        CONCATENATE additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+                                 into newfilenamewithpath.
+          endif.
+        endif.
+        concatenate additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Table definition
-    WHEN is_table.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator 'Dictionary_Objects'   " slashSeparator objectName
+    when is_table.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator 'Dictionary_Objects'   " slashSeparator objectName
                              slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator 'Dictionary_Objects'   " slashSeparator objectName
                              slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Table definition
-    WHEN is_transformation.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator 'Transformations'   " slashSeparator objectName
+    when is_transformation.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator 'Transformations'   " slashSeparator objectName
                              slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator 'Transformations'   " slashSeparator objectName
                              slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Program & Function documentation
-    WHEN is_documentation.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator objectname
+    when is_documentation.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator objectname
                              slashseparator 'Docs-'
                              objectname period
                              fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator objectname
                              slashseparator 'Docs-'
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Screens
-    WHEN is_screen.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator 'Screens'
+    when is_screen.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator 'Screens'
                              slashseparator 'screen_'
                              objectname period
-                             fileextension INTO newfilenamewithpath.
+                             fileextension into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator 'screens' INTO newsubdirectory.
-        CONCATENATE userpath slashseparator 'screens' INTO completepath.
+        concatenate userpath slashseparator 'screens' into newsubdirectory.
+        concatenate userpath slashseparator 'screens' into completepath.
 
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator 'Screens'
                              slashseparator 'screen_'
                              objectname period
-                             fileextension INTO newfilenamewithpath.
+                             fileextension into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator 'screens' INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator 'screens' INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator 'screens' into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator 'screens' into completepath.
+      endif.
 
 *   GUI title
-    WHEN is_guititle.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator 'Screens'
+    when is_guititle.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator 'Screens'
                              slashseparator 'gui_title_'
                              objectname period
-                             fileextension INTO newfilenamewithpath.
+                             fileextension into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator 'screens' INTO newsubdirectory.
-        CONCATENATE userpath slashseparator 'screens' INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator 'screens' into newsubdirectory.
+        concatenate userpath slashseparator 'screens' into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator 'Screens'
                              slashseparator 'gui_title_'
                              objectname period
-                             fileextension INTO newfilenamewithpath.
+                             fileextension into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator 'Screens' INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator 'Screens' INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator 'Screens' into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator 'Screens' into completepath.
+      endif.
 
 *   Message Class
-    WHEN is_messageclass.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator objectname
+    when is_messageclass.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator objectname
                              slashseparator 'Message class-'
                              objectname period
                              fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator objectname
                              slashseparator 'Message class-'
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Class definition
-    WHEN is_class.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator objectname
+    when is_class.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator objectname
                              slashseparator 'Class-'
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator objectname
                              slashseparator 'Class-'
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory slashseparator objectname INTO completepath.
-      ENDIF.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator additionalsubdirectory slashseparator objectname into completepath.
+      endif.
 
 *   Class definition
-    WHEN is_method.
-      IF additionalsubdirectory IS INITIAL.
-        CONCATENATE userpath slashseparator
+    when is_method.
+      if additionalsubdirectory is initial.
+        concatenate userpath slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
-        CONCATENATE userpath slashseparator objectname INTO newsubdirectory.
-        CONCATENATE userpath slashseparator objectname INTO completepath.
-      ELSE.
-        CONCATENATE userpath slashseparator additionalsubdirectory
+        concatenate userpath slashseparator objectname into newsubdirectory.
+        concatenate userpath slashseparator objectname into completepath.
+      else.
+        concatenate userpath slashseparator additionalsubdirectory
                              slashseparator
                              objectname period fileextension
-                             INTO newfilenamewithpath.
+                             into newfilenamewithpath.
 
 *        concatenate userPath slashSeparator additionalSubDirectory slashSeparator objectName into newSubDirectory.
-        CONCATENATE userpath slashseparator additionalsubdirectory INTO completepath.
-      ENDIF.
-  ENDCASE.
+        concatenate userpath slashseparator additionalsubdirectory into completepath.
+      endif.
+  endcase.
 
-  TRANSLATE completepath TO LOWER CASE.
-  CONCATENATE objectname period fileextension INTO newfilenameonly.
-  TRANSLATE newfilenameonly TO LOWER CASE.
-  TRANSLATE newfilenamewithpath TO LOWER CASE.
-  TRANSLATE newsubdirectory TO LOWER CASE.
+  translate completepath to lower case.
+  concatenate objectname period fileextension into newfilenameonly.
+  translate newfilenameonly to lower case.
+  translate newfilenamewithpath to lower case.
+  translate newsubdirectory to lower case.
 
 * If we are running on a non UNIX environment we will need to remove incorrect characters from the filename.
-  IF downloadtoserver IS INITIAL.
-    IF frontendopsystem = non_unix.
-      TRANSLATE newfilenameonly USING '/_'.
-      TRANSLATE newfilenamewithpath USING '/_'.
-      TRANSLATE newfilenameonly USING '< '.
-      TRANSLATE newfilenamewithpath USING '< '.
-      TRANSLATE newfilenameonly USING '> '.
-      TRANSLATE newfilenamewithpath USING '> '.
-      TRANSLATE newfilenameonly USING '? '.
-      TRANSLATE newfilenamewithpath USING '? '.
-      TRANSLATE newfilenameonly USING '| '.
-      TRANSLATE newfilenamewithpath USING '| '.
-      CONDENSE newfilenameonly NO-GAPS.
-      CONDENSE newfilenamewithpath NO-GAPS.
-    ENDIF.
-  ELSE.
-    IF serveropsystem = non_unix.
-      TRANSLATE newfilenameonly USING '/_'.
-      TRANSLATE newfilenamewithpath USING '/_'.
-      TRANSLATE newfilenameonly USING '< '.
-      TRANSLATE newfilenamewithpath USING '< '.
-      TRANSLATE newfilenameonly USING '> '.
-      TRANSLATE newfilenamewithpath USING '> '.
-      TRANSLATE newfilenameonly USING '? '.
-      TRANSLATE newfilenamewithpath USING '? '.
-      TRANSLATE newfilenameonly USING '| '.
-      TRANSLATE newfilenamewithpath USING '| '.
-      CONDENSE newfilenameonly NO-GAPS.
-      CONDENSE newfilenamewithpath NO-GAPS.
-    ENDIF.
-  ENDIF.
-ENDFORM.                                                                                 "buildFilename
+  if downloadtoserver is initial.
+    if frontendopsystem = non_unix.
+      translate newfilenameonly using '/_'.
+      translate newfilenamewithpath using '/_'.
+      translate newfilenameonly using '< '.
+      translate newfilenamewithpath using '< '.
+      translate newfilenameonly using '> '.
+      translate newfilenamewithpath using '> '.
+      translate newfilenameonly using '? '.
+      translate newfilenamewithpath using '? '.
+      translate newfilenameonly using '| '.
+      translate newfilenamewithpath using '| '.
+      condense newfilenameonly no-gaps.
+      condense newfilenamewithpath no-gaps.
+    endif.
+  else.
+    if serveropsystem = non_unix.
+      translate newfilenameonly using '/_'.
+      translate newfilenamewithpath using '/_'.
+      translate newfilenameonly using '< '.
+      translate newfilenamewithpath using '< '.
+      translate newfilenameonly using '> '.
+      translate newfilenamewithpath using '> '.
+      translate newfilenameonly using '? '.
+      translate newfilenamewithpath using '? '.
+      translate newfilenameonly using '| '.
+      translate newfilenamewithpath using '| '.
+      condense newfilenameonly no-gaps.
+      condense newfilenamewithpath no-gaps.
+    endif.
+  endif.
+endform.                                                                                 "buildFilename
 
 *-------------------------------------------------------------------------------------------------------
 *  saveFileToPc...    write an internal table to a file on the local PC
 *-------------------------------------------------------------------------------------------------------
-FORM savefiletopc USING idownload TYPE STANDARD TABLE
+form savefiletopc using idownload type standard table
                         value(filenamewithpath)
                         value(filename)
                         value(writefieldseparator)
                         value(truncatetrailingblanks)
                         value(displayprogressmessage).
 
-  DATA: statusmessage TYPE string.
-  DATA: objfile TYPE REF TO cl_gui_frontend_services.
-  DATA: strsubrc TYPE string.
+  data: statusmessage type string.
+  data: objfile type ref to cl_gui_frontend_services.
+  data: strsubrc type string.
 
-  IF NOT displayprogressmessage IS INITIAL.
-    CONCATENATE `Downloading: ` filename INTO statusmessage.
-    PERFORM displaystatus USING statusmessage 0.
-  ENDIF.
+  if not displayprogressmessage is initial.
+    concatenate `Downloading: ` filename into statusmessage.
+    perform displaystatus using statusmessage 0.
+  endif.
 
-  CREATE OBJECT objfile.
-  objfile->gui_download( EXPORTING filename = filenamewithpath
+  create object objfile.
+  objfile->gui_download( exporting filename = filenamewithpath
                                     filetype = 'ASC'
                                     write_field_separator = writefieldseparator
                                     trunc_trailing_blanks = truncatetrailingblanks
-                           CHANGING data_tab = idownload[]
-                         EXCEPTIONS file_write_error        = 1
+                           changing data_tab = idownload[]
+                         exceptions file_write_error        = 1
                                     no_batch                = 2
                                     gui_refuse_filetransfer = 3
                                     invalid_type            = 4
@@ -6300,87 +6368,87 @@ FORM savefiletopc USING idownload TYPE STANDARD TABLE
                                     not_supported_by_gui    = 22
                                     error_no_gui            = 23 ).
 
-  IF sy-subrc <> 0.
+  if sy-subrc <> 0.
     strsubrc = sy-subrc.
-    CONCATENATE `File save error: ` filename ` sy-subrc: ` strsubrc INTO statusmessage.
-    PERFORM displaystatus USING statusmessage 3.
-  ENDIF.
-ENDFORM.                                                                                                  "saveFileToPc
+    concatenate `File save error: ` filename ` sy-subrc: ` strsubrc into statusmessage.
+    perform displaystatus using statusmessage 3.
+  endif.
+endform.                                                                                                  "saveFileToPc
 
 *----------------------------------------------------------------------------------------------------------------------
 *  saveFileToServer...    write an internal table to a file on the SAP server
 *----------------------------------------------------------------------------------------------------------------------
-FORM savefiletoserver USING idownload TYPE STANDARD TABLE
+form savefiletoserver using idownload type standard table
                             value(filenamewithpath)
                             value(filename)
                             value(path)
                             value(displayprogressmessage)
                              value(locserverfilesystem).
 
-  DATA: wadownload TYPE string.
-  DATA: statusmessage TYPE string.
+  data: wadownload type string.
+  data: statusmessage type string.
 
-  IF NOT displayprogressmessage IS INITIAL.
-    CONCATENATE `Downloading: ` filename INTO statusmessage.
-    PERFORM displaystatus USING statusmessage 0.
-  ENDIF.
+  if not displayprogressmessage is initial.
+    concatenate `Downloading: ` filename into statusmessage.
+    perform displaystatus using statusmessage 0.
+  endif.
 
-  READ TABLE iserverpaths WITH KEY table_line = path.
-  IF sy-subrc <> 0.
-    PERFORM createserverdirectory USING path locserverfilesystem.
-    APPEND path TO iserverpaths.
-  ENDIF.
+  read table iserverpaths with key table_line = path.
+  if sy-subrc <> 0.
+    perform createserverdirectory using path locserverfilesystem.
+    append path to iserverpaths.
+  endif.
 
-  OPEN DATASET filenamewithpath FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
-  IF sy-subrc = 0.
-    LOOP AT idownload INTO wadownload.
-      TRANSFER wadownload TO filenamewithpath.
-      IF sy-subrc <> 0.
-        MESSAGE e000(oo) WITH 'Error transferring data to file'.
-      ENDIF.
-    ENDLOOP.
+  open dataset filenamewithpath for output in text mode encoding default.
+  if sy-subrc = 0.
+    loop at idownload into wadownload.
+      transfer wadownload to filenamewithpath.
+      if sy-subrc <> 0.
+        message e000(oo) with 'Error transferring data to file'.
+      endif.
+    endloop.
 
-    CLOSE DATASET filenamewithpath.
-    IF sy-subrc <> 0.
-      MESSAGE e000(oo) WITH 'Error closing file'.
-    ENDIF.
-  ELSE.
+    close dataset filenamewithpath.
+    if sy-subrc <> 0.
+      message e000(oo) with 'Error closing file'.
+    endif.
+  else.
 *   Unable to create a file
-    MESSAGE e000(oo) WITH 'Error creating file on SAP server' 'check permissions'.
-  ENDIF.
-ENDFORM.                                                                                              "saveFileToServer
+    message e000(oo) with 'Error creating file on SAP server' 'check permissions'.
+  endif.
+endform.                                                                                              "saveFileToServer
 
 *----------------------------------------------------------------------------------------------------------------------
 * createServerDirectory...
 *----------------------------------------------------------------------------------------------------------------------
-FORM createserverdirectory USING value(path)
+form createserverdirectory using value(path)
                                  value(locserverfilesystem).
 
-  DATA: castserveropsys TYPE syopsys.
+  data: castserveropsys type syopsys.
 
   castserveropsys = locserverfilesystem.
 
 *  Parameters for remove command.
-  DATA: param1 TYPE sxpgcolist-parameters.
+  data: param1 type sxpgcolist-parameters.
 *  Return status
-  DATA: funcstatus TYPE extcmdexex-status.
+  data: funcstatus type extcmdexex-status.
 *  Command line listing returned by the function
-  DATA: iserveroutput TYPE STANDARD TABLE OF btcxpm.
-  DATA: waserveroutput TYPE btcxpm.
+  data: iserveroutput type standard table of btcxpm.
+  data: waserveroutput type btcxpm.
 *  Targetsystem type conversion variable.
-  DATA: target TYPE rfcdisplay-rfchost.
+  data: target type rfcdisplay-rfchost.
 * Operating system
-  DATA: operatingsystem TYPE sxpgcolist-opsystem.
+  data: operatingsystem type sxpgcolist-opsystem.
 *  Head for split command.
-  DATA: head TYPE string..
-  DATA: tail TYPE string.
+  data: head type string..
+  data: tail type string.
 
   param1 = path.
   target = sy-host.
   operatingsystem = locserverfilesystem.
 
-  CALL FUNCTION 'SXPG_COMMAND_EXECUTE'
-    EXPORTING
+  call function 'SXPG_COMMAND_EXECUTE'
+    exporting
       commandname                   = 'ZDTX_MKDIR'
       additional_parameters         = param1
       operatingsystem               = castserveropsys
@@ -6388,11 +6456,11 @@ FORM createserverdirectory USING value(path)
       stdout                        = 'X'
       stderr                        = 'X'
       terminationwait               = 'X'
-    IMPORTING
+    importing
       status                        = funcstatus
-    TABLES
+    tables
       exec_protocol                 = iserveroutput[]
-    EXCEPTIONS
+    exceptions
       no_permission                 = 1
       command_not_found             = 2
       parameters_too_long           = 3
@@ -6407,152 +6475,152 @@ FORM createserverdirectory USING value(path)
       wrong_asynchronous_parameters = 12
       cant_enq_tbtco_entry          = 13
       jobcount_generation_error     = 14
-      OTHERS                        = 15.
+      others                        = 15.
 
-  IF sy-subrc = 0.
+  if sy-subrc = 0.
 *   Although the function succeded did the external command actually work
-    IF funcstatus = 'E'.
+    if funcstatus = 'E'.
 *     External command returned with an error
-      IF sy-opsys CS 'Windows NT'.
-        READ TABLE iserveroutput INDEX 1 INTO waserveroutput.
-        IF waserveroutput-message NS 'already exists'.
+      if sy-opsys cs 'Windows NT'.
+        read table iserveroutput index 1 into waserveroutput.
+        if waserveroutput-message ns 'already exists'.
 *         An error occurred creating the directory on the server
-          MESSAGE e000(oo) WITH 'An error occurred creating a directory'.
-        ENDIF.
-      ELSE.
-        READ TABLE iserveroutput INDEX 2 INTO waserveroutput.
-        SPLIT waserveroutput-message AT space INTO head tail.
-        SHIFT tail LEFT DELETING LEADING space.
-        IF tail <> 'Do not specify an existing file.'.
+          message e000(oo) with 'An error occurred creating a directory'.
+        endif.
+      else.
+        read table iserveroutput index 2 into waserveroutput.
+        split waserveroutput-message at space into head tail.
+        shift tail left deleting leading space.
+        if tail <> 'Do not specify an existing file.'.
 *         An error occurred creating the directory on the server
-          MESSAGE e000(oo) WITH 'An error occurred creating a directory'.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ELSE.
-    CASE sy-subrc.
-      WHEN 1.
+          message e000(oo) with 'An error occurred creating a directory'.
+        endif.
+      endif.
+    endif.
+  else.
+    case sy-subrc.
+      when 1.
 *       No permissions to run the command
-        MESSAGE e000(oo) WITH 'No permissions to run external command ZDTX_MKDIR'.
-      WHEN 2.
+        message e000(oo) with 'No permissions to run external command ZDTX_MKDIR'.
+      when 2.
 *       External command not found
-        MESSAGE e000(oo) WITH 'External comand ZDTX_MKDIR not found'.
+        message e000(oo) with 'External comand ZDTX_MKDIR not found'.
 
-      WHEN OTHERS.
+      when others.
 *       Unable to create the directory
-        MESSAGE e000(oo) WITH 'An error occurred creating a directory'
+        message e000(oo) with 'An error occurred creating a directory'
                               ', subrc:'
                               sy-subrc.
-    ENDCASE.
-  ENDIF.
-ENDFORM.                                                                                         "createServerDirectory
+    endcase.
+  endif.
+endform.                                                                                         "createServerDirectory
 
 *----------------------------------------------------------------------------------------------------------------------
 * appendTextElements...
 *----------------------------------------------------------------------------------------------------------------------
-FORM appendtextelements USING iloctextelements LIKE dumitexttab[]
-                              iloclines LIKE dumihtml[].
+form appendtextelements using iloctextelements like dumitexttab[]
+                              iloclines like dumihtml[].
 
-  FIELD-SYMBOLS: <watextelement> TYPE ttexttable.
-  DATA: waline TYPE string.
+  field-symbols: <watextelement> type ttexttable.
+  data: waline type string.
 
-  IF lines( iloctextelements ) > 0.
-    APPEND '' TO iloclines.
+  if lines( iloctextelements ) > 0.
+    append '' to iloclines.
 
-    APPEND '*Text elements' TO iloclines.
-    APPEND '*----------------------------------------------------------' TO  iloclines.
-    LOOP AT iloctextelements ASSIGNING <watextelement>.
-      CONCATENATE '*  ' <watextelement>-key <watextelement>-entry INTO waline SEPARATED BY space.
-      APPEND waline TO iloclines.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                                            "appendTextElements
+    append '*Text elements' to iloclines.
+    append '*----------------------------------------------------------' to  iloclines.
+    loop at iloctextelements assigning <watextelement>.
+      concatenate '*  ' <watextelement>-key <watextelement>-entry into waline separated by space.
+      append waline to iloclines.
+    endloop.
+  endif.
+endform.                                                                                            "appendTextElements
 
 *----------------------------------------------------------------------------------------------------------------------
 * appendGUITitles...
 *----------------------------------------------------------------------------------------------------------------------
-FORM appendguititles USING ilocguititles LIKE dumiguititle[]
-                           iloclines LIKE dumihtml[].
+form appendguititles using ilocguititles like dumiguititle[]
+                           iloclines like dumihtml[].
 
-  FIELD-SYMBOLS: <waguititle> TYPE tguititle.
-  DATA: waline TYPE string.
+  field-symbols: <waguititle> type tguititle.
+  data: waline type string.
 
-  IF lines( ilocguititles ) > 0.
-    APPEND '' TO iloclines.
+  if lines( ilocguititles ) > 0.
+    append '' to iloclines.
 
-    APPEND '*GUI Texts' TO iloclines.
-    APPEND '*----------------------------------------------------------' TO  iloclines.
-    LOOP AT ilocguititles ASSIGNING <waguititle>.
-      CONCATENATE '*  ' <waguititle>-obj_code '-->' <waguititle>-text INTO waline SEPARATED BY space.
-      APPEND waline TO iloclines.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                                               "appendGUITitles
+    append '*GUI Texts' to iloclines.
+    append '*----------------------------------------------------------' to  iloclines.
+    loop at ilocguititles assigning <waguititle>.
+      concatenate '*  ' <waguititle>-obj_code '-->' <waguititle>-text into waline separated by space.
+      append waline to iloclines.
+    endloop.
+  endif.
+endform.                                                                                               "appendGUITitles
 
 *----------------------------------------------------------------------------------------------------------------------
 * appendSelectionTexts...
 *----------------------------------------------------------------------------------------------------------------------
-FORM appendselectiontexts USING ilocselectiontexts LIKE dumitexttab[]
-                                iloclines LIKE dumihtml[].
+form appendselectiontexts using ilocselectiontexts like dumitexttab[]
+                                iloclines like dumihtml[].
 
-  FIELD-SYMBOLS: <waselectiontext> TYPE ttexttable.
-  DATA: waline TYPE string.
+  field-symbols: <waselectiontext> type ttexttable.
+  data: waline type string.
 
-  IF lines( ilocselectiontexts ) > 0.
-    APPEND '' TO iloclines.
-    APPEND '' TO iloclines.
+  if lines( ilocselectiontexts ) > 0.
+    append '' to iloclines.
+    append '' to iloclines.
 
-    APPEND '*Selection texts' TO iloclines.
-    APPEND '*----------------------------------------------------------' TO  iloclines.
-    LOOP AT ilocselectiontexts ASSIGNING <waselectiontext>.
-      CONCATENATE '*  ' <waselectiontext>-key <waselectiontext>-entry INTO waline SEPARATED BY space.
-      APPEND waline TO iloclines.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                                          "appendSelectionTexts
+    append '*Selection texts' to iloclines.
+    append '*----------------------------------------------------------' to  iloclines.
+    loop at ilocselectiontexts assigning <waselectiontext>.
+      concatenate '*  ' <waselectiontext>-key <waselectiontext>-entry into waline separated by space.
+      append waline to iloclines.
+    endloop.
+  endif.
+endform.                                                                                          "appendSelectionTexts
 
 *----------------------------------------------------------------------------------------------------------------------
 * appendExceptionTexts...
 *----------------------------------------------------------------------------------------------------------------------
-FORM appendexceptiontexts USING iconcepts LIKE dumiconcepts[]
-                                iloclines LIKE dumihtml[].
+form appendexceptiontexts using iconcepts like dumiconcepts[]
+                                iloclines like dumihtml[].
 
-  FIELD-SYMBOLS: <waconcept> TYPE tconcept.
-  DATA: waline TYPE string.
-  DATA: concepttext TYPE sotr_txt.
+  field-symbols: <waconcept> type tconcept.
+  data: waline type string.
+  data: concepttext type sotr_txt.
 
-  IF lines( iconcepts ) > 0.
-    APPEND '' TO iloclines.
+  if lines( iconcepts ) > 0.
+    append '' to iloclines.
 
-    APPEND '*Exception texts' TO iloclines.
-    APPEND '*----------------------------------------------------------' TO  iloclines.
-    LOOP AT iconcepts ASSIGNING <waconcept>.
+    append '*Exception texts' to iloclines.
+    append '*----------------------------------------------------------' to  iloclines.
+    loop at iconcepts assigning <waconcept>.
 *     Find the text for this concept
-      CALL FUNCTION 'SOTR_GET_TEXT_KEY'
-        EXPORTING
+      call function 'SOTR_GET_TEXT_KEY'
+        exporting
           concept                = <waconcept>-concept
           langu                  = pmlang
           search_in_second_langu = 'X'
 *         second_langu           = 'DE'
-        IMPORTING
+        importing
           e_text                 = concepttext
-        EXCEPTIONS
+        exceptions
           no_entry_found         = 1
           parameter_error        = 2
-          OTHERS                 = 3.
+          others                 = 3.
 
-      IF sy-subrc = 0.
-        CONCATENATE '*  ' <waconcept>-constname '-' concepttext  INTO waline SEPARATED BY space.
-        APPEND waline TO iloclines.
-      ENDIF.
-    ENDLOOP.
-  ENDIF.
-ENDFORM.                                                                                          "appendExceptionTexts
+      if sy-subrc = 0.
+        concatenate '*  ' <waconcept>-constname '-' concepttext  into waline separated by space.
+        append waline to iloclines.
+      endif.
+    endloop.
+  endif.
+endform.                                                                                          "appendExceptionTexts
 
 *----------------------------------------------------------------------------------------------------------------------
 * downloadFunctionDocs...
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadfunctiondocs USING value(functionname)
+form downloadfunctiondocs using value(functionname)
                                 value(functiondescription)
                                 value(userfilepath)
                                 value(fileextension)
@@ -6563,101 +6631,101 @@ FORM downloadfunctiondocs USING value(functionname)
                                       subdir
                                       documentationdownloaded
                                 value(locserverfilesystem)
-                                value(addbackground) TYPE abap_bool
-                                value(externalcss) TYPE abap_bool
-                                value(newtemplate) TYPE abap_bool.
+                                value(addbackground) type abap_bool
+                                value(externalcss) type abap_bool
+                                value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: idocumentation TYPE STANDARD TABLE OF funct WITH HEADER LINE.
-  DATA: iexceptions TYPE STANDARD TABLE OF rsexc WITH HEADER LINE.
-  DATA: iexport TYPE STANDARD TABLE OF rsexp WITH HEADER LINE.
-  DATA: iparameter TYPE STANDARD TABLE OF rsimp WITH HEADER LINE.
-  DATA: itables TYPE STANDARD TABLE OF rstbl WITH HEADER LINE.
-  DATA: iscriptlines TYPE STANDARD TABLE OF tline WITH HEADER LINE.
-  DATA: htmlpagename TYPE string.
-  DATA: newfilenamewithpath TYPE string.
-  DATA: newfilenameonly TYPE string.
-  DATA: object LIKE dokhl-object.
-  DATA: stringlength TYPE i VALUE 0.
-  DATA: newsubdirectory TYPE string.
-  DATA: waline(255).
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: idocumentation type standard table of funct with header line.
+  data: iexceptions type standard table of rsexc with header line.
+  data: iexport type standard table of rsexp with header line.
+  data: iparameter type standard table of rsimp with header line.
+  data: itables type standard table of rstbl with header line.
+  data: iscriptlines type standard table of tline with header line.
+  data: htmlpagename type string.
+  data: newfilenamewithpath type string.
+  data: newfilenameonly type string.
+  data: object like dokhl-object.
+  data: stringlength type i value 0.
+  data: newsubdirectory type string.
+  data: waline(255).
+  data: completesavepath type string.
 
   documentationdownloaded = false.
   object = functionname.
 
-  CALL FUNCTION 'FUNCTION_IMPORT_DOKU'
-    EXPORTING
+  call function 'FUNCTION_IMPORT_DOKU'
+    exporting
       funcname           = functionname
-    TABLES
+    tables
       dokumentation      = idocumentation
       exception_list     = iexceptions
       export_parameter   = iexport
       import_parameter   = iparameter
       tables_parameter   = itables
-    EXCEPTIONS
+    exceptions
       error_message      = 1
       function_not_found = 2
       invalid_name       = 3
-      OTHERS             = 4.
+      others             = 4.
 
-  CALL FUNCTION 'DOCU_GET'
-    EXPORTING
+  call function 'DOCU_GET'
+    exporting
       id                     = 'FU'
       langu                  = pmlang
       object                 = object
       typ                    = 'T'
       version_active_or_last = 'L'
-    TABLES
+    tables
       line                   = iscriptlines
-    EXCEPTIONS
+    exceptions
       no_docu_on_screen      = 1
       no_docu_self_def       = 2
       no_docu_temp           = 3
       ret_code               = 4
-      OTHERS                 = 5.
+      others                 = 5.
 
-  IF sy-subrc = 0 AND NOT ( iscriptlines[] IS INITIAL ).
-    APPEND 'SHORT TEXT' TO ilines.
-    CONCATENATE space functiondescription INTO functiondescription SEPARATED BY space.
-    APPEND functiondescription TO ilines.
-    APPEND space TO ilines.
-    LOOP AT iscriptlines.
-      MOVE iscriptlines-tdline TO ilines.
-      CONCATENATE space ilines INTO ilines SEPARATED BY space.
-      WHILE ilines CP '&*' OR ilines CP '*&'.
-        REPLACE '&' INTO ilines WITH space.
-        SHIFT ilines LEFT DELETING LEADING space.
-      ENDWHILE.
-      APPEND ilines.
-    ENDLOOP.
+  if sy-subrc = 0 and not ( iscriptlines[] is initial ).
+    append 'SHORT TEXT' to ilines.
+    concatenate space functiondescription into functiondescription separated by space.
+    append functiondescription to ilines.
+    append space to ilines.
+    loop at iscriptlines.
+      move iscriptlines-tdline to ilines.
+      concatenate space ilines into ilines separated by space.
+      while ilines cp '&*' or ilines cp '*&'.
+        replace '&' into ilines with space.
+        shift ilines left deleting leading space.
+      endwhile.
+      append ilines.
+    endloop.
 
-    CLEAR ilines.
-    IF NOT ( idocumentation[] IS INITIAL ).
-      APPEND ilines.
-      APPEND 'PARAMETER DOCUMENTATION' TO ilines.
-      APPEND '-----------------------' TO ilines.
-      APPEND ilines.
+    clear ilines.
+    if not ( idocumentation[] is initial ).
+      append ilines.
+      append 'PARAMETER DOCUMENTATION' to ilines.
+      append '-----------------------' to ilines.
+      append ilines.
 
-      DESCRIBE FIELD idocumentation-parameter LENGTH stringlength IN CHARACTER MODE.
+      describe field idocumentation-parameter length stringlength in character mode.
       stringlength = stringlength + 3.
-      LOOP AT idocumentation.
-        MOVE idocumentation-parameter TO waline.
-        MOVE idocumentation-stext TO waline+stringlength.
-        APPEND waline TO ilines.
-      ENDLOOP.
-    ENDIF.
+      loop at idocumentation.
+        move idocumentation-parameter to waline.
+        move idocumentation-stext to waline+stringlength.
+        append waline to ilines.
+      endloop.
+    endif.
 
-    CONCATENATE `Documentation - ` functionname INTO htmlpagename.
+    concatenate `Documentation - ` functionname into htmlpagename.
 
-    IF converttohtml IS INITIAL.
-      APPEND ilines.
-      APPEND  '----------------------------------------------------------------------------------' TO ilines.
-      APPEND ilines.
-      PERFORM buildfootermessage USING ilines.
-      APPEND ilines.
-    ELSE.
-      PERFORM convertcodetohtml USING ilines[]
+    if converttohtml is initial.
+      append ilines.
+      append  '----------------------------------------------------------------------------------' to ilines.
+      append ilines.
+      perform buildfootermessage using ilines.
+      append ilines.
+    else.
+      perform convertcodetohtml using ilines[]
                                       htmlpagename
                                       space
                                       is_documentation
@@ -6672,9 +6740,9 @@ FORM downloadfunctiondocs USING value(functionname)
                                       space
                                       abap_mode
                                       newtemplate.
-    ENDIF.
+    endif.
 
-    PERFORM buildfilename USING userfilepath
+    perform buildfilename using userfilepath
                                 subdir
                                 functionname
                                 space
@@ -6688,30 +6756,30 @@ FORM downloadfunctiondocs USING value(functionname)
                                 newsubdirectory
                                 completesavepath.
 
-    IF savetoserver IS INITIAL.
-      PERFORM savefiletopc USING ilines[]
+    if savetoserver is initial.
+      perform savefiletopc using ilines[]
                                  newfilenamewithpath
                                  newfilenameonly
                                  space
                                  space
                                  displayprogressmessage.
-    ELSE.
-      PERFORM savefiletoserver USING ilines[]
+    else.
+      perform savefiletoserver using ilines[]
                                      newfilenamewithpath
                                      newfilenameonly
                                      completesavepath
                                      displayprogressmessage
                                      locserverfilesystem.
-    ENDIF.
+    endif.
 
     documentationdownloaded = true.
-  ENDIF.
-ENDFORM.                    "downloadFunctionDocs
+  endif.
+endform.                    "downloadFunctionDocs
 
 *----------------------------------------------------------------------------------------------------------------------
 * downloadClassDocs...
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadclassdocs USING value(classname) TYPE seoclsname
+form downloadclassdocs using value(classname) type seoclsname
                              value(userfilepath)
                              value(fileextension)
                              value(converttohtml)
@@ -6721,31 +6789,31 @@ FORM downloadclassdocs USING value(classname) TYPE seoclsname
                                    subdir
                                    documentationdownloaded
                              value(locserverfilesystem)
-                             value(addbackground) TYPE abap_bool
-                             value(externalcss) TYPE abap_bool
-                             value(newtemplate) TYPE abap_bool.
+                             value(addbackground) type abap_bool
+                             value(externalcss) type abap_bool
+                             value(newtemplate) type abap_bool.
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: idocumentation TYPE STANDARD TABLE OF funct WITH HEADER LINE.
-  DATA: iexceptions TYPE STANDARD TABLE OF rsexc WITH HEADER LINE.
-  DATA: iexport TYPE STANDARD TABLE OF rsexp WITH HEADER LINE.
-  DATA: iparameter TYPE STANDARD TABLE OF rsimp WITH HEADER LINE.
-  DATA: itables TYPE STANDARD TABLE OF rstbl WITH HEADER LINE.
-  DATA: iscriptlines TYPE STANDARD TABLE OF tline WITH HEADER LINE.
-  DATA: htmlpagename TYPE string.
-  DATA: newfilenamewithpath TYPE string.
-  DATA: newfilenameonly TYPE string.
-  DATA: object LIKE dokhl-object.
-  DATA: stringlength TYPE i VALUE 0.
-  DATA: newsubdirectory TYPE string.
-  DATA: waline(255).
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  data: idocumentation type standard table of funct with header line.
+  data: iexceptions type standard table of rsexc with header line.
+  data: iexport type standard table of rsexp with header line.
+  data: iparameter type standard table of rsimp with header line.
+  data: itables type standard table of rstbl with header line.
+  data: iscriptlines type standard table of tline with header line.
+  data: htmlpagename type string.
+  data: newfilenamewithpath type string.
+  data: newfilenameonly type string.
+  data: object like dokhl-object.
+  data: stringlength type i value 0.
+  data: newsubdirectory type string.
+  data: waline(255).
+  data: completesavepath type string.
 
   documentationdownloaded = false.
   object = classname.
 
-  CALL FUNCTION 'DOC_OBJECT_GET'
-    EXPORTING
+  call function 'DOC_OBJECT_GET'
+    exporting
       class                  = 'CL'
       name                   = object
       language               = pmlang
@@ -6753,32 +6821,32 @@ FORM downloadclassdocs USING value(classname) TYPE seoclsname
 *     appendix               = ' '
 *   importing
 *     header                 = header
-   TABLES
+   tables
      itf_lines              = iscriptlines[]
-   EXCEPTIONS
+   exceptions
      object_not_found       = 1.
 
-  IF sy-subrc = 0 AND NOT ( iscriptlines[] IS INITIAL ).
-    LOOP AT iscriptlines.
-      MOVE iscriptlines-tdline TO ilines.
-      CONCATENATE space ilines INTO ilines SEPARATED BY space.
-      WHILE ilines CP '&*' OR ilines CP '*&'.
-        REPLACE '&' INTO ilines WITH space.
-        SHIFT ilines LEFT DELETING LEADING space.
-      ENDWHILE.
-      APPEND ilines.
-    ENDLOOP.
+  if sy-subrc = 0 and not ( iscriptlines[] is initial ).
+    loop at iscriptlines.
+      move iscriptlines-tdline to ilines.
+      concatenate space ilines into ilines separated by space.
+      while ilines cp '&*' or ilines cp '*&'.
+        replace '&' into ilines with space.
+        shift ilines left deleting leading space.
+      endwhile.
+      append ilines.
+    endloop.
 
-    CONCATENATE `Documentation - ` classname INTO htmlpagename.
+    concatenate `Documentation - ` classname into htmlpagename.
 
-    IF converttohtml IS INITIAL.
-      APPEND ilines.
-      APPEND  '----------------------------------------------------------------------------------' TO ilines.
-      APPEND ilines.
-      PERFORM buildfootermessage USING ilines.
-      APPEND ilines.
-    ELSE.
-      PERFORM convertcodetohtml USING ilines[]
+    if converttohtml is initial.
+      append ilines.
+      append  '----------------------------------------------------------------------------------' to ilines.
+      append ilines.
+      perform buildfootermessage using ilines.
+      append ilines.
+    else.
+      perform convertcodetohtml using ilines[]
                                       htmlpagename
                                       space
                                       is_documentation
@@ -6793,9 +6861,9 @@ FORM downloadclassdocs USING value(classname) TYPE seoclsname
                                       space
                                       abap_mode
                                       newtemplate.
-    ENDIF.
+    endif.
 
-    PERFORM buildfilename USING userfilepath
+    perform buildfilename using userfilepath
                                 subdir
                                 classname
                                 space
@@ -6809,29 +6877,29 @@ FORM downloadclassdocs USING value(classname) TYPE seoclsname
                                 newsubdirectory
                                 completesavepath.
 
-    IF savetoserver IS INITIAL.
-      PERFORM savefiletopc USING ilines[]
+    if savetoserver is initial.
+      perform savefiletopc using ilines[]
                                  newfilenamewithpath
                                  newfilenameonly
                                  space
                                  space
                                  displayprogressmessage.
-    ELSE.
-      PERFORM savefiletoserver USING ilines[]
+    else.
+      perform savefiletoserver using ilines[]
                                      newfilenamewithpath
                                      newfilenameonly
                                      completesavepath
                                      displayprogressmessage
                                      locserverfilesystem.
-    ENDIF.
+    endif.
 
     documentationdownloaded = true.
-  ENDIF.
-ENDFORM.                    "downloadClassDocs
+  endif.
+endform.                    "downloadClassDocs
 *----------------------------------------------------------------------------------------------------------------------
 *  downloadScreens...
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadscreens USING ilocscreenflow LIKE dumiscreen[]
+form downloadscreens using ilocscreenflow like dumiscreen[]
                            value(programname)
                            value(userfilepath)
                            value(textfileextension)
@@ -6842,99 +6910,99 @@ FORM downloadscreens USING ilocscreenflow LIKE dumiscreen[]
                            value(locserverfilesystem).
 
 
-  TABLES: d020t.
-  DATA: header LIKE d020s.
-  DATA: ifields TYPE STANDARD TABLE OF d021s WITH HEADER LINE.
-  DATA: iflowlogic TYPE STANDARD TABLE OF d022s WITH HEADER LINE.
-  FIELD-SYMBOLS <wascreen> TYPE tscreenflow.
-  DATA: wacharheader TYPE scr_chhead.
-  DATA: iscreenchar TYPE STANDARD TABLE OF scr_chfld WITH HEADER LINE.
-  DATA: ifieldschar TYPE STANDARD TABLE OF scr_chfld WITH HEADER LINE.
-  DATA: stars TYPE string VALUE '****************************************************************'.
-  DATA: comment1 TYPE string VALUE '*   This file was generated by Direct Download Enterprise.     *'.
-  DATA: comment2 TYPE string VALUE '*   Please do not change it manually.                          *'.
-  DATA: dynprotext TYPE string VALUE '%_DYNPRO'.
-  DATA: headertext TYPE string VALUE '%_HEADER'.
-  DATA: paramstext TYPE string VALUE '%_PARAMS'.
-  DATA: descriptiontext TYPE string VALUE '%_DESCRIPTION'.
-  DATA: fieldstext TYPE string VALUE '%_FIELDS'.
-  DATA: flowlogictext TYPE string VALUE '%_FLOWLOGIC'.
-  DATA: programlength TYPE string.
-  DATA: newsubdirectory TYPE string.
-  DATA: newfilenamewithpath TYPE string.
-  DATA: newfilenameonly TYPE string.
-  DATA: completesavepath TYPE string.
+  tables: d020t.
+  data: header like d020s.
+  data: ifields type standard table of d021s with header line.
+  data: iflowlogic type standard table of d022s with header line.
+  field-symbols <wascreen> type tscreenflow.
+  data: wacharheader type scr_chhead.
+  data: iscreenchar type standard table of scr_chfld with header line.
+  data: ifieldschar type standard table of scr_chfld with header line.
+  data: stars type string value '****************************************************************'.
+  data: comment1 type string value '*   This file was generated by Direct Download Enterprise.     *'.
+  data: comment2 type string value '*   Please do not change it manually.                          *'.
+  data: dynprotext type string value '%_DYNPRO'.
+  data: headertext type string value '%_HEADER'.
+  data: paramstext type string value '%_PARAMS'.
+  data: descriptiontext type string value '%_DESCRIPTION'.
+  data: fieldstext type string value '%_FIELDS'.
+  data: flowlogictext type string value '%_FLOWLOGIC'.
+  data: programlength type string.
+  data: newsubdirectory type string.
+  data: newfilenamewithpath type string.
+  data: newfilenameonly type string.
+  data: completesavepath type string.
 
-  LOOP AT ilocscreenflow ASSIGNING <wascreen>.
-    CALL FUNCTION 'RS_IMPORT_DYNPRO'
-      EXPORTING
+  loop at ilocscreenflow assigning <wascreen>.
+    call function 'RS_IMPORT_DYNPRO'
+      exporting
         dylang = pmlang
         dyname = programname
         dynumb = <wascreen>-screen
-      IMPORTING
+      importing
         header = header
-      TABLES
+      tables
         ftab   = ifields
         pltab  = iflowlogic.
 
-    CALL FUNCTION 'RS_SCRP_HEADER_RAW_TO_CHAR'
-      EXPORTING
+    call function 'RS_SCRP_HEADER_RAW_TO_CHAR'
+      exporting
         header_int  = header
-      IMPORTING
+      importing
         header_char = wacharheader
-      EXCEPTIONS
-        OTHERS      = 1.
+      exceptions
+        others      = 1.
 
 *   Add in the top comments for the file
-    APPEND stars TO iscreenchar .
-    APPEND comment1 TO iscreenchar.
-    APPEND comment2 TO iscreenchar.
-    APPEND stars TO iscreenchar.
+    append stars to iscreenchar .
+    append comment1 to iscreenchar.
+    append comment2 to iscreenchar.
+    append stars to iscreenchar.
 
 *   Screen identification
-    APPEND dynprotext TO iscreenchar.
-    APPEND wacharheader-prog TO iscreenchar.
-    APPEND wacharheader-dnum TO iscreenchar.
-    APPEND sy-saprl TO iscreenchar.
-    DESCRIBE FIELD d020t-prog LENGTH programlength IN CHARACTER MODE.
-    CONCATENATE `                ` programlength INTO iscreenchar.
-    APPEND iscreenchar.
+    append dynprotext to iscreenchar.
+    append wacharheader-prog to iscreenchar.
+    append wacharheader-dnum to iscreenchar.
+    append sy-saprl to iscreenchar.
+    describe field d020t-prog length programlength in character mode.
+    concatenate `                ` programlength into iscreenchar.
+    append iscreenchar.
 
 *   Header
-    APPEND headertext TO iscreenchar.
-    APPEND wacharheader TO iscreenchar.
+    append headertext to iscreenchar.
+    append wacharheader to iscreenchar.
 
 *   Description text
-    APPEND descriptiontext TO iscreenchar.
-    SELECT SINGLE dtxt FROM d020t INTO iscreenchar
-                       WHERE prog = programname
-                             AND dynr = <wascreen>-screen
-                             AND lang = pmlang.
-    APPEND iscreenchar.
+    append descriptiontext to iscreenchar.
+    select single dtxt from d020t into iscreenchar
+                       where prog = programname
+                             and dynr = <wascreen>-screen
+                             and lang = pmlang.
+    append iscreenchar.
 
 *   Fieldlist text
-    APPEND fieldstext TO iscreenchar.
+    append fieldstext to iscreenchar.
 
-    CALL FUNCTION 'RS_SCRP_FIELDS_RAW_TO_CHAR'
-      TABLES
+    call function 'RS_SCRP_FIELDS_RAW_TO_CHAR'
+      tables
         fields_int  = ifields[]
         fields_char = ifieldschar[]
-      EXCEPTIONS
-        OTHERS      = 1.
+      exceptions
+        others      = 1.
 
-    LOOP AT ifieldschar.
-      MOVE-CORRESPONDING ifieldschar TO iscreenchar.
-      APPEND iscreenchar.
-    ENDLOOP.
+    loop at ifieldschar.
+      move-corresponding ifieldschar to iscreenchar.
+      append iscreenchar.
+    endloop.
 
 *   Flowlogic text
-    APPEND flowlogictext TO iscreenchar.
+    append flowlogictext to iscreenchar.
 *   Flow logic.
-    LOOP AT iflowlogic.
-      APPEND iflowlogic TO iscreenchar.
-    ENDLOOP.
+    loop at iflowlogic.
+      append iflowlogic to iscreenchar.
+    endloop.
 
-    PERFORM buildfilename USING userfilepath
+    perform buildfilename using userfilepath
                                 subdir
                                 wacharheader-dnum
                                 space
@@ -6948,36 +7016,36 @@ FORM downloadscreens USING ilocscreenflow LIKE dumiscreen[]
                                 newsubdirectory
                                 completesavepath.
 
-    IF savetoserver IS INITIAL.
+    if savetoserver is initial.
 *     Save the screen to the local computer
-      PERFORM savefiletopc USING iscreenchar[]
+      perform savefiletopc using iscreenchar[]
                                  newfilenamewithpath
                                  newfilenameonly
                                  'X'
                                  'X'
                                  displayprogressmessage.
-    ELSE.
+    else.
 *     Save the screen to the SAP server
-      PERFORM savefiletoserver USING iscreenchar[]
+      perform savefiletoserver using iscreenchar[]
                                      newfilenamewithpath
                                      newfilenameonly
                                      completesavepath
                                      displayprogressmessage
                                      locserverfilesystem.
-    ENDIF.
+    endif.
 
-    CLEAR header. CLEAR wacharheader.
-    CLEAR iscreenchar[].
-    CLEAR ifieldschar[].
-    CLEAR ifields[].
-    CLEAR iflowlogic[].
-  ENDLOOP.
-ENDFORM.                                                                                               "downloadScreens
+    clear header. clear wacharheader.
+    clear iscreenchar[].
+    clear ifieldschar[].
+    clear ifields[].
+    clear iflowlogic[].
+  endloop.
+endform.                                                                                               "downloadScreens
 
 *----------------------------------------------------------------------------------------------------------------------
 *  downloadGUITitles..
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadguititles USING ilocguititles LIKE dumiguititle[]
+form downloadguititles using ilocguititles like dumiguititle[]
                              value(userfilepath)
                              value(textfileextension)
                              value(subdir)
@@ -6986,17 +7054,17 @@ FORM downloadguititles USING ilocguititles LIKE dumiguititle[]
                              value(displayprogressmessage)
                              value(locserverfilesystem).
 
-  DATA: ilines TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  FIELD-SYMBOLS: <waguititle> TYPE tguititle.
-  DATA: newsubdirectory TYPE string.
-  DATA: newfilenamewithpath TYPE string.
-  DATA: newfilenameonly TYPE string.
-  DATA: completesavepath TYPE string.
+  data: ilines type standard table of string with header line.
+  field-symbols: <waguititle> type tguititle.
+  data: newsubdirectory type string.
+  data: newfilenamewithpath type string.
+  data: newfilenameonly type string.
+  data: completesavepath type string.
 
-  LOOP AT ilocguititles ASSIGNING <waguititle>.
-    APPEND <waguititle>-text TO ilines.
+  loop at ilocguititles assigning <waguititle>.
+    append <waguititle>-text to ilines.
 
-    PERFORM buildfilename USING userfilepath
+    perform buildfilename using userfilepath
                                 subdir
                                 <waguititle>-obj_code
                                 space
@@ -7010,33 +7078,33 @@ FORM downloadguititles USING ilocguititles LIKE dumiguititle[]
                                 newsubdirectory
                                 completesavepath.
 
-    IF savetoserver IS INITIAL.
-      PERFORM savefiletopc USING ilines[]
+    if savetoserver is initial.
+      perform savefiletopc using ilines[]
                                  newfilenamewithpath
                                  newfilenameonly
                                  space
                                  space
                                  displayprogressmessage.
-    ELSE.
-      PERFORM savefiletoserver USING ilines[]
+    else.
+      perform savefiletoserver using ilines[]
                                      newfilenamewithpath
                                      newfilenameonly
                                      completesavepath
                                      displayprogressmessage
                                      locserverfilesystem.
-    ENDIF.
+    endif.
 
-    CLEAR ilines[].
-  ENDLOOP.
-ENDFORM.                                                                                             "downloadGUITitles
+    clear ilines[].
+  endloop.
+endform.                                                                                             "downloadGUITitles
 
 *----------------------------------------------------------------------------------------------------------------------
 *  downloadPrograms..
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadprograms USING ilocprogram LIKE iprograms[]
-                            ilocfunctions LIKE ifunctions[]
-                            ilocdictionaryfilename LIKE idictfilename[]
-                            iloctabletypefilename LIKE itabletypefilename[]
+form downloadprograms using ilocprogram like iprograms[]
+                            ilocfunctions like ifunctions[]
+                            ilocdictionaryfilename like idictfilename[]
+                            iloctabletypefilename like itabletypefilename[]
                             value(userfilepath)
                             value(fileextension)
                             value(htmlfileextension)
@@ -7051,36 +7119,36 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                             value(savetoserver)
                             value(displayprogressmessage)
                             value(locserverfilesystem)
-                            value(addbackground) TYPE abap_bool
-                            value(externalcss) TYPE abap_bool
-                            value(highlight) TYPE abap_bool
-                            value(newtemplate) TYPE abap_bool.
+                            value(addbackground) type abap_bool
+                            value(externalcss) type abap_bool
+                            value(highlight) type abap_bool
+                            value(newtemplate) type abap_bool.
 
 
-  DATA: iprogfunctions TYPE STANDARD TABLE OF tfunction WITH HEADER LINE.
-  FIELD-SYMBOLS: <waprogram> TYPE tprogram.
-  FIELD-SYMBOLS: <wainclude> TYPE tinclude.
-  DATA: iemptytextelements TYPE STANDARD TABLE OF ttexttable.
-  DATA: iemptyselectiontexts TYPE STANDARD TABLE OF ttexttable.
-  DATA: iemptymessages TYPE STANDARD TABLE OF tmessage.
-  DATA: iemptyguititles TYPE STANDARD TABLE OF tguititle.
-  DATA: locconverttohtml(1).
-  DATA: locfileextension TYPE string.
+  data: iprogfunctions type standard table of tfunction with header line.
+  field-symbols: <waprogram> type tprogram.
+  field-symbols: <wainclude> type tinclude.
+  data: iemptytextelements type standard table of ttexttable.
+  data: iemptyselectiontexts type standard table of ttexttable.
+  data: iemptymessages type standard table of tmessage.
+  data: iemptyguititles type standard table of tguititle.
+  data: locconverttohtml(1).
+  data: locfileextension type string.
 
-  SORT ilocprogram ASCENDING BY progname.
+  sort ilocprogram ascending by progname.
 
-  LOOP AT ilocprogram ASSIGNING <waprogram>.
+  loop at ilocprogram assigning <waprogram>.
 *   if the program to download is this program then always download as text otherwise you will get a rubbish file
-    IF <waprogram>-progname = sy-cprog.
+    if <waprogram>-progname = sy-cprog.
       locconverttohtml = ''.
       locfileextension = textextension.
-    ELSE.
+    else.
       locconverttohtml = converttohtml.
       locfileextension = fileextension.
-    ENDIF.
+    endif.
 
 *   Download the main program
-    PERFORM readincludeanddownload USING <waprogram>-itextelements[]
+    perform readincludeanddownload using <waprogram>-itextelements[]
                                          <waprogram>-iselectiontexts[]
                                          <waprogram>-imessages[]
                                          <waprogram>-iguititle[]
@@ -7105,8 +7173,8 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                          newtemplate.
 
 *   Download screens.
-    IF NOT <waprogram>-iscreenflow[] IS INITIAL.
-      PERFORM downloadscreens USING <waprogram>-iscreenflow[]
+    if not <waprogram>-iscreenflow[] is initial.
+      perform downloadscreens using <waprogram>-iscreenflow[]
                                     <waprogram>-progname
                                     userfilepath
                                     textfileextension
@@ -7115,11 +7183,11 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                     savetoserver
                                     displayprogressmessage
                                     locserverfilesystem.
-    ENDIF.
+    endif.
 
 *   Download GUI titles
-    IF NOT <waprogram>-iguititle[] IS INITIAL.
-      PERFORM downloadguititles USING <waprogram>-iguititle
+    if not <waprogram>-iguititle[] is initial.
+      perform downloadguititles using <waprogram>-iguititle
                                       userfilepath
                                       textfileextension
                                       <waprogram>-progname
@@ -7127,11 +7195,11 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                       savetoserver
                                       displayprogressmessage
                                       locserverfilesystem.
-    ENDIF.
+    endif.
 
 *   Download all other includes
-    LOOP AT <waprogram>-iincludes ASSIGNING <wainclude>.
-      PERFORM readincludeanddownload USING iemptytextelements[]
+    loop at <waprogram>-iincludes assigning <wainclude>.
+      perform readincludeanddownload using iemptytextelements[]
                                            iemptyselectiontexts[]
                                            iemptymessages[]
                                            iemptyguititles[]
@@ -7155,11 +7223,11 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                            highlight
                                            newtemplate.
 
-    ENDLOOP.
+    endloop.
 
 *   Download all dictionary structures
-    IF NOT <waprogram>-idictstruct[] IS INITIAL.
-      PERFORM downloadddstructures USING <waprogram>-idictstruct[]
+    if not <waprogram>-idictstruct[] is initial.
+      perform downloadddstructures using <waprogram>-idictstruct[]
                                          ilocdictionaryfilename[]
                                          userfilepath
                                          htmlfileextension
@@ -7172,11 +7240,11 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download all Table Types
-    IF NOT <waprogram>-itabletypes[] IS INITIAL.
-      PERFORM downloadddtabletypes USING <waprogram>-itabletypes[]
+    if not <waprogram>-itabletypes[] is initial.
+      perform downloadddtabletypes using <waprogram>-itabletypes[]
                                          iloctabletypefilename[]
                                          userfilepath
                                          htmlfileextension
@@ -7189,11 +7257,11 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download Transformations
-    IF NOT <waprogram>-itransformations[] IS INITIAL.
-      PERFORM downloadxslt USING <waprogram>-itransformations[]
+    if not <waprogram>-itransformations[] is initial.
+      perform downloadxslt using <waprogram>-itransformations[]
                                  userfilepath
                                  fileextension
                                  htmlfileextension
@@ -7209,15 +7277,15 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                  externalcss
                                  highlight
                                  newtemplate.
-    ENDIF.
+    endif.
 
 *   Download any functions used by these programs
-    LOOP AT ilocfunctions INTO iprogfunctions WHERE programlinkname = <waprogram>-progname.
-      APPEND iprogfunctions.
-    ENDLOOP.
+    loop at ilocfunctions into iprogfunctions where programlinkname = <waprogram>-progname.
+      append iprogfunctions.
+    endloop.
 
-    IF NOT iprogfunctions[] IS INITIAL.
-      PERFORM downloadfunctions USING iprogfunctions[]
+    if not iprogfunctions[] is initial.
+      perform downloadfunctions using iprogfunctions[]
                                       ilocdictionaryfilename[]
                                       itabletypefilename[]
                                       userfilepath
@@ -7239,18 +7307,18 @@ FORM downloadprograms USING ilocprogram LIKE iprograms[]
                                       externalcss
                                       highlight
                                       newtemplate.
-      CLEAR iprogfunctions[].
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                              "downloadPrograms
+      clear iprogfunctions[].
+    endif.
+  endloop.
+endform.                                                                                              "downloadPrograms
 
 *----------------------------------------------------------------------------------------------------------------------
 *  downloadClasses..
 *----------------------------------------------------------------------------------------------------------------------
-FORM downloadclasses USING ilocclasses LIKE iclasses[]
-                           ilocfunctions LIKE ifunctions[]
-                           ilocdictionaryfilename LIKE idictfilename[]
-                           iloctabletypefilename LIKE itabletypefilename[]
+form downloadclasses using ilocclasses like iclasses[]
+                           ilocfunctions like ifunctions[]
+                           ilocdictionaryfilename like idictfilename[]
+                           iloctabletypefilename like itabletypefilename[]
                            value(userfilepath)
                            value(fileextension)
                            value(htmlfileextension)
@@ -7265,23 +7333,23 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                            value(savetoserver)
                            value(displayprogressmessage)
                            value(locserverfilesystem)
-                           value(addbackground) TYPE abap_bool
-                           value(externalcss) TYPE abap_bool
-                           value(highlight) TYPE abap_bool
-                           value(newtemplate) TYPE abap_bool.
+                           value(addbackground) type abap_bool
+                           value(externalcss) type abap_bool
+                           value(highlight) type abap_bool
+                           value(newtemplate) type abap_bool.
 
 
-  DATA: iclassfunctions TYPE STANDARD TABLE OF tfunction WITH HEADER LINE.
-  FIELD-SYMBOLS: <waclass> TYPE tclass.
-  FIELD-SYMBOLS: <wamethod> TYPE tmethod.
-  DATA: additionalsubdirectory TYPE string.
-  DATA: classdocumentationexists TYPE abap_bool VALUE false.
+  data: iclassfunctions type standard table of tfunction with header line.
+  field-symbols: <waclass> type tclass.
+  field-symbols: <wamethod> type tmethod.
+  data: additionalsubdirectory type string.
+  data: classdocumentationexists type abap_bool value false.
 
-  SORT ilocclasses ASCENDING BY clsname.
+  sort ilocclasses ascending by clsname.
 
-  LOOP AT ilocclasses ASSIGNING <waclass>.
+  loop at ilocclasses assigning <waclass>.
 *   Download the class
-    PERFORM readclassanddownload USING <waclass>
+    perform readclassanddownload using <waclass>
                                         <waclass>-clsname
                                         space
                                         is_class
@@ -7303,9 +7371,9 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
 
 
 *   Download all of the methods
-    LOOP AT <waclass>-imethods ASSIGNING <wamethod>.
+    loop at <waclass>-imethods assigning <wamethod>.
       additionalsubdirectory = <waclass>-clsname.
-      PERFORM readmethodanddownload USING <wamethod>
+      perform readmethodanddownload using <wamethod>
                                           <wamethod>-cmpname
                                           <wamethod>-methodkey
                                           space
@@ -7326,11 +7394,11 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                           highlight
                                           newtemplate.
 
-    ENDLOOP.
+    endloop.
 
 *   Download all dictionary structures
-    IF NOT <waclass>-idictstruct[] IS INITIAL.
-      PERFORM downloadddstructures USING <waclass>-idictstruct[]
+    if not <waclass>-idictstruct[] is initial.
+      perform downloadddstructures using <waclass>-idictstruct[]
                                          ilocdictionaryfilename[]
                                          userfilepath
                                          htmlfileextension
@@ -7343,11 +7411,11 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download all Table Types
-    IF NOT <waclass>-itabletypes[] IS INITIAL.
-      PERFORM downloadddtabletypes USING <waclass>-itabletypes[]
+    if not <waclass>-itabletypes[] is initial.
+      perform downloadddtabletypes using <waclass>-itabletypes[]
                                          iloctabletypefilename[]
                                          userfilepath
                                          htmlfileextension
@@ -7360,11 +7428,11 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                          addbackground
                                          externalcss
                                          newtemplate.
-    ENDIF.
+    endif.
 
 *   Download Transformations
-    IF NOT <waclass>-itransformations[] IS INITIAL.
-      PERFORM downloadxslt USING <waclass>-itransformations[]
+    if not <waclass>-itransformations[] is initial.
+      perform downloadxslt using <waclass>-itransformations[]
                                  userfilepath
                                  fileextension
                                  htmlfileextension
@@ -7380,15 +7448,15 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                  externalcss
                                  highlight
                                  newtemplate.
-    ENDIF.
+    endif.
 
 *   Download any functions used by these programs
-    LOOP AT ilocfunctions INTO iclassfunctions WHERE programlinkname = <waclass>-clsname.
-      APPEND iclassfunctions.
-    ENDLOOP.
+    loop at ilocfunctions into iclassfunctions where programlinkname = <waclass>-clsname.
+      append iclassfunctions.
+    endloop.
 
-    IF NOT iclassfunctions[] IS INITIAL.
-      PERFORM downloadfunctions USING iclassfunctions[]
+    if not iclassfunctions[] is initial.
+      perform downloadfunctions using iclassfunctions[]
                                       ilocdictionaryfilename[]
                                       iloctabletypefilename[]
                                       userfilepath
@@ -7410,11 +7478,11 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                       externalcss
                                       highlight
                                       newtemplate.
-      CLEAR iclassfunctions[].
-    ENDIF.
+      clear iclassfunctions[].
+    endif.
 
-    IF downloaddocumentation = true.
-      PERFORM downloadclassdocs USING <waclass>-clsname
+    if downloaddocumentation = true.
+      perform downloadclassdocs using <waclass>-clsname
                                        userfilepath
                                        fileextension
                                        converttohtml
@@ -7427,14 +7495,14 @@ FORM downloadclasses USING ilocclasses LIKE iclasses[]
                                        addbackground
                                        externalcss
                                        newtemplate.
-    ENDIF.
-  ENDLOOP.
-ENDFORM.                                                                                               "downloadClasses
+    endif.
+  endloop.
+endform.                                                                                               "downloadClasses
 
 *-------------------------------------------------------------------------------------------------------
 *   downloadXslt...
 *-------------------------------------------------------------------------------------------------------
-FORM downloadxslt USING iloctransformation LIKE itransformations[]
+form downloadxslt using iloctransformation like itransformations[]
                             value(userfilepath)
                             value(fileextension)
                             value(htmlfileextension)
@@ -7446,18 +7514,18 @@ FORM downloadxslt USING iloctransformation LIKE itransformations[]
                             value(subdir)
                             value(displayprogressmessage)
                             value(locserverfilesystem)
-                            value(addbackground) TYPE abap_bool
-                            value(externalcss) TYPE abap_bool
-                            value(highlight) TYPE abap_bool
-                            value(newtemplate) TYPE abap_bool.
+                            value(addbackground) type abap_bool
+                            value(externalcss) type abap_bool
+                            value(highlight) type abap_bool
+                            value(newtemplate) type abap_bool.
 
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
+  field-symbols: <watransformation> type ttransformation.
 
-  SORT iloctransformation ASCENDING.
+  sort iloctransformation ascending.
 
-  LOOP AT iloctransformation ASSIGNING <watransformation>.
+  loop at iloctransformation assigning <watransformation>.
 *   Download the main program
-    PERFORM readxsltanddownload USING <watransformation>-xsltname
+    perform readxsltanddownload using <watransformation>-xsltname
                                       <watransformation>-xsltdesc
                                       userfilepath
                                       fileextension
@@ -7472,62 +7540,62 @@ FORM downloadxslt USING iloctransformation LIKE itransformations[]
                                       externalcss
                                       highlight
                                       newtemplate.
-  ENDLOOP.
-ENDFORM.                                                                                              "downloadXSLT
+  endloop.
+endform.                                                                                              "downloadXSLT
 
 *----------------------------------------------------------------------------------------------------------------------
 *  reFormatClassCode...   Expand a classes public, private and protected section from the 72 characters that the class
 *                         builder sets it to back to the wide editor mode
 *----------------------------------------------------------------------------------------------------------------------
-FORM reformatclasscode USING itemplines LIKE dumihtml[].
+form reformatclasscode using itemplines like dumihtml[].
 
-  FIELD-SYMBOLS: <waline> TYPE string.
-  DATA: newline TYPE string.
-  DATA: inewtable TYPE STANDARD TABLE OF string.
-  DATA: foundone TYPE abap_bool VALUE false.
+  field-symbols: <waline> type string.
+  data: newline type string.
+  data: inewtable type standard table of string.
+  data: foundone type abap_bool value false.
 
-  LOOP AT itemplines ASSIGNING <waline>.
-    IF NOT <waline> IS INITIAL.
-      IF foundone = false.
-        FIND 'data' IN <waline> RESPECTING CASE.
-        IF sy-subrc = 0.
+  loop at itemplines assigning <waline>.
+    if not <waline> is initial.
+      if foundone = false.
+        find 'data' in <waline> respecting case.
+        if sy-subrc = 0.
           foundone = true.
-        ENDIF.
+        endif.
 
-        FIND 'constants' IN <waline> RESPECTING CASE.
-        IF sy-subrc = 0.
+        find 'constants' in <waline> respecting case.
+        if sy-subrc = 0.
           foundone = true.
-        ENDIF.
+        endif.
 
-        IF foundone = true.
+        if foundone = true.
           newline = <waline>.
 
-          IF ( newline CS '.' OR newline CS '*' ).
-            REPLACE '!' IN <waline> WITH ''.
-            APPEND newline TO inewtable.
-            CLEAR newline.
+          if ( newline cs '.' or newline cs '*' ).
+            replace '!' in <waline> with ''.
+            append newline to inewtable.
+            clear newline.
             foundone = false.
-          ENDIF.
-        ELSE.
-          REPLACE '!' IN <waline> WITH ''.
-          APPEND <waline> TO inewtable.
-        ENDIF.
-      ELSE.
-        CONCATENATE newline <waline> INTO newline SEPARATED BY space.
-        IF ( newline CS '.' OR newline CS '*' ).
-          APPEND newline TO inewtable.
-          CLEAR newline.
+          endif.
+        else.
+          replace '!' in <waline> with ''.
+          append <waline> to inewtable.
+        endif.
+      else.
+        concatenate newline <waline> into newline separated by space.
+        if ( newline cs '.' or newline cs '*' ).
+          append newline to inewtable.
+          clear newline.
           foundone = false.
-        ENDIF.
-      ENDIF.
-    ELSE.
-      REPLACE '!' IN <waline> WITH ''.
-      APPEND <waline> TO inewtable[].
-    ENDIF.
-  ENDLOOP.
+        endif.
+      endif.
+    else.
+      replace '!' in <waline> with ''.
+      append <waline> to inewtable[].
+    endif.
+  endloop.
 
   itemplines[] = inewtable[].
-ENDFORM.                                                                             "reFormatClassCode
+endform.                                                                             "reFormatClassCode
 
 ***********************************************************************************************************************
 **********************************************HTML ROUTINES************************************************************
@@ -7536,316 +7604,316 @@ ENDFORM.                                                                        
 *----------------------------------------------------------------------------------------------------------------------
 *  convertDDToHTML...   Convert text description to HTML
 *----------------------------------------------------------------------------------------------------------------------
-FORM convertddtohtml USING ilocdictstructure LIKE dumidictstructure[]
-                           ilochtml LIKE dumihtml[]
+form convertddtohtml using ilocdictstructure like dumidictstructure[]
+                           ilochtml like dumihtml[]
                            value(tablename)
                            value(tabletitle)
                            value(sorttablesasc)
-                           value(addbackground) TYPE abap_bool
-                           value(externalcss) TYPE abap_bool
-                           value(newtemplate) TYPE abap_bool.
+                           value(addbackground) type abap_bool
+                           value(externalcss) type abap_bool
+                           value(newtemplate) type abap_bool.
 
-  DATA: icolumncaptions TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: wadictionary TYPE tdicttablestructure.
-  DATA: wahtml TYPE string.
-  DATA: title TYPE string.
-  FIELD-SYMBOLS: <ilocdictstructure> TYPE tdicttablestructure.
+  data: icolumncaptions type standard table of string with header line.
+  data: wadictionary type tdicttablestructure.
+  data: wahtml type string.
+  data: title type string.
+  field-symbols: <ilocdictstructure> type tdicttablestructure.
 * Holds one cell from the internal table
-  FIELD-SYMBOLS: <fsfield>.
+  field-symbols: <fsfield>.
 * The value of one cell form the internal table
-  DATA: wtextcell TYPE string.
-  DATA: rowcounter(3).
+  data: wtextcell type string.
+  data: rowcounter(3).
 * The base type of the field we are reading
-  DATA: wfieldbasetype.
+  data: wfieldbasetype.
 
-  PERFORM buildddcolumnheaders USING icolumncaptions[].
+  perform buildddcolumnheaders using icolumncaptions[].
 
 * Add a html header to the table
-  CONCATENATE 'Dictionary object-' tablename INTO title SEPARATED BY space.
-  PERFORM addhtmlheader USING ilochtml[]
+  concatenate 'Dictionary object-' tablename into title separated by space.
+  perform addhtmlheader using ilochtml[]
                               title
                               addbackground
                               ss_table
                               externalcss
                               newtemplate.
 
-  APPEND `<body>` TO ilochtml.
-  APPEND `  <table class="outerTable">` TO ilochtml.
-  APPEND `    <tr>` TO ilochtml.
-  CONCATENATE `      <td><h2>Table: ` tablename '</h2>' INTO wahtml.
-  APPEND wahtml TO ilochtml.
-  CONCATENATE `  <h3>Description: ` tabletitle '</h3></td>' INTO wahtml.
-  APPEND wahtml TO ilochtml.
-  APPEND `    </tr>` TO ilochtml.
+  append `<body>` to ilochtml.
+  append `  <table class="outerTable">` to ilochtml.
+  append `    <tr>` to ilochtml.
+  concatenate `      <td><h2>Table: ` tablename '</h2>' into wahtml.
+  append wahtml to ilochtml.
+  concatenate `  <h3>Description: ` tabletitle '</h3></td>' into wahtml.
+  append wahtml to ilochtml.
+  append `    </tr>` to ilochtml.
 
-  APPEND `    <tr>` TO ilochtml.
-  APPEND `      <td><!--This is where our main table begins  -->` TO ilochtml.
-  APPEND `<table class="innerTable">` TO ilochtml.
+  append `    <tr>` to ilochtml.
+  append `      <td><!--This is where our main table begins  -->` to ilochtml.
+  append `<table class="innerTable">` to ilochtml.
 
 * Do we need to sort the fields into alphabetical order
-  IF NOT sorttablesasc IS INITIAL.
-    SORT ilocdictstructure ASCENDING BY fieldname.
-  ENDIF.
+  if not sorttablesasc is initial.
+    sort ilocdictstructure ascending by fieldname.
+  endif.
 
 * This is where the header fields are defined
-  APPEND `<tr>` TO ilochtml.
-  LOOP AT icolumncaptions.
-    CONCATENATE `  <th>` icolumncaptions `</th>` INTO wahtml.
-    APPEND wahtml TO ilochtml.
-  ENDLOOP.
-  APPEND `</tr>` TO ilochtml.
+  append `<tr>` to ilochtml.
+  loop at icolumncaptions.
+    concatenate `  <th>` icolumncaptions `</th>` into wahtml.
+    append wahtml to ilochtml.
+  endloop.
+  append `</tr>` to ilochtml.
 
 * Add the table cells here
-  LOOP AT ilocdictstructure ASSIGNING <ilocdictstructure>.
-    APPEND `<tr class="cell">` TO ilochtml.
+  loop at ilocdictstructure assigning <ilocdictstructure>.
+    append `<tr class="cell">` to ilochtml.
     rowcounter = rowcounter + 1.
-    CONCATENATE `  <td>` rowcounter `</td>` INTO wahtml.
-    APPEND wahtml TO ilochtml.
+    concatenate `  <td>` rowcounter `</td>` into wahtml.
+    append wahtml to ilochtml.
 
-    DO.
+    do.
 *     Assign each field in the table to the field symbol
-      ASSIGN COMPONENT sy-index OF STRUCTURE <ilocdictstructure> TO <fsfield>.
-      IF sy-subrc = 0.
-        DESCRIBE FIELD <fsfield> TYPE wfieldbasetype.
-        IF wfieldbasetype <> 'h'.
-          MOVE <fsfield> TO wtextcell.
+      assign component sy-index of structure <ilocdictstructure> to <fsfield>.
+      if sy-subrc = 0.
+        describe field <fsfield> type wfieldbasetype.
+        if wfieldbasetype <> 'h'.
+          move <fsfield> to wtextcell.
           wahtml = `  <td>`.
 
 *         Add the caption name
-          IF wtextcell IS INITIAL.
+          if wtextcell is initial.
 *            CONCATENATE wahtml '&nbsp;' '</td>' INTO wahtml.
-            CONCATENATE wahtml '</td>' INTO wahtml.
-          ELSE.
-            CONCATENATE wahtml wtextcell '</td>' INTO wahtml.
-          ENDIF.
+            concatenate wahtml '</td>' into wahtml.
+          else.
+            concatenate wahtml wtextcell '</td>' into wahtml.
+          endif.
 
-          APPEND wahtml TO ilochtml.
-          CLEAR wahtml.
-        ENDIF.
-      ELSE.
-        EXIT.
-      ENDIF.
-    ENDDO.
+          append wahtml to ilochtml.
+          clear wahtml.
+        endif.
+      else.
+        exit.
+      endif.
+    enddo.
 
-    APPEND `</tr>` TO ilochtml.
-  ENDLOOP.
+    append `</tr>` to ilochtml.
+  endloop.
 
-  APPEND `      </table>` TO ilochtml.
-  APPEND `     </td>` TO ilochtml.
-  APPEND `   </tr>` TO ilochtml.
-  APPEND '<br/>' TO ilochtml.
+  append `      </table>` to ilochtml.
+  append `     </td>` to ilochtml.
+  append `   </tr>` to ilochtml.
+  append '<br/>' to ilochtml.
 
 * Add in any domain entries
-  PERFORM adddomaintohtml USING ilocdictstructure[]
+  perform adddomaintohtml using ilocdictstructure[]
                                 ilochtml[].
 
 * Add a html footer to the table
-  PERFORM addhtmlfooter USING ilochtml[]
+  perform addhtmlfooter using ilochtml[]
                               space
                               space.
-ENDFORM.                                                                                               "convertDDToHTML
+endform.                                                                                               "convertDDToHTML
 
 *----------------------------------------------------------------------------------------------------------------------
 *  addDomaintoHTML...   Add domain vlaues into the HTML
 *----------------------------------------------------------------------------------------------------------------------
-FORM adddomaintohtml USING ilocdictstructure LIKE dumidictstructure[]
-                           ilochtml LIKE dumihtml[].
+form adddomaintohtml using ilocdictstructure like dumidictstructure[]
+                           ilochtml like dumihtml[].
 
-  DATA: icolumncaptions TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: wadictionary TYPE tdicttablestructure.
-  DATA: wahtml TYPE string.
-  DATA: title TYPE string.
-  FIELD-SYMBOLS: <ilocdictstructure> TYPE tdicttablestructure.
-  DATA: idomstructure TYPE STANDARD TABLE OF tdomainstructure WITH HEADER LINE.
-  DATA: idomstructure_found TYPE STANDARD TABLE OF tdomainstructure WITH HEADER LINE.
+  data: icolumncaptions type standard table of string with header line.
+  data: wadictionary type tdicttablestructure.
+  data: wahtml type string.
+  data: title type string.
+  field-symbols: <ilocdictstructure> type tdicttablestructure.
+  data: idomstructure type standard table of tdomainstructure with header line.
+  data: idomstructure_found type standard table of tdomainstructure with header line.
 * Holds one cell from the internal table
-  FIELD-SYMBOLS: <fsfield>.
+  field-symbols: <fsfield>.
 * The value of one cell form the internal table
-  DATA: wtextcell TYPE string.
-  DATA: rowcounter(3).
+  data: wtextcell type string.
+  data: rowcounter(3).
 * The base type of the field we are reading
-  DATA: wfieldbasetype.
-  DATA: addedheader TYPE flag VALUE ''.
+  data: wfieldbasetype.
+  data: addedheader type flag value ''.
 
-  PERFORM builddomcolumnheaders USING icolumncaptions[].
+  perform builddomcolumnheaders using icolumncaptions[].
 
 * Add the table cells here
-  LOOP AT ilocdictstructure ASSIGNING <ilocdictstructure>.
-    LOOP AT <ilocdictstructure>-idomains INTO idomstructure.
+  loop at ilocdictstructure assigning <ilocdictstructure>.
+    loop at <ilocdictstructure>-idomains into idomstructure.
 
 *     Domain already exists?
-      READ TABLE idomstructure_found
-        WITH KEY domname = idomstructure-domname
+      read table idomstructure_found
+        with key domname = idomstructure-domname
           domvalue_l = idomstructure-domvalue_l
           domvalue_h = idomstructure-domvalue_h.
 
-      IF sy-subrc IS INITIAL.
-        EXIT. "Domain exists, try next one
-      ENDIF.
+      if sy-subrc is initial.
+        exit. "Domain exists, try next one
+      endif.
 
       "Add domain to existing ones
-      APPEND idomstructure TO idomstructure_found.
+      append idomstructure to idomstructure_found.
 
 *     OK, lets add the header since we know we have some domain texrt to add.
-      IF addedheader = ''.
-        APPEND `  <table class="outerTable">` TO ilochtml.
-        APPEND `    <tr>` TO ilochtml.
-        CONCATENATE `      <td><h2>Fixed Domain Values ` '</h2>' INTO wahtml.
-        APPEND wahtml TO ilochtml.
-        APPEND `    </tr>` TO ilochtml.
+      if addedheader = ''.
+        append `  <table class="outerTable">` to ilochtml.
+        append `    <tr>` to ilochtml.
+        concatenate `      <td><h2>Fixed Domain Values ` '</h2>' into wahtml.
+        append wahtml to ilochtml.
+        append `    </tr>` to ilochtml.
 
-        APPEND `    <tr>` TO ilochtml.
-        APPEND `      <td><!--This is where our main table begins  -->` TO ilochtml.
-        APPEND `<table class="innerTable">` TO ilochtml.
+        append `    <tr>` to ilochtml.
+        append `      <td><!--This is where our main table begins  -->` to ilochtml.
+        append `<table class="innerTable">` to ilochtml.
 
 *       This is where the header fields are defined
-        APPEND `<tr>` TO ilochtml.
-        LOOP AT icolumncaptions.
-          CONCATENATE `  <th>` icolumncaptions `</th>` INTO wahtml.
-          APPEND wahtml TO ilochtml.
-        ENDLOOP.
-        APPEND `</tr>` TO ilochtml.
+        append `<tr>` to ilochtml.
+        loop at icolumncaptions.
+          concatenate `  <th>` icolumncaptions `</th>` into wahtml.
+          append wahtml to ilochtml.
+        endloop.
+        append `</tr>` to ilochtml.
         addedheader = 'X'.
-      ENDIF.
+      endif.
 
-      APPEND `<tr class="cell">` TO ilochtml.
-      DO.
+      append `<tr class="cell">` to ilochtml.
+      do.
 *       Assign each field in the table to the field symbol
-        ASSIGN COMPONENT sy-index OF STRUCTURE idomstructure TO <fsfield>.
-        IF sy-subrc = 0.
-          DESCRIBE FIELD <fsfield> TYPE wfieldbasetype.
-          IF wfieldbasetype <> 'h'.
-            MOVE <fsfield> TO wtextcell.
+        assign component sy-index of structure idomstructure to <fsfield>.
+        if sy-subrc = 0.
+          describe field <fsfield> type wfieldbasetype.
+          if wfieldbasetype <> 'h'.
+            move <fsfield> to wtextcell.
             wahtml = `  <td>`.
 
 *           Add the caption name
-            IF wtextcell IS INITIAL.
+            if wtextcell is initial.
 *              CONCATENATE wahtml '&nbsp;' '</td>' INTO wahtml.
-              CONCATENATE wahtml '</td>' INTO wahtml.
-            ELSE.
-              CONCATENATE wahtml wtextcell '</td>' INTO wahtml.
-            ENDIF.
+              concatenate wahtml '</td>' into wahtml.
+            else.
+              concatenate wahtml wtextcell '</td>' into wahtml.
+            endif.
 
-            APPEND wahtml TO ilochtml.
-            CLEAR wahtml.
-          ENDIF.
-        ELSE.
-          EXIT.
-        ENDIF.
-      ENDDO.
+            append wahtml to ilochtml.
+            clear wahtml.
+          endif.
+        else.
+          exit.
+        endif.
+      enddo.
 
-      APPEND `</tr>` TO ilochtml.
-    ENDLOOP.
-  ENDLOOP.
+      append `</tr>` to ilochtml.
+    endloop.
+  endloop.
 
-  IF addedheader = 'X'.
-    APPEND `      </table>` TO ilochtml.
-    APPEND `     </td>` TO ilochtml.
-    APPEND `   </tr>` TO ilochtml.
-  ENDIF.
-ENDFORM.                    "addDomaintoHTML
+  if addedheader = 'X'.
+    append `      </table>` to ilochtml.
+    append `     </td>` to ilochtml.
+    append `   </tr>` to ilochtml.
+  endif.
+endform.                    "addDomaintoHTML
 *----------------------------------------------------------------------------------------------------------------------
 *  convertTableTypeToHtml
 *----------------------------------------------------------------------------------------------------------------------
-FORM converttabletypetohtml USING iloctabletypes LIKE itabletypes[]
-                                  ilochtml LIKE dumihtml[]
+form converttabletypetohtml using iloctabletypes like itabletypes[]
+                                  ilochtml like dumihtml[]
                                   value(tablename)
                                   value(tabletitle)
                                   value(sorttablesasc)
-                                  value(addbackground) TYPE abap_bool
-                                  value(externalcss) TYPE abap_bool
-                                  value(newtemplate) TYPE abap_bool.
+                                  value(addbackground) type abap_bool
+                                  value(externalcss) type abap_bool
+                                  value(newtemplate) type abap_bool.
 
-  DATA: icolumncaptions TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: wadictionary TYPE tdicttablestructure.
-  DATA: wahtml TYPE string.
-  DATA: title TYPE string.
-  FIELD-SYMBOLS: <iloctabletype> LIKE LINE OF iloctabletypes.
+  data: icolumncaptions type standard table of string with header line.
+  data: wadictionary type tdicttablestructure.
+  data: wahtml type string.
+  data: title type string.
+  field-symbols: <iloctabletype> like line of iloctabletypes.
 * Holds one cell from the internal table
-  FIELD-SYMBOLS: <fsfield>.
+  field-symbols: <fsfield>.
 * The value of one cell form the internal table
-  DATA: wtextcell TYPE string.
-  DATA: rowcounter(3).
+  data: wtextcell type string.
+  data: rowcounter(3).
 
-  PERFORM buildcolumnheaderstabletypes USING icolumncaptions[].
+  perform buildcolumnheaderstabletypes using icolumncaptions[].
 
 * Add a html header to the table
-  CONCATENATE 'Dictionary object (Table Type)-' tablename INTO title SEPARATED BY space.
-  PERFORM addhtmlheader USING ilochtml[]
+  concatenate 'Dictionary object (Table Type)-' tablename into title separated by space.
+  perform addhtmlheader using ilochtml[]
                               title
                               addbackground
                               ss_table
                               externalcss
                               newtemplate.
 
-  APPEND '<body>' TO ilochtml.
-  APPEND '  <table class="outerTable">' TO ilochtml.
-  APPEND '    <tr>' TO ilochtml.
-  CONCATENATE '      <td><h2>Table: ' tablename '</h2>' INTO wahtml.
-  APPEND wahtml TO ilochtml.
-  CONCATENATE '  <h3>Description: ' tabletitle '</h3></td>' INTO wahtml.
-  APPEND wahtml TO ilochtml.
-  APPEND '    </tr>' TO ilochtml.
+  append '<body>' to ilochtml.
+  append '  <table class="outerTable">' to ilochtml.
+  append '    <tr>' to ilochtml.
+  concatenate '      <td><h2>Table: ' tablename '</h2>' into wahtml.
+  append wahtml to ilochtml.
+  concatenate '  <h3>Description: ' tabletitle '</h3></td>' into wahtml.
+  append wahtml to ilochtml.
+  append '    </tr>' to ilochtml.
 
-  APPEND '    <tr>' TO ilochtml.
-  APPEND '      <td><!--This is where our main table begins  -->' TO ilochtml.
-  APPEND '<table class="innerTable">' TO ilochtml.
+  append '    <tr>' to ilochtml.
+  append '      <td><!--This is where our main table begins  -->' to ilochtml.
+  append '<table class="innerTable">' to ilochtml.
 
 * This is where the header fields are defined
-  APPEND '<tr>' TO ilochtml.
-  LOOP AT icolumncaptions.
-    CONCATENATE '  <th>' icolumncaptions '</th>' INTO wahtml.
-    APPEND wahtml TO ilochtml.
-  ENDLOOP.
-  APPEND '</tr>' TO ilochtml.
+  append '<tr>' to ilochtml.
+  loop at icolumncaptions.
+    concatenate '  <th>' icolumncaptions '</th>' into wahtml.
+    append wahtml to ilochtml.
+  endloop.
+  append '</tr>' to ilochtml.
 
 * Add the table cells here
-  LOOP AT iloctabletypes ASSIGNING <iloctabletype>.
-    APPEND '<tr class="cell">' TO ilochtml.
+  loop at iloctabletypes assigning <iloctabletype>.
+    append '<tr class="cell">' to ilochtml.
     rowcounter = rowcounter + 1.
-    CONCATENATE '  <td>' rowcounter '</td>' INTO wahtml.
-    APPEND wahtml TO ilochtml.
+    concatenate '  <td>' rowcounter '</td>' into wahtml.
+    append wahtml to ilochtml.
 
-    DO.
+    do.
 *     Assign each field in the table to the field symbol
-      ASSIGN COMPONENT sy-index OF STRUCTURE <iloctabletype> TO <fsfield>.
-      IF sy-subrc = 0.
-        MOVE <fsfield> TO wtextcell.
+      assign component sy-index of structure <iloctabletype> to <fsfield>.
+      if sy-subrc = 0.
+        move <fsfield> to wtextcell.
         wahtml = '  <td>'.
 
 *       Add the caption name
-        IF wtextcell IS INITIAL.
+        if wtextcell is initial.
 *          CONCATENATE wahtml '&nbsp;' '</td>' INTO wahtml.
-          CONCATENATE wahtml '</td>' INTO wahtml.
-        ELSE.
-          CONCATENATE wahtml wtextcell '</td>' INTO wahtml.
-        ENDIF.
+          concatenate wahtml '</td>' into wahtml.
+        else.
+          concatenate wahtml wtextcell '</td>' into wahtml.
+        endif.
 
-        APPEND wahtml TO ilochtml.
-        CLEAR wahtml.
-      ELSE.
-        EXIT.
-      ENDIF.
-    ENDDO.
+        append wahtml to ilochtml.
+        clear wahtml.
+      else.
+        exit.
+      endif.
+    enddo.
 
-    APPEND '</tr>' TO ilochtml.
-  ENDLOOP.
+    append '</tr>' to ilochtml.
+  endloop.
 
-  APPEND '      </table>' TO ilochtml.
-  APPEND '     </td>' TO ilochtml.
-  APPEND '   </tr>' TO ilochtml.
+  append '      </table>' to ilochtml.
+  append '     </td>' to ilochtml.
+  append '   </tr>' to ilochtml.
 
 * Add a html footer to the table
-  PERFORM addhtmlfooter USING ilochtml[]
+  perform addhtmlfooter using ilochtml[]
                               space
                               space.
-ENDFORM.                                                                                  "convertTableTypeToHTML
+endform.                                                                                  "convertTableTypeToHTML
 "convertITABtoHtml
 
 *----------------------------------------------------------------------------------------------------------------------
 *  convertCodeToHtml... Builds an HTML table based upon a text table.
 *----------------------------------------------------------------------------------------------------------------------
-FORM convertcodetohtml USING icontents LIKE dumihtml[]
+form convertcodetohtml using icontents like dumihtml[]
                              value(programname)
                              value(shortdescription)
                              value(sourcecodetype)
@@ -7855,127 +7923,127 @@ FORM convertcodetohtml USING icontents LIKE dumihtml[]
                              value(customernamerange)
                              value(getincludes)
                              value(getdictstructures)
-                             value(addbackground) TYPE abap_bool
-                             value(externalcss) TYPE abap_bool
-                             value(highlight) TYPE abap_bool
-                             value(editor_mode) TYPE string
-                             value(newtemplate) TYPE abap_bool.
+                             value(addbackground) type abap_bool
+                             value(externalcss) type abap_bool
+                             value(highlight) type abap_bool
+                             value(editor_mode) type string
+                             value(newtemplate) type abap_bool.
 
-  DATA: htmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: head(255).
-  DATA: tail(255).
-  DATA: mytabix TYPE sytabix.
-  DATA: nextline TYPE sytabix.
-  DATA: hyperlinkname TYPE string.
-  DATA: include_tk TYPE string.
-  DATA: includetype_tk TYPE string.
-  DATA: copyofcurrentline TYPE string.
-  DATA: currentlinelength TYPE i VALUE 0.
-  DATA: copylinelength TYPE i VALUE 0.
-  DATA: ignorefuturelines TYPE abap_bool VALUE false.
-  DATA: foundasterix TYPE abap_bool VALUE false.
-  DATA: lowercaselink TYPE string.
-  DATA: wanextline TYPE string.
-  DATA: wacontent TYPE string.
-  DATA: incommentmode TYPE abap_bool VALUE 'X'.
+  data: htmltable type standard table of string with header line.
+  data: head(255).
+  data: tail(255).
+  data: mytabix type sytabix.
+  data: nextline type sytabix.
+  data: hyperlinkname type string.
+  data: include_tk type string.
+  data: includetype_tk type string.
+  data: copyofcurrentline type string.
+  data: currentlinelength type i value 0.
+  data: copylinelength type i value 0.
+  data: ignorefuturelines type abap_bool value false.
+  data: foundasterix type abap_bool value false.
+  data: lowercaselink type string.
+  data: wanextline type string.
+  data: wacontent type string.
+  data: incommentmode type abap_bool value 'X'.
 
 * Add a html header to the table
-  PERFORM addhtmlheader USING htmltable[]
+  perform addhtmlheader using htmltable[]
                               programname
                               addbackground
                               ss_code
                               externalcss
                               newtemplate.
 
-  APPEND '<body>' TO htmltable.
+  append '<body>' to htmltable.
 * Prgroamname and description
-  APPEND '<table class="outerTable">' TO htmltable.
-  APPEND `  <tr class="normalBoldLarge">` TO htmltable.
+  append '<table class="outerTable">' to htmltable.
+  append `  <tr class="normalBoldLarge">` to htmltable.
 
-  CONCATENATE `     <td><h2>Code listing for: ` programname `</h2>` INTO htmltable.
-  APPEND htmltable.
+  concatenate `     <td><h2>Code listing for: ` programname `</h2>` into htmltable.
+  append htmltable.
 
-  CONCATENATE `<h3> Description: ` shortdescription `</h3></td>` INTO htmltable.
-  APPEND htmltable.
-  APPEND `   </tr>` TO htmltable.
+  concatenate `<h3> Description: ` shortdescription `</h3></td>` into htmltable.
+  append htmltable.
+  append `   </tr>` to htmltable.
 
 * Code
-  APPEND `  <tr>` TO htmltable.
-  APPEND `     <td>` TO htmltable.
+  append `  <tr>` to htmltable.
+  append `     <td>` to htmltable.
 
 * Table containing code
-  APPEND `     <table class="innerTable">` TO htmltable.
-  APPEND `       <tr>` TO htmltable.
-  APPEND `          <td>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          <div id="editor">` TO htmltable.
-  ELSE.
-    APPEND `          <pre><code>` TO htmltable.
-  ENDIF.
+  append `     <table class="innerTable">` to htmltable.
+  append `       <tr>` to htmltable.
+  append `          <td>` to htmltable.
+  if not highlight is initial.
+    append `          <div id="editor">` to htmltable.
+  else.
+    append `          <pre><code>` to htmltable.
+  endif.
 
 
-  LOOP AT icontents INTO wacontent.
+  loop at icontents into wacontent.
     mytabix = sy-tabix.
 
-    IF NOT ( wacontent IS INITIAL ).
-      WHILE ( wacontent CS '<' OR wacontent CS '>' ).
-        REPLACE '<' IN wacontent WITH lt.
-        REPLACE '>' IN wacontent WITH gt.
-      ENDWHILE.
+    if not ( wacontent is initial ).
+      while ( wacontent cs '<' or wacontent cs '>' ).
+        replace '<' in wacontent with lt.
+        replace '>' in wacontent with gt.
+      endwhile.
 
-      IF wacontent+0(1) <> asterix.
-        IF mytabix = 1.
-          APPEND `   <div class="code">` TO htmltable.
+      if wacontent+0(1) <> asterix.
+        if mytabix = 1.
+          append `   <div class="code">` to htmltable.
           incommentmode = false.
-        ELSE.
-          IF incommentmode = true.
-            APPEND `   </div>` TO htmltable.
+        else.
+          if incommentmode = true.
+            append `   </div>` to htmltable.
             incommentmode = false.
-            APPEND `   <div class="code">` TO htmltable.
-          ENDIF.
-        ENDIF.
+            append `   <div class="code">` to htmltable.
+          endif.
+        endif.
 
         currentlinelength = strlen( wacontent ).
         copyofcurrentline = wacontent.
 
 *       Don't hyperlink anything for files of type documentation
-        IF sourcecodetype <> is_documentation.
+        if sourcecodetype <> is_documentation.
 *         Check for any functions to highlight
-          IF ( wacontent CS callfunction ) AND ( wacontent <> 'DESTINATION' ).
+          if ( wacontent cs callfunction ) and ( wacontent <> 'DESTINATION' ).
             nextline = mytabix + 1.
-            READ TABLE icontents INTO wanextline INDEX nextline.
-            TRANSLATE wanextline TO UPPER CASE.
-            IF wanextline NS 'DESTINATION'.
-              SHIFT copyofcurrentline LEFT DELETING LEADING space.
+            read table icontents into wanextline index nextline.
+            translate wanextline to upper case.
+            if wanextline ns 'DESTINATION'.
+              shift copyofcurrentline left deleting leading space.
 
               copylinelength = strlen( copyofcurrentline ).
 
-              SPLIT copyofcurrentline AT space INTO head tail.
-              SPLIT tail AT space INTO head tail.
-              SPLIT tail AT space INTO head tail.
+              split copyofcurrentline at space into head tail.
+              split tail at space into head tail.
+              split tail at space into head tail.
 *             Function name is now in head
-              TRANSLATE head USING ''' '.
-              SHIFT head LEFT DELETING LEADING space.
+              translate head using ''' '.
+              shift head left deleting leading space.
 
-              TRY.
-                  IF head+0(1) = 'Y' OR head+0(1) = 'Z' OR head+0(1) = 'y' OR head+0(1) = 'z' OR head CS customernamerange.
+              try.
+                  if head+0(1) = 'Y' or head+0(1) = 'Z' or head+0(1) = 'y' or head+0(1) = 'z' or head cs customernamerange.
 *                 Definately a customer function module
                     hyperlinkname = head.
 
-                    IF sourcecodetype = is_function.
+                    if sourcecodetype = is_function.
                       copyofcurrentline = 'call function <a href ="../'.
-                    ELSE.
+                    else.
                       copyofcurrentline = 'call function <a href ="'.
-                    ENDIF.
+                    endif.
 
                     lowercaselink = hyperlinkname.
-                    TRANSLATE lowercaselink TO LOWER CASE.
+                    translate lowercaselink to lower case.
 *                 If we are running on a non UNIX environment we will need to remove forward slashes
-                    IF frontendopsystem = non_unix.
-                      TRANSLATE lowercaselink USING '/_'.
-                    ENDIF.
+                    if frontendopsystem = non_unix.
+                      translate lowercaselink using '/_'.
+                    endif.
 
-                    CONCATENATE copyofcurrentline
+                    concatenate copyofcurrentline
                                 lowercaselink     "hyperlinkName
                                 '/'
                                 lowercaselink     "hyperlinkName
@@ -7984,87 +8052,87 @@ FORM convertcodetohtml USING icontents LIKE dumihtml[]
                                 hyperlinkname
                                 ''''
                                 '</a>'
-                                tail INTO copyofcurrentline.
+                                tail into copyofcurrentline.
 
 *                 Pad the string back out with spaces
-                    WHILE copylinelength < currentlinelength.
-                      SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                    while copylinelength < currentlinelength.
+                      shift copyofcurrentline right by 1 places.
                       copylinelength = copylinelength + 1.
-                    ENDWHILE.
+                    endwhile.
 
                     wacontent = copyofcurrentline.
-                  ENDIF.
-                CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-              ENDTRY.
-            ENDIF.
-          ENDIF.
-        ENDIF.
+                  endif.
+                catch cx_sy_range_out_of_bounds into objruntimeerror.
+              endtry.
+            endif.
+          endif.
+        endif.
 
 *       Check for any customer includes to hyperlink
-        IF wacontent CS include OR wacontent CS lowinclude.
-          SHIFT copyofcurrentline LEFT DELETING LEADING space.
+        if wacontent cs include or wacontent cs lowinclude.
+          shift copyofcurrentline left deleting leading space.
           copylinelength = strlen( copyofcurrentline ).
 
-          SPLIT copyofcurrentline AT space INTO head tail.
-          SHIFT tail LEFT DELETING LEADING space.
+          split copyofcurrentline at space into head tail.
+          shift tail left deleting leading space.
 
-          TRY.
-              IF ( tail+0(1) = 'Y' OR tail+0(1) = 'Z' OR tail+0(1) = 'y' OR tail+0(1) = 'z' OR tail CS customernamerange OR tail+0(2) = 'mz' OR tail+0(2) = 'MZ' )
-                  AND NOT getincludes IS INITIAL AND  tail NS structure AND tail NS lowstructure.
+          try.
+              if ( tail+0(1) = 'Y' or tail+0(1) = 'Z' or tail+0(1) = 'y' or tail+0(1) = 'z' or tail cs customernamerange or tail+0(2) = 'mz' or tail+0(2) = 'MZ' )
+                  and not getincludes is initial and  tail ns structure and tail ns lowstructure.
 
 *             Hyperlink for program includes
-                CLEAR wacontent.
-                SHIFT tail LEFT DELETING LEADING space.
-                SPLIT tail AT period INTO hyperlinkname tail.
+                clear wacontent.
+                shift tail left deleting leading space.
+                split tail at period into hyperlinkname tail.
                 copyofcurrentline = 'include <a href ="'.
 
                 lowercaselink = hyperlinkname.
-                TRANSLATE lowercaselink TO LOWER CASE.
+                translate lowercaselink to lower case.
 
 *             If we are running on a non UNIX environment we will need to remove forward slashes
-                IF frontendopsystem = non_unix.
-                  TRANSLATE lowercaselink USING '/_'.
-                ENDIF.
+                if frontendopsystem = non_unix.
+                  translate lowercaselink using '/_'.
+                endif.
 
-                CONCATENATE copyofcurrentline
+                concatenate copyofcurrentline
                             lowercaselink       "hyperlinkName
                             period htmlextension '">'
                             hyperlinkname
                             '</a>'
-                            period tail INTO copyofcurrentline.
+                            period tail into copyofcurrentline.
 
 *             Pad the string back out with spaces
-                WHILE copylinelength < currentlinelength.
-                  SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                while copylinelength < currentlinelength.
+                  shift copyofcurrentline right by 1 places.
                   copylinelength = copylinelength + 1.
-                ENDWHILE.
+                endwhile.
                 wacontent = copyofcurrentline.
-              ELSE.
-                IF NOT getdictstructures IS INITIAL.
+              else.
+                if not getdictstructures is initial.
 *              Hyperlink for structure include e.g. "include structure zfred."
 *                                              e.g. "include type zfred."
                   copylinelength = strlen( copyofcurrentline ).
-                  SPLIT copyofcurrentline AT space INTO head tail.
+                  split copyofcurrentline at space into head tail.
                   include_tk = head.
-                  SHIFT tail LEFT DELETING LEADING space.
-                  SPLIT tail AT space INTO head tail.
+                  shift tail left deleting leading space.
+                  split tail at space into head tail.
                   includetype_tk = head.
 
-                  TRY.
-                      IF tail+0(1) = 'Y' OR tail+0(1) = 'Z' OR tail+0(1) = 'y' OR tail+0(1) = 'z' OR tail CS customernamerange.
-                        CLEAR wacontent.
-                        SHIFT tail LEFT DELETING LEADING space.
-                        SPLIT tail AT period INTO hyperlinkname tail.
-                        CONCATENATE include_tk includetype_tk '<a href =' INTO copyofcurrentline SEPARATED BY space.
+                  try.
+                      if tail+0(1) = 'Y' or tail+0(1) = 'Z' or tail+0(1) = 'y' or tail+0(1) = 'z' or tail cs customernamerange.
+                        clear wacontent.
+                        shift tail left deleting leading space.
+                        split tail at period into hyperlinkname tail.
+                        concatenate include_tk includetype_tk '<a href =' into copyofcurrentline separated by space.
 
                         lowercaselink = hyperlinkname.
-                        TRANSLATE lowercaselink TO LOWER CASE.
+                        translate lowercaselink to lower case.
 *                  If we are running on a non UNIX environment we will need to remove forward slashes
-                        IF frontendopsystem = non_unix.
-                          TRANSLATE lowercaselink USING '/_'.
-                        ENDIF.
+                        if frontendopsystem = non_unix.
+                          translate lowercaselink using '/_'.
+                        endif.
 
-                        CONCATENATE copyofcurrentline
+                        concatenate copyofcurrentline
                                     '"'
                                     lowercaselink    "hyperlinkName
                                     '/'
@@ -8074,257 +8142,257 @@ FORM convertcodetohtml USING icontents LIKE dumihtml[]
                                     '">'
                                     hyperlinkname
                                     '</a>'
-                                    period tail INTO copyofcurrentline.
+                                    period tail into copyofcurrentline.
 
 *                  Pad the string back out with spaces
-                        WHILE copylinelength < currentlinelength.
-                          SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                        while copylinelength < currentlinelength.
+                          shift copyofcurrentline right by 1 places.
                           copylinelength = copylinelength + 1.
-                        ENDWHILE.
+                        endwhile.
                         wacontent = copyofcurrentline.
-                      ENDIF.
-                    CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-                  ENDTRY.
-                ENDIF.
-              ENDIF.
-            CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-          ENDTRY.
-        ENDIF.
-      ELSE.
-        IF  wacontent+0(1) = asterix.
-          IF mytabix = 1.
-            APPEND `   <div class="codeComment">` TO htmltable.
+                      endif.
+                    catch cx_sy_range_out_of_bounds into objruntimeerror.
+                  endtry.
+                endif.
+              endif.
+            catch cx_sy_range_out_of_bounds into objruntimeerror.
+          endtry.
+        endif.
+      else.
+        if  wacontent+0(1) = asterix.
+          if mytabix = 1.
+            append `   <div class="codeComment">` to htmltable.
             incommentmode = true.
-          ELSE.
-            IF incommentmode = false.
-              APPEND `   </div>` TO htmltable.
-              APPEND `   <div class="codeComment">` TO htmltable.
+          else.
+            if incommentmode = false.
+              append `   </div>` to htmltable.
+              append `   <div class="codeComment">` to htmltable.
               incommentmode = true.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
+            endif.
+          endif.
+        endif.
+      endif.
 
 
-      IF incommentmode = true.
+      if incommentmode = true.
 *        WHILE wacontent CS ' '.
 *          REPLACE space WITH '&nbsp;' INTO wacontent.
 *          IF sy-subrc <> 0.
 *            EXIT.
 *          ENDIF.
 *        ENDWHILE.
-      ENDIF.
+      endif.
       htmltable =  wacontent.
 
-      TRY.
-          IF htmltable+0(1) = ` `.
+      try.
+          if htmltable+0(1) = ` `.
 *            WHILE htmltable CS ` `.
 *              REPLACE ` ` WITH '&nbsp;' INTO htmltable.
 *              IF sy-subrc <> 0.
 *                EXIT.
 *              ENDIF.
 *            ENDWHILE.
-          ENDIF.
-        CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-      ENDTRY.
-    ELSE.
+          endif.
+        catch cx_sy_range_out_of_bounds into objruntimeerror.
+      endtry.
+    else.
       htmltable = ''.
-    ENDIF.
+    endif.
 *    CONCATENATE htmltable `<br />` INTO htmltable.
-    APPEND htmltable.
-  ENDLOOP.
+    append htmltable.
+  endloop.
 
-  APPEND `            </div>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          </div>` TO htmltable.
-  ELSE.
-    APPEND `          </code></pre>` TO htmltable.
-  ENDIF.
-  APPEND `          </td>`  TO htmltable.
-  APPEND `        </tr>` TO htmltable.
-  APPEND `      </table>` TO htmltable.
-  APPEND `      </td>` TO htmltable.
-  APPEND `      </tr>` TO htmltable.
+  append `            </div>` to htmltable.
+  if not highlight is initial.
+    append `          </div>` to htmltable.
+  else.
+    append `          </code></pre>` to htmltable.
+  endif.
+  append `          </td>`  to htmltable.
+  append `        </tr>` to htmltable.
+  append `      </table>` to htmltable.
+  append `      </td>` to htmltable.
+  append `      </tr>` to htmltable.
 
 * Add a html footer to the table
-  PERFORM addhtmlfooter USING htmltable[]
+  perform addhtmlfooter using htmltable[]
                               highlight
                               editor_mode.
 
   icontents[] = htmltable[].
-ENDFORM.                                                                                             "convertCodeToHtml
+endform.                                                                                             "convertCodeToHtml
 
 *----------------------------------------------------------------------------------------------------------------------
 *  convertClassToHtml... Builds an HTML table based upon a text table.
 *----------------------------------------------------------------------------------------------------------------------
-FORM convertclasstohtml USING icontents LIKE dumihtml[]
+form convertclasstohtml using icontents like dumihtml[]
                               value(classname)
                               value(shortdescription)
                               value(sourcecodetype)
                               value(htmlextension)
                               value(customernamerange)
                               value(getdictstructures)
-                              value(addbackground) TYPE abap_bool
-                              value(externalcss) TYPE abap_bool
-                              value(highlight) TYPE abap_bool
-                              value(newtemplate) TYPE abap_bool.
+                              value(addbackground) type abap_bool
+                              value(externalcss) type abap_bool
+                              value(highlight) type abap_bool
+                              value(newtemplate) type abap_bool.
 
-  DATA: htmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: mytabix TYPE sytabix.
-  DATA: wacontent TYPE string.
-  DATA: head TYPE string.
-  DATA: tail TYPE string.
-  DATA: body TYPE string.
-  DATA: hyperlinkname TYPE string.
-  DATA: lowercaselink TYPE string.
-  DATA: copyofcurrentline TYPE string.
-  DATA: currentlinelength TYPE i VALUE 0.
-  DATA: copylinelength TYPE i VALUE 0.
-  DATA: replacelenght TYPE i VALUE 0.
-  DATA: incommentmode TYPE abap_bool VALUE 'X'.
-  DATA: methoddirectory TYPE string.
+  data: htmltable type standard table of string with header line.
+  data: mytabix type sytabix.
+  data: wacontent type string.
+  data: head type string.
+  data: tail type string.
+  data: body type string.
+  data: hyperlinkname type string.
+  data: lowercaselink type string.
+  data: copyofcurrentline type string.
+  data: currentlinelength type i value 0.
+  data: copylinelength type i value 0.
+  data: replacelenght type i value 0.
+  data: incommentmode type abap_bool value 'X'.
+  data: methoddirectory type string.
 
 * Add a html header to the table
-  PERFORM addhtmlheader USING htmltable[]
+  perform addhtmlheader using htmltable[]
                               classname
                               addbackground
                               ss_code
                               externalcss
                               newtemplate.
 
-  APPEND '<body>' TO htmltable.
+  append '<body>' to htmltable.
 * Class name and description
-  APPEND '<table class="outerTable">' TO htmltable.
-  APPEND `  <tr class="normalBoldLarge">` TO htmltable.
+  append '<table class="outerTable">' to htmltable.
+  append `  <tr class="normalBoldLarge">` to htmltable.
 
-  CONCATENATE `     <td><h2>Code listing for class: ` classname `</h2>` INTO htmltable.
-  APPEND htmltable.
+  concatenate `     <td><h2>Code listing for class: ` classname `</h2>` into htmltable.
+  append htmltable.
 
-  CONCATENATE `<h3> Description: ` shortdescription `</h3></td>` INTO htmltable.
-  APPEND htmltable.
-  APPEND `   </tr>` TO htmltable.
+  concatenate `<h3> Description: ` shortdescription `</h3></td>` into htmltable.
+  append htmltable.
+  append `   </tr>` to htmltable.
 
 * Code
-  APPEND `  <tr>` TO htmltable.
-  APPEND `     <td>` TO htmltable.
+  append `  <tr>` to htmltable.
+  append `     <td>` to htmltable.
 
 * Table containing code
-  APPEND `     <table class="innerTable">` TO htmltable.
-  APPEND `       <tr>` TO htmltable.
-  APPEND `          <td>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          <div id="editor">` TO htmltable.
-  ELSE.
-    APPEND `          <pre><code>` TO htmltable.
-  ENDIF.
+  append `     <table class="innerTable">` to htmltable.
+  append `       <tr>` to htmltable.
+  append `          <td>` to htmltable.
+  if not highlight is initial.
+    append `          <div id="editor">` to htmltable.
+  else.
+    append `          <pre><code>` to htmltable.
+  endif.
 
-  LOOP AT icontents INTO wacontent.
+  loop at icontents into wacontent.
     mytabix = sy-tabix.
 
 *   Comments
-    IF NOT ( wacontent IS INITIAL ).
-      IF wacontent+0(1) = asterix.
+    if not ( wacontent is initial ).
+      if wacontent+0(1) = asterix.
         htmltable = wacontent.
-        IF mytabix = 1.
-          APPEND `   <div class="codeComment">` TO htmltable.
+        if mytabix = 1.
+          append `   <div class="codeComment">` to htmltable.
           incommentmode = true.
-        ELSE.
-          IF incommentmode = false.
-            APPEND `   </div>` TO htmltable.
-            APPEND `   <div class="codeComment">` TO htmltable.
+        else.
+          if incommentmode = false.
+            append `   </div>` to htmltable.
+            append `   <div class="codeComment">` to htmltable.
             incommentmode = true.
-          ENDIF.
-        ENDIF.
-      ELSE.
-        IF mytabix = 1.
-          APPEND `   <div class="code">` TO htmltable.
+          endif.
+        endif.
+      else.
+        if mytabix = 1.
+          append `   <div class="code">` to htmltable.
           incommentmode = false.
-        ELSE.
-          IF incommentmode = true.
-            APPEND `   </div>` TO htmltable.
+        else.
+          if incommentmode = true.
+            append `   </div>` to htmltable.
             incommentmode = false.
-            APPEND `   <div class="code">` TO htmltable.
-          ENDIF.
-        ENDIF.
+            append `   <div class="code">` to htmltable.
+          endif.
+        endif.
 
 *        Smaller than, greater than signs
-        IF NOT ( wacontent IS INITIAL ).
-          WHILE ( wacontent CS '<' OR wacontent CS '>' ).
-            REPLACE '<' IN wacontent WITH lt.
-            REPLACE '>' IN wacontent WITH gt.
-          ENDWHILE.
+        if not ( wacontent is initial ).
+          while ( wacontent cs '<' or wacontent cs '>' ).
+            replace '<' in wacontent with lt.
+            replace '>' in wacontent with gt.
+          endwhile.
 
 *--        Hyperlink methods in the class
 *--        Setup sudirectory where method will be saved
-          IF wacontent CS 'public section.'.
+          if wacontent cs 'public section.'.
             methoddirectory = 'public_methods'.
-          ELSEIF wacontent CS 'private section.'.
+          elseif wacontent cs 'private section.'.
             methoddirectory = 'private_methods'.
-          ELSEIF wacontent CS 'protected section.'.
+          elseif wacontent cs 'protected section.'.
             methoddirectory = 'protected_methods'.
-          ENDIF.
+          endif.
 
 *--        When it is a method, make a link
-          FIND REGEX '([:space:]*methods[:space:]*)(.*)' IN wacontent
-                                                         IGNORING CASE
-                                                         SUBMATCHES head body.
-          IF sy-subrc = 0.
-            SHIFT body LEFT DELETING LEADING space.
-            CLEAR tail.
-            SPLIT body AT space INTO hyperlinkname tail.
-            IF body <> hyperlinkname.
-              CONCATENATE space tail INTO tail.
-            ELSE.
-              SPLIT body AT '.' INTO hyperlinkname tail.
-              IF body <> hyperlinkname.
-                CONCATENATE '.' tail INTO tail.
-              ENDIF.
-            ENDIF.
+          find regex '([:space:]*methods[:space:]*)(.*)' in wacontent
+                                                         ignoring case
+                                                         submatches head body.
+          if sy-subrc = 0.
+            shift body left deleting leading space.
+            clear tail.
+            split body at space into hyperlinkname tail.
+            if body <> hyperlinkname.
+              concatenate space tail into tail.
+            else.
+              split body at '.' into hyperlinkname tail.
+              if body <> hyperlinkname.
+                concatenate '.' tail into tail.
+              endif.
+            endif.
 
-            CONCATENATE methoddirectory
+            concatenate methoddirectory
                         '/'
                         hyperlinkname
                         '.html'
-                        INTO lowercaselink.
+                        into lowercaselink.
 
-            TRANSLATE lowercaselink TO LOWER CASE.
-            CONCATENATE head
+            translate lowercaselink to lower case.
+            concatenate head
                         ' <a href="'
                         lowercaselink
                         '">'
                         hyperlinkname
                         '</a>'
                         tail
-                        INTO wacontent.
-            SHIFT wacontent RIGHT BY 2 PLACES.
-          ENDIF.
+                        into wacontent.
+            shift wacontent right by 2 places.
+          endif.
 
 *          Dictionary structures
-          IF NOT getdictstructures IS INITIAL.
-            FIND 'class' IN wacontent IGNORING CASE.
-            IF sy-subrc <> 0.
+          if not getdictstructures is initial.
+            find 'class' in wacontent ignoring case.
+            if sy-subrc <> 0.
 *              Hyperlink for dictionary/structure include
               copylinelength = strlen( wacontent ).
               copyofcurrentline = wacontent.
-              SPLIT copyofcurrentline AT space INTO head tail.
-              SHIFT tail LEFT DELETING LEADING space.
-              SPLIT tail AT space INTO head tail.
+              split copyofcurrentline at space into head tail.
+              shift tail left deleting leading space.
+              split tail at space into head tail.
 
-              TRY.
-                  IF tail+0(1) = 'Y' OR tail+0(1) = 'Z' OR tail+0(1) = 'y' OR tail+0(1) = 'z' OR tail CS customernamerange.
-                    CLEAR wacontent.
-                    SHIFT tail LEFT DELETING LEADING space.
-                    SPLIT tail AT period INTO hyperlinkname tail.
+              try.
+                  if tail+0(1) = 'Y' or tail+0(1) = 'Z' or tail+0(1) = 'y' or tail+0(1) = 'z' or tail cs customernamerange.
+                    clear wacontent.
+                    shift tail left deleting leading space.
+                    split tail at period into hyperlinkname tail.
                     copyofcurrentline = 'include structure <a href ='.
 
                     lowercaselink = hyperlinkname.
-                    TRANSLATE lowercaselink TO LOWER CASE.
+                    translate lowercaselink to lower case.
 *                  If we are running on a non UNIX environment we will need to remove forward slashes
-                    IF frontendopsystem = non_unix.
-                      TRANSLATE lowercaselink USING '/_'.
-                    ENDIF.
+                    if frontendopsystem = non_unix.
+                      translate lowercaselink using '/_'.
+                    endif.
 
-                    CONCATENATE copyofcurrentline
+                    concatenate copyofcurrentline
                                 '"'
                                 lowercaselink    "hyperlinkName
                                 '/'
@@ -8334,23 +8402,23 @@ FORM convertclasstohtml USING icontents LIKE dumihtml[]
                                 '">'
                                 hyperlinkname
                                 '</a>'
-                                period tail INTO copyofcurrentline.
+                                period tail into copyofcurrentline.
 
 *                  Pad the string back out with spaces
-                    WHILE copylinelength < currentlinelength.
-                      SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                    while copylinelength < currentlinelength.
+                      shift copyofcurrentline right by 1 places.
                       copylinelength = copylinelength + 1.
-                    ENDWHILE.
+                    endwhile.
                     wacontent = copyofcurrentline.
-                  ENDIF.
-                CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-              ENDTRY.
-            ENDIF.
-          ENDIF.
+                  endif.
+                catch cx_sy_range_out_of_bounds into objruntimeerror.
+              endtry.
+            endif.
+          endif.
 
           htmltable = wacontent.
 
-          TRY.
+          try.
               replacelenght = 0.
 *              WHILE htmltable+0(1) = ` `.
 *                REPLACE ` ` WITH '&nbsp;' INTO htmltable.
@@ -8361,47 +8429,47 @@ FORM convertclasstohtml USING icontents LIKE dumihtml[]
 *                replacelenght = replacelenght + 6.
 *              ENDWHILE.
 
-              DO replacelenght TIMES.
-                SHIFT htmltable RIGHT CIRCULAR.
-              ENDDO.
-            CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-          ENDTRY.
-        ELSE.
+              do replacelenght times.
+                shift htmltable right circular.
+              enddo.
+            catch cx_sy_range_out_of_bounds into objruntimeerror.
+          endtry.
+        else.
           htmltable = ''.
-        ENDIF.
-      ENDIF.
-    ELSE.
+        endif.
+      endif.
+    else.
       htmltable = ''.
-    ENDIF.
+    endif.
 
 *    CONCATENATE htmltable '<br />' INTO htmltable.
-    APPEND htmltable.
-  ENDLOOP.
+    append htmltable.
+  endloop.
 
-  APPEND `            </div>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          </div>` TO htmltable.
-  ELSE.
-    APPEND `          </code></pre>` TO htmltable.
-  ENDIF.
-  APPEND `          </td>`  TO htmltable.
-  APPEND `        </tr>` TO htmltable.
-  APPEND `      </table>` TO htmltable.
-  APPEND `      </td>` TO htmltable.
-  APPEND `      </tr>` TO htmltable.
+  append `            </div>` to htmltable.
+  if not highlight is initial.
+    append `          </div>` to htmltable.
+  else.
+    append `          </code></pre>` to htmltable.
+  endif.
+  append `          </td>`  to htmltable.
+  append `        </tr>` to htmltable.
+  append `      </table>` to htmltable.
+  append `      </td>` to htmltable.
+  append `      </tr>` to htmltable.
 
 * Add a html footer to the table
-  PERFORM addhtmlfooter USING htmltable[]
+  perform addhtmlfooter using htmltable[]
                               highlight
                               abap_mode.
 
   icontents[] = htmltable[].
-ENDFORM.                                                                                            "convertClassToHtml
+endform.                                                                                            "convertClassToHtml
 
 *----------------------------------------------------------------------------------------------------------------------
 *  convertFunctionToHtml... Builds an HTML table based upon a text table.
 *----------------------------------------------------------------------------------------------------------------------
-FORM convertfunctiontohtml USING icontents LIKE dumihtml[]
+form convertfunctiontohtml using icontents like dumihtml[]
                                  value(functionname)
                                  value(shortdescription)
                                  value(sourcecodetype)
@@ -8411,185 +8479,185 @@ FORM convertfunctiontohtml USING icontents LIKE dumihtml[]
                                  value(customernamerange)
                                  value(getincludes)
                                  value(getdictstructures)
-                                 value(addbackground) TYPE abap_bool
-                                 value(externalcss) TYPE abap_bool
-                                 value(highlight) TYPE abap_bool
-                                 value(newtemplate) TYPE abap_bool.
+                                 value(addbackground) type abap_bool
+                                 value(externalcss) type abap_bool
+                                 value(highlight) type abap_bool
+                                 value(newtemplate) type abap_bool.
 
-  DATA: htmltable TYPE STANDARD TABLE OF string WITH HEADER LINE.
-  DATA: head(255).
-  DATA: tail(255).
-  DATA: mytabix TYPE sytabix.
-  DATA: nextline TYPE sytabix.
-  DATA: hyperlinkname TYPE string.
-  DATA: copyofcurrentline TYPE string.
-  DATA: currentlinelength TYPE i VALUE 0.
-  DATA: copylinelength TYPE i VALUE 0.
-  DATA: ignorefuturelines TYPE abap_bool VALUE false.
-  DATA: foundasterix TYPE abap_bool VALUE false.
-  DATA: lowercaselink TYPE string.
-  DATA: wanextline TYPE string.
-  DATA: wacontent TYPE string.
-  DATA: incommentmode TYPE abap_bool VALUE 'X'.
+  data: htmltable type standard table of string with header line.
+  data: head(255).
+  data: tail(255).
+  data: mytabix type sytabix.
+  data: nextline type sytabix.
+  data: hyperlinkname type string.
+  data: copyofcurrentline type string.
+  data: currentlinelength type i value 0.
+  data: copylinelength type i value 0.
+  data: ignorefuturelines type abap_bool value false.
+  data: foundasterix type abap_bool value false.
+  data: lowercaselink type string.
+  data: wanextline type string.
+  data: wacontent type string.
+  data: incommentmode type abap_bool value 'X'.
 
 * Add a html header to the table
-  PERFORM addhtmlheader USING htmltable[]
+  perform addhtmlheader using htmltable[]
                               functionname
                               addbackground
                               ss_code
                               externalcss
                               newtemplate.
 
-  APPEND '<body>' TO htmltable.
+  append '<body>' to htmltable.
 * Class name and description
-  APPEND '<table class="outerTable">' TO htmltable.
-  APPEND `  <tr class="normalBoldLarge">` TO htmltable.
+  append '<table class="outerTable">' to htmltable.
+  append `  <tr class="normalBoldLarge">` to htmltable.
 
-  CONCATENATE `     <td><h2>Code listing for function ` functionname `</h2>` INTO htmltable.
-  APPEND htmltable.
+  concatenate `     <td><h2>Code listing for function ` functionname `</h2>` into htmltable.
+  append htmltable.
 
-  CONCATENATE `<h3> Description: ` shortdescription `</h3></td>` INTO htmltable.
-  APPEND htmltable.
-  APPEND `   </tr>` TO htmltable.
+  concatenate `<h3> Description: ` shortdescription `</h3></td>` into htmltable.
+  append htmltable.
+  append `   </tr>` to htmltable.
 
 * Code
-  APPEND `  <tr>` TO htmltable.
-  APPEND `     <td>` TO htmltable.
+  append `  <tr>` to htmltable.
+  append `     <td>` to htmltable.
 
 * Table containing code
-  APPEND `     <table class="innerTable">` TO htmltable.
-  APPEND `       <tr>` TO htmltable.
-  APPEND `          <td>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          <div id="editor">` TO htmltable.
-  ELSE.
-    APPEND `          <pre><code>` TO htmltable.
-  ENDIF.
+  append `     <table class="innerTable">` to htmltable.
+  append `       <tr>` to htmltable.
+  append `          <td>` to htmltable.
+  if not highlight is initial.
+    append `          <div id="editor">` to htmltable.
+  else.
+    append `          <pre><code>` to htmltable.
+  endif.
 
-  LOOP AT icontents INTO wacontent.
+  loop at icontents into wacontent.
     mytabix = sy-tabix.
 
 *   Extra code for adding global and doc hyperlinks to functions
-    IF sourcecodetype = is_function AND ismainfunctioninclude = true.
-      IF NOT ( wacontent IS INITIAL ).
-        IF sy-tabix > 1.
-          IF wacontent+0(1) = asterix AND ignorefuturelines = false.
+    if sourcecodetype = is_function and ismainfunctioninclude = true.
+      if not ( wacontent is initial ).
+        if sy-tabix > 1.
+          if wacontent+0(1) = asterix and ignorefuturelines = false.
             foundasterix = true.
-          ELSE.
-            IF foundasterix = true.
+          else.
+            if foundasterix = true.
 *             Lets add our extra HTML lines in here
-              APPEND '' TO htmltable.
+              append '' to htmltable.
 
 *             Global data hyperlink
               copyofcurrentline = '<div class="codeComment">*       <a href ="' .
               lowercaselink = functionname.
-              TRANSLATE lowercaselink TO LOWER CASE.
+              translate lowercaselink to lower case.
 *             If we are running on a non UNIX environment we will need to remove forward slashes
-              IF frontendopsystem = non_unix.
-                TRANSLATE lowercaselink USING '/_'.
-              ENDIF.
+              if frontendopsystem = non_unix.
+                translate lowercaselink using '/_'.
+              endif.
 
-              CONCATENATE copyofcurrentline 'global-' lowercaselink  "functionName
-                          period htmlextension '">' 'Global data declarations' '</a>' INTO copyofcurrentline.
+              concatenate copyofcurrentline 'global-' lowercaselink  "functionName
+                          period htmlextension '">' 'Global data declarations' '</a>' into copyofcurrentline.
 
 *              CONCATENATE copyofcurrentline '</div><br />' INTO copyofcurrentline.
-              CONCATENATE copyofcurrentline '</div>' INTO copyofcurrentline.
+              concatenate copyofcurrentline '</div>' into copyofcurrentline.
 
-              APPEND copyofcurrentline TO htmltable.
+              append copyofcurrentline to htmltable.
 
 *             Documentation hyperlink.
-              IF functiondocumentationexists = true.
+              if functiondocumentationexists = true.
                 copyofcurrentline = '<div class="codeComment">*       <a href ="'.
 
                 lowercaselink = functionname.
-                TRANSLATE lowercaselink TO LOWER CASE.
+                translate lowercaselink to lower case.
 *               If we are running on a non UNIX environment we will need to remove forward slashes
-                IF frontendopsystem = non_unix.
-                  TRANSLATE lowercaselink USING '/_'.
-                ENDIF.
+                if frontendopsystem = non_unix.
+                  translate lowercaselink using '/_'.
+                endif.
 
-                CONCATENATE copyofcurrentline
+                concatenate copyofcurrentline
                             'docs-'
                             lowercaselink  "functionName
                             period htmlextension '">'
                             'Function module documentation'
                             '</a>'
-                            INTO copyofcurrentline.
+                            into copyofcurrentline.
 
 *                CONCATENATE copyofcurrentline '</div><br />' INTO copyofcurrentline.
-                CONCATENATE copyofcurrentline '</div>' INTO copyofcurrentline.
-                APPEND copyofcurrentline TO htmltable.
-              ENDIF.
+                concatenate copyofcurrentline '</div>' into copyofcurrentline.
+                append copyofcurrentline to htmltable.
+              endif.
 
               foundasterix = false.
               ignorefuturelines = true.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDIF.
+            endif.
+          endif.
+        endif.
+      endif.
+    endif.
 
 *   Carry on as normal
-    IF NOT ( wacontent IS INITIAL ).
-      WHILE ( wacontent CS '<' OR wacontent CS '>' ).
-        REPLACE '<' IN wacontent WITH lt.
-        REPLACE '>' IN wacontent WITH gt.
-      ENDWHILE.
+    if not ( wacontent is initial ).
+      while ( wacontent cs '<' or wacontent cs '>' ).
+        replace '<' in wacontent with lt.
+        replace '>' in wacontent with gt.
+      endwhile.
 
-      IF wacontent+0(1) <> asterix.
-        IF mytabix = 1.
-          APPEND `   <div class="code">` TO htmltable.
+      if wacontent+0(1) <> asterix.
+        if mytabix = 1.
+          append `   <div class="code">` to htmltable.
           incommentmode = false.
-        ELSE.
-          IF incommentmode = true.
-            APPEND `   </div>` TO htmltable.
+        else.
+          if incommentmode = true.
+            append `   </div>` to htmltable.
             incommentmode = false.
-            APPEND `   <div class="code">` TO htmltable.
-          ENDIF.
-        ENDIF.
+            append `   <div class="code">` to htmltable.
+          endif.
+        endif.
 
         currentlinelength = strlen( wacontent ).
 
 *       Don't hyperlink anything for files of type documentation
-        IF sourcecodetype <> is_documentation.
+        if sourcecodetype <> is_documentation.
 *       Check for any functions to highlight
-          IF ( wacontent CS callfunction ) AND ( wacontent <> 'DESTINATION' ).
+          if ( wacontent cs callfunction ) and ( wacontent <> 'DESTINATION' ).
             nextline = mytabix + 1.
-            READ TABLE icontents INTO wanextline INDEX nextline.
-            TRANSLATE wanextline TO UPPER CASE.
-            IF wanextline NS 'DESTINATION'.
+            read table icontents into wanextline index nextline.
+            translate wanextline to upper case.
+            if wanextline ns 'DESTINATION'.
               copyofcurrentline = wacontent.
-              SHIFT copyofcurrentline LEFT DELETING LEADING space.
+              shift copyofcurrentline left deleting leading space.
 
               copylinelength = strlen( copyofcurrentline ).
 
-              SPLIT copyofcurrentline AT space INTO head tail.
-              SPLIT tail AT space INTO head tail.
-              SPLIT tail AT space INTO head tail.
+              split copyofcurrentline at space into head tail.
+              split tail at space into head tail.
+              split tail at space into head tail.
 *             Function name is now in head
-              TRANSLATE head USING ''' '.
-              SHIFT head LEFT DELETING LEADING space.
+              translate head using ''' '.
+              shift head left deleting leading space.
 
-              TRY.
-                  IF head+0(1) = 'Y' OR head+0(1) = 'Z' OR head+0(1) = 'y' OR head+0(1) = 'z' OR head CS customernamerange.
+              try.
+                  if head+0(1) = 'Y' or head+0(1) = 'Z' or head+0(1) = 'y' or head+0(1) = 'z' or head cs customernamerange.
 
 *                 Definately a customer function module
                     hyperlinkname = head.
 
-                    IF sourcecodetype = is_function.
+                    if sourcecodetype = is_function.
                       copyofcurrentline = 'call function <a href ="../'.
-                    ELSE.
+                    else.
                       copyofcurrentline = 'call function <a href ="'.
-                    ENDIF.
+                    endif.
 
                     lowercaselink = hyperlinkname.
-                    TRANSLATE lowercaselink TO LOWER CASE.
+                    translate lowercaselink to lower case.
 *                 If we are running on a non UNIX environment we will need to remove forward slashes
-                    IF frontendopsystem = non_unix.
-                      TRANSLATE lowercaselink USING '/_'.
-                    ENDIF.
+                    if frontendopsystem = non_unix.
+                      translate lowercaselink using '/_'.
+                    endif.
 
-                    CONCATENATE copyofcurrentline
+                    concatenate copyofcurrentline
                                 lowercaselink     "hyperlinkName
                                 '/'
                                 lowercaselink     "hyperlinkName
@@ -8598,85 +8666,85 @@ FORM convertfunctiontohtml USING icontents LIKE dumihtml[]
                                 hyperlinkname
                                 ''''
                                 '</a>'
-                                tail INTO copyofcurrentline.
+                                tail into copyofcurrentline.
 
 *                 Pad the string back out with spaces
-                    WHILE copylinelength < currentlinelength.
-                      SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                    while copylinelength < currentlinelength.
+                      shift copyofcurrentline right by 1 places.
                       copylinelength = copylinelength + 1.
-                    ENDWHILE.
+                    endwhile.
 
                     wacontent = copyofcurrentline.
-                  ENDIF.
-                CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-              ENDTRY.
-            ENDIF.
-          ENDIF.
-        ENDIF.
+                  endif.
+                catch cx_sy_range_out_of_bounds into objruntimeerror.
+              endtry.
+            endif.
+          endif.
+        endif.
 
 *       Check for any customer includes to hyperlink
-        IF wacontent CS include OR wacontent CS lowinclude.
+        if wacontent cs include or wacontent cs lowinclude.
           copyofcurrentline = wacontent.
 
-          SHIFT copyofcurrentline LEFT DELETING LEADING space.
+          shift copyofcurrentline left deleting leading space.
           copylinelength = strlen( copyofcurrentline ).
 
-          SPLIT copyofcurrentline AT space INTO head tail.
-          SHIFT tail LEFT DELETING LEADING space.
+          split copyofcurrentline at space into head tail.
+          shift tail left deleting leading space.
 
-          TRY.
-              IF ( tail+0(1) = 'Y' OR tail+0(1) = 'Z' OR tail+0(1) = 'y' OR tail+0(1) = 'z'
-                   OR tail CS customernamerange OR tail+0(2) = 'mz' OR tail+0(2) = 'MZ' ) AND NOT getincludes IS INITIAL.
+          try.
+              if ( tail+0(1) = 'Y' or tail+0(1) = 'Z' or tail+0(1) = 'y' or tail+0(1) = 'z'
+                   or tail cs customernamerange or tail+0(2) = 'mz' or tail+0(2) = 'MZ' ) and not getincludes is initial.
 
 *             Hyperlink for program includes
-                CLEAR wacontent.
-                SHIFT tail LEFT DELETING LEADING space.
-                SPLIT tail AT period INTO hyperlinkname tail.
+                clear wacontent.
+                shift tail left deleting leading space.
+                split tail at period into hyperlinkname tail.
                 copyofcurrentline = 'include <a href ="'.
 
                 lowercaselink = hyperlinkname.
-                TRANSLATE lowercaselink TO LOWER CASE.
+                translate lowercaselink to lower case.
 *             If we are running on a non UNIX environment we will need to remove forward slashes
-                IF frontendopsystem = non_unix.
-                  TRANSLATE lowercaselink USING '/_'.
-                ENDIF.
+                if frontendopsystem = non_unix.
+                  translate lowercaselink using '/_'.
+                endif.
 
-                CONCATENATE copyofcurrentline
+                concatenate copyofcurrentline
                             lowercaselink       "hyperlinkName
                             period htmlextension '">'
                             hyperlinkname
                             '</a>'
-                            period tail INTO copyofcurrentline.
+                            period tail into copyofcurrentline.
 
 *             Pad the string back out with spaces
-                WHILE copylinelength < currentlinelength.
-                  SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                while copylinelength < currentlinelength.
+                  shift copyofcurrentline right by 1 places.
                   copylinelength = copylinelength + 1.
-                ENDWHILE.
+                endwhile.
                 wacontent = copyofcurrentline.
-              ELSE.
-                IF NOT getdictstructures IS INITIAL.
+              else.
+                if not getdictstructures is initial.
 *               Hyperlink for structure include
                   copylinelength = strlen( copyofcurrentline ).
-                  SPLIT copyofcurrentline AT space INTO head tail.
-                  SHIFT tail LEFT DELETING LEADING space.
-                  SPLIT tail AT space INTO head tail.
+                  split copyofcurrentline at space into head tail.
+                  shift tail left deleting leading space.
+                  split tail at space into head tail.
 
-                  TRY.
-                      IF tail+0(1) = 'Y' OR tail+0(1) = 'Z' OR tail+0(1) = 'y' OR tail+0(1) = 'z' OR tail CS customernamerange.
-                        CLEAR wacontent.
-                        SHIFT tail LEFT DELETING LEADING space.
-                        SPLIT tail AT period INTO hyperlinkname tail.
+                  try.
+                      if tail+0(1) = 'Y' or tail+0(1) = 'Z' or tail+0(1) = 'y' or tail+0(1) = 'z' or tail cs customernamerange.
+                        clear wacontent.
+                        shift tail left deleting leading space.
+                        split tail at period into hyperlinkname tail.
                         copyofcurrentline = 'include structure <a href ='.
 
                         lowercaselink = hyperlinkname.
-                        TRANSLATE lowercaselink TO LOWER CASE.
+                        translate lowercaselink to lower case.
 *                   If we are running on a non UNIX environment we will need to remove forward slashes
-                        IF frontendopsystem = non_unix.
-                          TRANSLATE lowercaselink USING '/_'.
-                        ENDIF.
+                        if frontendopsystem = non_unix.
+                          translate lowercaselink using '/_'.
+                        endif.
 
-                        CONCATENATE copyofcurrentline
+                        concatenate copyofcurrentline
                                     '"'
                                     lowercaselink    "hyperlinkName
                                     '/'
@@ -8686,315 +8754,315 @@ FORM convertfunctiontohtml USING icontents LIKE dumihtml[]
                                     '">'
                                     hyperlinkname
                                     '</a>'
-                                    period tail INTO copyofcurrentline.
+                                    period tail into copyofcurrentline.
 
 *                   Pad the string back out with spaces
-                        WHILE copylinelength < currentlinelength.
-                          SHIFT copyofcurrentline RIGHT BY 1 PLACES.
+                        while copylinelength < currentlinelength.
+                          shift copyofcurrentline right by 1 places.
                           copylinelength = copylinelength + 1.
-                        ENDWHILE.
+                        endwhile.
                         wacontent = copyofcurrentline.
-                      ENDIF.
-                    CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-                  ENDTRY.
-                ENDIF.
-              ENDIF.
-            CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-          ENDTRY.
-        ENDIF.
-      ELSE.
-        IF wacontent+0(1) = asterix.
-          IF mytabix = 1.
-            APPEND `   <div class="codeComment">` TO htmltable.
+                      endif.
+                    catch cx_sy_range_out_of_bounds into objruntimeerror.
+                  endtry.
+                endif.
+              endif.
+            catch cx_sy_range_out_of_bounds into objruntimeerror.
+          endtry.
+        endif.
+      else.
+        if wacontent+0(1) = asterix.
+          if mytabix = 1.
+            append `   <div class="codeComment">` to htmltable.
             incommentmode = true.
-          ELSE.
-            IF incommentmode = false.
-              APPEND `   </div>` TO htmltable.
-              APPEND `   <div class="codeComment">` TO htmltable.
+          else.
+            if incommentmode = false.
+              append `   </div>` to htmltable.
+              append `   <div class="codeComment">` to htmltable.
               incommentmode = true.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
+            endif.
+          endif.
+        endif.
+      endif.
 
       htmltable = wacontent.
 
-      TRY.
-          IF htmltable+0(1) = ` `.
+      try.
+          if htmltable+0(1) = ` `.
 *            WHILE htmltable CS ` `.
 *              REPLACE ` ` WITH '&nbsp;' INTO htmltable.
 *              IF sy-subrc <> 0.
 *                EXIT.
 *              ENDIF.
 *            ENDWHILE.
-          ENDIF.
-        CATCH cx_sy_range_out_of_bounds INTO objruntimeerror.
-      ENDTRY.
+          endif.
+        catch cx_sy_range_out_of_bounds into objruntimeerror.
+      endtry.
 
-    ELSE.
+    else.
       htmltable = ''.
-    ENDIF.
+    endif.
 *    CONCATENATE htmltable '<br />' INTO htmltable.
-    APPEND htmltable.
-  ENDLOOP.
+    append htmltable.
+  endloop.
 
-  APPEND `            </div>` TO htmltable.
-  IF NOT highlight IS INITIAL.
-    APPEND `          </div>` TO htmltable.
-  ELSE.
-    APPEND `          </code></pre>` TO htmltable.
-  ENDIF.
-  APPEND `          </td>`  TO htmltable.
-  APPEND `        </tr>` TO htmltable.
-  APPEND `      </table>` TO htmltable.
-  APPEND `      </td>` TO htmltable.
-  APPEND `      </tr>` TO htmltable.
+  append `            </div>` to htmltable.
+  if not highlight is initial.
+    append `          </div>` to htmltable.
+  else.
+    append `          </code></pre>` to htmltable.
+  endif.
+  append `          </td>`  to htmltable.
+  append `        </tr>` to htmltable.
+  append `      </table>` to htmltable.
+  append `      </td>` to htmltable.
+  append `      </tr>` to htmltable.
 
 * Add a html footer to the table
-  PERFORM addhtmlfooter USING htmltable[]
+  perform addhtmlfooter using htmltable[]
                               highlight
                               abap_mode.
 
   icontents[] = htmltable[].
-ENDFORM.                                                                                         "convertFunctionToHtml
+endform.                                                                                         "convertFunctionToHtml
 
 *----------------------------------------------------------------------------------------------------------------------
 *  buildColumnHeaders... build table column names
 *----------------------------------------------------------------------------------------------------------------------
-FORM buildddcolumnheaders USING iloccolumncaptions LIKE dumihtml[].
+form buildddcolumnheaders using iloccolumncaptions like dumihtml[].
 
-  APPEND 'Row' TO iloccolumncaptions.
-  APPEND 'Field name' TO iloccolumncaptions.
-  APPEND 'Position' TO iloccolumncaptions.
-  APPEND 'Key' TO iloccolumncaptions.
-  APPEND 'Data element' TO iloccolumncaptions.
-  APPEND 'Domain' TO iloccolumncaptions.
-  APPEND 'Datatype' TO iloccolumncaptions.
-  APPEND 'Length' TO iloccolumncaptions.
-  APPEND 'Lowercase' TO iloccolumncaptions.
-  APPEND 'Domain text' TO iloccolumncaptions.
-ENDFORM.                                                                                            "buildColumnHeaders
+  append 'Row' to iloccolumncaptions.
+  append 'Field name' to iloccolumncaptions.
+  append 'Position' to iloccolumncaptions.
+  append 'Key' to iloccolumncaptions.
+  append 'Data element' to iloccolumncaptions.
+  append 'Domain' to iloccolumncaptions.
+  append 'Datatype' to iloccolumncaptions.
+  append 'Length' to iloccolumncaptions.
+  append 'Lowercase' to iloccolumncaptions.
+  append 'Domain text' to iloccolumncaptions.
+endform.                                                                                            "buildColumnHeaders
 
 *----------------------------------------------------------------------------------------------------------------------
 *  buildDomColumnHeaders... build table column names
 *----------------------------------------------------------------------------------------------------------------------
-FORM builddomcolumnheaders USING iloccolumncaptions LIKE dumihtml[].
+form builddomcolumnheaders using iloccolumncaptions like dumihtml[].
 
-  APPEND 'Domain Name' TO iloccolumncaptions.
-  APPEND 'Value Low' TO iloccolumncaptions.
-  APPEND 'Value High' TO iloccolumncaptions.
-  APPEND 'Text' TO iloccolumncaptions.
-ENDFORM.                    "buildDomColumnHeaders
+  append 'Domain Name' to iloccolumncaptions.
+  append 'Value Low' to iloccolumncaptions.
+  append 'Value High' to iloccolumncaptions.
+  append 'Text' to iloccolumncaptions.
+endform.                    "buildDomColumnHeaders
 
 *----------------------------------------------------------------------------------------------------------------------
 *  buildColumnHeadersTableTypes
 *----------------------------------------------------------------------------------------------------------------------
-FORM buildcolumnheaderstabletypes  USING iloccolumncaptions LIKE dumihtml[].
+form buildcolumnheaderstabletypes  using iloccolumncaptions like dumihtml[].
 
-  APPEND 'Row' TO iloccolumncaptions.
-  APPEND 'Name of table type' TO iloccolumncaptions.
-  APPEND 'Name of row type for table types' TO iloccolumncaptions.
-  APPEND 'Category of table type (range or general table type)' TO iloccolumncaptions.
-  APPEND 'Elem. type of LOW and HIGH components of a Ranges type' TO iloccolumncaptions.
-  APPEND 'Type of Object Referenced' TO iloccolumncaptions.
-  APPEND 'Initial Line Number for Table Types' TO iloccolumncaptions.
-  APPEND 'Description' TO iloccolumncaptions.
-ENDFORM.                                                                                 " BUILDCOLUMNHEADERSTABLETYPES
+  append 'Row' to iloccolumncaptions.
+  append 'Name of table type' to iloccolumncaptions.
+  append 'Name of row type for table types' to iloccolumncaptions.
+  append 'Category of table type (range or general table type)' to iloccolumncaptions.
+  append 'Elem. type of LOW and HIGH components of a Ranges type' to iloccolumncaptions.
+  append 'Type of Object Referenced' to iloccolumncaptions.
+  append 'Initial Line Number for Table Types' to iloccolumncaptions.
+  append 'Description' to iloccolumncaptions.
+endform.                                                                                 " BUILDCOLUMNHEADERSTABLETYPES
 
 
 *----------------------------------------------------------------------------------------------------------------------
 * addHTMLHeader...  add a html formatted header to our output table
 *----------------------------------------------------------------------------------------------------------------------
-FORM addhtmlheader USING ilocheader LIKE dumihtml[]
+form addhtmlheader using ilocheader like dumihtml[]
                          value(title)
-                         value(addbackground) TYPE abap_bool
-                         value(stylesheettype) TYPE char1
-                         value(externalcss) TYPE abap_bool
-                         value(newtemplate) TYPE abap_bool.
+                         value(addbackground) type abap_bool
+                         value(stylesheettype) type char1
+                         value(externalcss) type abap_bool
+                         value(newtemplate) type abap_bool.
 
-  DATA: waheader TYPE string.
+  data: waheader type string.
 
-  APPEND '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' TO ilocheader.
-  APPEND '<html xmlns="http://www.w3.org/1999/xhtml">' TO ilocheader.
-  APPEND '<head>' TO ilocheader.
+  append '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' to ilocheader.
+  append '<html xmlns="http://www.w3.org/1999/xhtml">' to ilocheader.
+  append '<head>' to ilocheader.
 *     append '<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />' to iLocHeader.
-  APPEND '<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />' TO ilocheader.
+  append '<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />' to ilocheader.
 
-  CONCATENATE '<title>' title '</title>' INTO waheader.
-  APPEND waheader TO ilocheader.
+  concatenate '<title>' title '</title>' into waheader.
+  append waheader to ilocheader.
 
-  CASE stylesheettype.
-    WHEN ss_code.
-      PERFORM addcodestyles USING ilocheader
+  case stylesheettype.
+    when ss_code.
+      perform addcodestyles using ilocheader
                                   addbackground
                                   newtemplate.
-    WHEN ss_table.
-      PERFORM addtablestyles USING ilocheader
+    when ss_table.
+      perform addtablestyles using ilocheader
                                    addbackground
                                    newtemplate.
-  ENDCASE.
+  endcase.
 
-  PERFORM addgenericstyles USING ilocheader
+  perform addgenericstyles using ilocheader
                                  addbackground
                                  externalcss
                                  newtemplate.
 
-  APPEND '</head>' TO ilocheader.
-ENDFORM.                                                                                                 "addHTMLHeader
+  append '</head>' to ilocheader.
+endform.                                                                                                 "addHTMLHeader
 
 *----------------------------------------------------------------------------------------------------------------------
 * addCodeStyles... Add the stylesheets needed for HTML output
 *----------------------------------------------------------------------------------------------------------------------
-FORM addcodestyles USING ilocheader LIKE dumihtml[]
-                         value(addbackground) TYPE abap_bool
-                         value(newtemplate) TYPE abap_bool.
+form addcodestyles using ilocheader like dumihtml[]
+                         value(addbackground) type abap_bool
+                         value(newtemplate) type abap_bool.
 
-  APPEND '<style type="text/css">' TO ilocheader.
-  IF newtemplate IS INITIAL.
-    APPEND `.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }` TO ilocheader.
-    APPEND `  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }` TO ilocheader.
-    APPEND `  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` TO ilocheader.
-    APPEND `  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` TO ilocheader.
-  ELSE.
-    APPEND `.code{ font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#000; font-size:12px; background-color:#F2F4F7 }` TO ilocheader.
-    APPEND `  .codeComment {font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#0000F0; font-size:12px; background-color:#F2F4F7 }` TO ilocheader.
-    APPEND `  .normalBold{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` TO ilocheader.
-    APPEND `  .normalBoldLarge{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` TO ilocheader.
-  ENDIF.
-  APPEND '</style>' TO ilocheader.
-ENDFORM.                    "addCodeStyles
-
-*----------------------------------------------------------------------------------------------------------------------
-* addTableStyles... Add the stylesheets needed for HTML output
-*----------------------------------------------------------------------------------------------------------------------
-FORM addtablestyles USING ilocheader LIKE dumihtml[]
-                          value(addbackground) TYPE abap_bool
-                          value(newtemplate) TYPE abap_bool.
-
-  APPEND '<style type="text/css">' TO ilocheader.
-  APPEND `  th{text-align:left}` TO ilocheader.
-
-  IF newtemplate IS INITIAL.
-    APPEND `  .cell{` TO ilocheader.
-    APPEND `     font-family:"Courier New", Courier, monospace;` TO ilocheader.
-    APPEND `     color:#000;` TO ilocheader.
-    APPEND `     font-size:12px;` TO ilocheader.
-    APPEND `     background-color:#F2F4F7;` TO ilocheader.
-    APPEND `  }` TO ilocheader.
-  ELSE.
-    APPEND `  th{` TO ilocheader.
-    APPEND `     font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px;` TO ilocheader.
-    APPEND `  }` TO ilocheader.
-
-    APPEND `  .cell{` TO ilocheader.
-    APPEND `     font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace;` TO ilocheader.
-    APPEND `     color:#000;` TO ilocheader.
-    APPEND `     font-size:12px;` TO ilocheader.
-    APPEND `     background-color:#F2F4F7;` TO ilocheader.
-    APPEND `  }` TO ilocheader.
-  ENDIF.
-
-  APPEND `  .cell td { border: thin solid #ccc; }` TO ilocheader.
-  APPEND `</style>` TO ilocheader.
-ENDFORM.                    "addTableStyles
+  append '<style type="text/css">' to ilocheader.
+  if newtemplate is initial.
+    append `.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
+    append `  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+  else.
+    append `.code{ font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#000; font-size:12px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .codeComment {font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace; color:#0000F0; font-size:12px; background-color:#F2F4F7 }` to ilocheader.
+    append `  .normalBold{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }` to ilocheader.
+    append `  .normalBoldLarge{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+  endif.
+  append '</style>' to ilocheader.
+endform.                    "addCodeStyles
 
 *----------------------------------------------------------------------------------------------------------------------
 * addTableStyles... Add the stylesheets needed for HTML output
 *----------------------------------------------------------------------------------------------------------------------
-FORM addgenericstyles USING ilocheader LIKE dumihtml[]
-                          value(addbackground) TYPE abap_bool
-                          value(externalcss) TYPE abap_bool
-                          value(newtemplate) TYPE abap_bool.
+form addtablestyles using ilocheader like dumihtml[]
+                          value(addbackground) type abap_bool
+                          value(newtemplate) type abap_bool.
 
-  APPEND '<style type="text/css">' TO ilocheader.
+  append '<style type="text/css">' to ilocheader.
+  append `  th{text-align:left}` to ilocheader.
 
-  IF newtemplate IS INITIAL.
-    APPEND `  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }` TO ilocheader.
-    APPEND `  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` TO ilocheader.
-    APPEND `  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` TO ilocheader.
-    APPEND `  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` TO ilocheader.
-  ELSE.
-    APPEND `  .normal{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px }` TO ilocheader.
-    APPEND `  .footer{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` TO ilocheader.
-    APPEND `  h2{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` TO ilocheader.
-    APPEND `  h3{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` TO ilocheader.
-  ENDIF.
+  if newtemplate is initial.
+    append `  .cell{` to ilocheader.
+    append `     font-family:"Courier New", Courier, monospace;` to ilocheader.
+    append `     color:#000;` to ilocheader.
+    append `     font-size:12px;` to ilocheader.
+    append `     background-color:#F2F4F7;` to ilocheader.
+    append `  }` to ilocheader.
+  else.
+    append `  th{` to ilocheader.
+    append `     font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px;` to ilocheader.
+    append `  }` to ilocheader.
 
-  APPEND `  .outerTable{` TO ilocheader.
-  IF NOT addbackground IS INITIAL.
-    APPEND `   background-color:#E0E7ED;` TO ilocheader.
-  ENDIF.
-  APPEND `   width:100%;` TO ilocheader.
-  APPEND `   border-top-width: thin;` TO ilocheader.
-  APPEND `   border-right-width: thin;` TO ilocheader.
-  APPEND `   border-right-width: thin;` TO ilocheader.
-  APPEND `   border-left-width: thin;` TO ilocheader.
-  APPEND `   border-top-style: solid;` TO ilocheader.
-  APPEND `   border-right-style: solid;` TO ilocheader.
-  APPEND `   border-bottom-style: solid;` TO ilocheader.
-  APPEND `   border-left-style: solid;` TO ilocheader.
-  APPEND `  }` TO ilocheader.
+    append `  .cell{` to ilocheader.
+    append `     font-family:"Source Code Pro", Monaco, Consolas, "Courier New", Courier, monospace;` to ilocheader.
+    append `     color:#000;` to ilocheader.
+    append `     font-size:12px;` to ilocheader.
+    append `     background-color:#F2F4F7;` to ilocheader.
+    append `  }` to ilocheader.
+  endif.
 
-  APPEND `  .innerTable{` TO ilocheader.
-  IF NOT addbackground IS INITIAL.
-    APPEND `   background-color:#F2F4F7;` TO ilocheader.
-  ENDIF.
-  APPEND `   width:100%;` TO ilocheader.
-  APPEND `   border-top-width: thin;` TO ilocheader.
-  APPEND `   border-right-width: thin;` TO ilocheader.
-  APPEND `   border-bottom-width: thin;` TO ilocheader.
-  APPEND `   border-left-width: thin;` TO ilocheader.
-  APPEND `   border-top-style: solid;` TO ilocheader.
-  APPEND `   border-right-style: solid;` TO ilocheader.
-  APPEND `   border-bottom-style: solid;` TO ilocheader.
-  APPEND `   border-left-style: solid;` TO ilocheader.
-  APPEND `  }` TO ilocheader.
-  APPEND '</style>' TO ilocheader.
-  IF NOT externalcss IS INITIAL.
-    APPEND `<link rel="stylesheet" type="text/css" href="default.css">` TO ilocheader.
-  ENDIF.
-ENDFORM.                    "addGenericStyles
+  append `  .cell td { border: thin solid #ccc; }` to ilocheader.
+  append `</style>` to ilocheader.
+endform.                    "addTableStyles
+
+*----------------------------------------------------------------------------------------------------------------------
+* addTableStyles... Add the stylesheets needed for HTML output
+*----------------------------------------------------------------------------------------------------------------------
+form addgenericstyles using ilocheader like dumihtml[]
+                          value(addbackground) type abap_bool
+                          value(externalcss) type abap_bool
+                          value(newtemplate) type abap_bool.
+
+  append '<style type="text/css">' to ilocheader.
+
+  if newtemplate is initial.
+    append `  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
+    append `  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
+    append `  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+    append `  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
+  else.
+    append `  .normal{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px }` to ilocheader.
+    append `  .footer{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }` to ilocheader.
+    append `  h2{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }` to ilocheader.
+    append `  h3{ font-family:Calibri, "Helvetiva Neue", Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }` to ilocheader.
+  endif.
+
+  append `  .outerTable{` to ilocheader.
+  if not addbackground is initial.
+    append `   background-color:#E0E7ED;` to ilocheader.
+  endif.
+  append `   width:100%;` to ilocheader.
+  append `   border-top-width: thin;` to ilocheader.
+  append `   border-right-width: thin;` to ilocheader.
+  append `   border-right-width: thin;` to ilocheader.
+  append `   border-left-width: thin;` to ilocheader.
+  append `   border-top-style: solid;` to ilocheader.
+  append `   border-right-style: solid;` to ilocheader.
+  append `   border-bottom-style: solid;` to ilocheader.
+  append `   border-left-style: solid;` to ilocheader.
+  append `  }` to ilocheader.
+
+  append `  .innerTable{` to ilocheader.
+  if not addbackground is initial.
+    append `   background-color:#F2F4F7;` to ilocheader.
+  endif.
+  append `   width:100%;` to ilocheader.
+  append `   border-top-width: thin;` to ilocheader.
+  append `   border-right-width: thin;` to ilocheader.
+  append `   border-bottom-width: thin;` to ilocheader.
+  append `   border-left-width: thin;` to ilocheader.
+  append `   border-top-style: solid;` to ilocheader.
+  append `   border-right-style: solid;` to ilocheader.
+  append `   border-bottom-style: solid;` to ilocheader.
+  append `   border-left-style: solid;` to ilocheader.
+  append `  }` to ilocheader.
+  append '</style>' to ilocheader.
+  if not externalcss is initial.
+    append `<link rel="stylesheet" type="text/css" href="default.css">` to ilocheader.
+  endif.
+endform.                    "addGenericStyles
 
 *----------------------------------------------------------------------------------------------------------------------
 * addHTMLFooter...  add a html formatted footer to our output table
 *----------------------------------------------------------------------------------------------------------------------
-FORM addhtmlfooter USING ilocfooter LIKE dumihtml[]
-                         value(highlight) TYPE abap_bool
-                         value(editor_mode) TYPE string.
+form addhtmlfooter using ilocfooter like dumihtml[]
+                         value(highlight) type abap_bool
+                         value(editor_mode) type string.
 
-  DATA: footermessage TYPE string.
-  DATA: wafooter TYPE string.
+  data: footermessage type string.
+  data: wafooter type string.
 
-  PERFORM buildfootermessage USING footermessage.
+  perform buildfootermessage using footermessage.
 
-  APPEND `   <tr>` TO ilocfooter.
-  CONCATENATE '<td class="footer">' footermessage '</td>' INTO wafooter.
-  APPEND wafooter TO ilocfooter.
-  APPEND `   </tr>` TO ilocfooter.
-  APPEND `</table>` TO ilocfooter.
-  IF NOT highlight IS INITIAL.
-    APPEND `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>` TO ilocfooter.
-    APPEND '<script>' TO ilocfooter.
-    APPEND '  var editor = ace.edit("editor");' TO ilocfooter.
-    APPEND '  editor.setReadOnly(true);	' TO ilocfooter.
-    APPEND '  editor.setTheme("ace/theme/eclipse");' TO ilocfooter.
-    APPEND '  editor.setOptions({ maxLines: Infinity });' TO ilocfooter.
-    CONCATENATE '  editor.getSession().setMode("ace/mode/' editor_mode '");' INTO wafooter.
-    APPEND wafooter TO ilocfooter.
-    APPEND '</script>' TO ilocfooter.
-  ENDIF.
-  APPEND '</body>' TO ilocfooter.
-  APPEND '</html>' TO ilocfooter.
-ENDFORM.                                                                                                 "addHTMLFooter
+  append `   <tr>` to ilocfooter.
+  concatenate '<td class="footer">' footermessage '</td>' into wafooter.
+  append wafooter to ilocfooter.
+  append `   </tr>` to ilocfooter.
+  append `</table>` to ilocfooter.
+  if not highlight is initial.
+    append `<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" type="text/javascript" charset="utf-8"></script>` to ilocfooter.
+    append '<script>' to ilocfooter.
+    append '  var editor = ace.edit("editor");' to ilocfooter.
+    append '  editor.setReadOnly(true);	' to ilocfooter.
+    append '  editor.setTheme("ace/theme/eclipse");' to ilocfooter.
+    append '  editor.setOptions({ maxLines: Infinity });' to ilocfooter.
+    concatenate '  editor.getSession().setMode("ace/mode/' editor_mode '");' into wafooter.
+    append wafooter to ilocfooter.
+    append '</script>' to ilocfooter.
+  endif.
+  append '</body>' to ilocfooter.
+  append '</html>' to ilocfooter.
+endform.                                                                                                 "addHTMLFooter
 
 *----------------------------------------------------------------------------------------------------------------------
 * buildFooterMessage...Returns a footer message based on the output file type.
 *----------------------------------------------------------------------------------------------------------------------
-FORM buildfootermessage USING returnmessage.
-  CONCATENATE `Extracted by Mass Download NG version `
+form buildfootermessage using returnmessage.
+  concatenate `Extracted by Mass Download NG version `
               versionno ` - <a class="h-card"href="https://github.com/diesire">Pablo Escalada</a>. 2014-`
-              sy-datum+0(4) `. Sap Release ` sy-saprl INTO returnmessage.
-ENDFORM.                                                                                            "buildFooterMessage
+              sy-datum+0(4) `. Sap Release ` sy-saprl into returnmessage.
+endform.                                                                                            "buildFooterMessage
 
 ***********************************************************************************************************************
 ********************************************DISPLAY ROUTINES***********************************************************
@@ -9003,80 +9071,80 @@ ENDFORM.                                                                        
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodeTables...
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodetables USING ilocdictionary LIKE idictionary[]
-                              iloctreedisplay LIKE itreedisplay[]
+form filltreenodetables using ilocdictionary like idictionary[]
+                              iloctreedisplay like itreedisplay[]
                               value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <wadictionary> TYPE tdicttable.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
-  DATA: sublevel TYPE string.
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <wadictionary> type tdicttable.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
+  data: sublevel type string.
 
   tablelines = lines( ilocdictionary ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring 'table downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ELSE.
-    CONCATENATE tablelinesstring 'tables downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring 'table downloaded' into watreedisplay-text2 separated by space.
+  else.
+    concatenate tablelinesstring 'tables downloaded' into watreedisplay-text2 separated by space.
+  endif.
 
-  WRITE runtime TO runtimechar.
-  CONCATENATE watreedisplay-text2 '- runtime' runtimechar INTO watreedisplay-text2 SEPARATED BY space.
+  write runtime to runtimechar.
+  concatenate watreedisplay-text2 '- runtime' runtimechar into watreedisplay-text2 separated by space.
 
 * include header display record.
   watreedisplay-tlevel = '1'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO iloctreedisplay.
+  append watreedisplay to iloctreedisplay.
 
-  LOOP AT ilocdictionary ASSIGNING <wadictionary>.
+  loop at ilocdictionary assigning <wadictionary>.
     watreedisplay-tlevel = '2'.
     watreedisplay-text2 = <wadictionary>-tablename.
     watreedisplay-tcolor2    = 3.
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 3.
     watreedisplay-tpos3      = 60.
-    CONCATENATE 'Dictionary:' <wadictionary>-tabletitle INTO watreedisplay-text3 SEPARATED BY space.
+    concatenate 'Dictionary:' <wadictionary>-tabletitle into watreedisplay-text3 separated by space.
 
-    APPEND watreedisplay TO iloctreedisplay.
-  ENDLOOP.
-ENDFORM.                                                                                            "fillTreeNodeTables
+    append watreedisplay to iloctreedisplay.
+  endloop.
+endform.                                                                                            "fillTreeNodeTables
 
 *-------------------------------------------------------------------------------------------------------
 *   fillTreeNodeXslt...
 *-------------------------------------------------------------------------------------------------------
-FORM filltreenodexslt USING iloctransformations LIKE itransformations[]
-                            iloctreedisplay LIKE itreedisplay[]
+form filltreenodexslt using iloctransformations like itransformations[]
+                            iloctreedisplay like itreedisplay[]
                             value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <watransformation> type ttransformation.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
 
   tablelines = lines( iloctransformations ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring ` XSLT program downloaded` INTO watreedisplay-text2.
-  ELSE.
-    CONCATENATE tablelinesstring ` XSLT programs downloaded` INTO watreedisplay-text2.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring ` XSLT program downloaded` into watreedisplay-text2.
+  else.
+    concatenate tablelinesstring ` XSLT programs downloaded` into watreedisplay-text2.
+  endif.
 
-  WRITE runtime TO runtimechar.
+  write runtime to runtimechar.
 
-  CONCATENATE watreedisplay-text2 ` - runtime ` runtimechar INTO watreedisplay-text2.
+  concatenate watreedisplay-text2 ` - runtime ` runtimechar into watreedisplay-text2.
 * include header display record.
   watreedisplay-tlevel = '2'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO itreedisplay.
+  append watreedisplay to itreedisplay.
 
-  LOOP AT iloctransformations ASSIGNING <watransformation>.
+  loop at iloctransformations assigning <watransformation>.
 *   Main programs.
     watreedisplay-tlevel = '3'.
     watreedisplay-text2 = <watransformation>-xsltname.
@@ -9085,50 +9153,50 @@ FORM filltreenodexslt USING iloctransformations LIKE itransformations[]
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 1.
     watreedisplay-tpos3      = 60.
-    CONCATENATE `XSLT: ` <watransformation>-xsltdesc INTO watreedisplay-text3.
-    APPEND watreedisplay TO itreedisplay.
-  ENDLOOP.
-ENDFORM.                                                                           " FILLTREENODEXSLT
+    concatenate `XSLT: ` <watransformation>-xsltdesc into watreedisplay-text3.
+    append watreedisplay to itreedisplay.
+  endloop.
+endform.                                                                           " FILLTREENODEXSLT
 
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodeMessages...
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodemessages USING ilocmessages LIKE imessages[]
-                                iloctreedisplay LIKE itreedisplay[]
+form filltreenodemessages using ilocmessages like imessages[]
+                                iloctreedisplay like itreedisplay[]
                                 value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <wamessage> TYPE tmessage.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <wamessage> type tmessage.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
 
-  SORT ilocmessages ASCENDING BY arbgb.
+  sort ilocmessages ascending by arbgb.
 
-  LOOP AT ilocmessages ASSIGNING <wamessage>.
-    AT NEW arbgb.
+  loop at ilocmessages assigning <wamessage>.
+    at new arbgb.
       tablelines = tablelines + 1.
-    ENDAT.
-  ENDLOOP.
+    endat.
+  endloop.
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring 'message class downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ELSE.
-    CONCATENATE tablelinesstring 'message classes downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring 'message class downloaded' into watreedisplay-text2 separated by space.
+  else.
+    concatenate tablelinesstring 'message classes downloaded' into watreedisplay-text2 separated by space.
+  endif.
 
-  WRITE runtime TO runtimechar.
-  CONCATENATE watreedisplay-text2 '- runtime' runtimechar INTO watreedisplay-text2 SEPARATED BY space.
+  write runtime to runtimechar.
+  concatenate watreedisplay-text2 '- runtime' runtimechar into watreedisplay-text2 separated by space.
 
 * include header display record.
   watreedisplay-tlevel = '1'.
   watreedisplay-tlength2 = 60.
   watreedisplay-tcolor2 = 1.
-  APPEND watreedisplay TO iloctreedisplay.
+  append watreedisplay to iloctreedisplay.
 
-  LOOP AT ilocmessages ASSIGNING <wamessage>.
-    AT NEW arbgb.
+  loop at ilocmessages assigning <wamessage>.
+    at new arbgb.
       watreedisplay-tlevel = '2'.
       watreedisplay-text2 = <wamessage>-arbgb.
       watreedisplay-tcolor2    = 5.
@@ -9136,110 +9204,110 @@ FORM filltreenodemessages USING ilocmessages LIKE imessages[]
       watreedisplay-tcolor3    = 5.
       watreedisplay-tpos3      = 60.
       watreedisplay-text3 = <wamessage>-stext.
-      CONCATENATE 'Message class:'  watreedisplay-text3 INTO watreedisplay-text3 SEPARATED BY space.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDAT.
-  ENDLOOP.
-ENDFORM.                                                                                          "fillTreeNodeMessages
+      concatenate 'Message class:'  watreedisplay-text3 into watreedisplay-text3 separated by space.
+      append watreedisplay to iloctreedisplay.
+    endat.
+  endloop.
+endform.                                                                                          "fillTreeNodeMessages
 
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodeTableTypes
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodetabletypes USING iloctabletypes LIKE itabletypes[]
-                                  iloctreedisplay LIKE itreedisplay[]
+form filltreenodetabletypes using iloctabletypes like itabletypes[]
+                                  iloctreedisplay like itreedisplay[]
                                   value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <watabletype> LIKE LINE OF iloctabletypes.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
-  DATA: sublevel TYPE string.
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <watabletype> like line of iloctabletypes.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
+  data: sublevel type string.
 
   tablelines = lines( iloctabletypes ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring 'table type downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ELSE.
-    CONCATENATE tablelinesstring 'table types downloaded' INTO watreedisplay-text2 SEPARATED BY space.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring 'table type downloaded' into watreedisplay-text2 separated by space.
+  else.
+    concatenate tablelinesstring 'table types downloaded' into watreedisplay-text2 separated by space.
+  endif.
 
-  WRITE runtime TO runtimechar.
-  CONCATENATE watreedisplay-text2 '- runtime' runtimechar INTO watreedisplay-text2 SEPARATED BY space.
+  write runtime to runtimechar.
+  concatenate watreedisplay-text2 '- runtime' runtimechar into watreedisplay-text2 separated by space.
 
 * include header display record.
   watreedisplay-tlevel = '2'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO iloctreedisplay.
+  append watreedisplay to iloctreedisplay.
 
-  LOOP AT iloctabletypes ASSIGNING <watabletype>.
+  loop at iloctabletypes assigning <watabletype>.
     watreedisplay-tlevel = '3'.
     watreedisplay-text2 = <watabletype>-typename.
     watreedisplay-tcolor2    = 3.
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 3.
     watreedisplay-tpos3      = 60.
-    CONCATENATE 'Dictionary:' <watabletype>-ddtext INTO watreedisplay-text3 SEPARATED BY space.
+    concatenate 'Dictionary:' <watabletype>-ddtext into watreedisplay-text3 separated by space.
 
-    APPEND watreedisplay TO iloctreedisplay.
-  ENDLOOP.
-ENDFORM.                                                                                        " FILLTREENODETABLETYPES
+    append watreedisplay to iloctreedisplay.
+  endloop.
+endform.                                                                                        " FILLTREENODETABLETYPES
 
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodeFunctions...
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodefunctions USING ilocfunctions LIKE ifunctions[]
-                                 iloctreedisplay LIKE itreedisplay[]
+form filltreenodefunctions using ilocfunctions like ifunctions[]
+                                 iloctreedisplay like itreedisplay[]
                                  value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <wafunction> TYPE tfunction.
-  FIELD-SYMBOLS: <wascreen> TYPE tscreenflow.
-  FIELD-SYMBOLS: <waguititle> TYPE tguititle.
-  FIELD-SYMBOLS: <wadictionary> TYPE tdicttable.
-  FIELD-SYMBOLS: <wainclude> TYPE tinclude.
-  FIELD-SYMBOLS: <wamessage> TYPE tmessage.
-  FIELD-SYMBOLS: <watabletype> TYPE ttabletype.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <wafunction> type tfunction.
+  field-symbols: <wascreen> type tscreenflow.
+  field-symbols: <waguititle> type tguititle.
+  field-symbols: <wadictionary> type tdicttable.
+  field-symbols: <wainclude> type tinclude.
+  field-symbols: <wamessage> type tmessage.
+  field-symbols: <watabletype> type ttabletype.
+  field-symbols: <watransformation> type ttransformation.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
 
-  SORT ilocfunctions ASCENDING BY functionname.
+  sort ilocfunctions ascending by functionname.
 
   tablelines = lines( ilocfunctions ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring ` function downloaded` INTO watreedisplay-text2.
-  ELSE.
-    CONCATENATE tablelinesstring ` functions downloaded` INTO watreedisplay-text2.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring ` function downloaded` into watreedisplay-text2.
+  else.
+    concatenate tablelinesstring ` functions downloaded` into watreedisplay-text2.
+  endif.
 
-  WRITE runtime TO runtimechar.
+  write runtime to runtimechar.
 
-  CONCATENATE watreedisplay-text2 ` - runtime ` runtimechar INTO watreedisplay-text2.
+  concatenate watreedisplay-text2 ` - runtime ` runtimechar into watreedisplay-text2.
 * include header display record.
   watreedisplay-tlevel = '1'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO iloctreedisplay.
+  append watreedisplay to iloctreedisplay.
 
 * Lets fill the detail in
-  LOOP AT ilocfunctions ASSIGNING <wafunction>.
+  loop at ilocfunctions assigning <wafunction>.
     watreedisplay-tlevel = 2.
     watreedisplay-text2 = <wafunction>-functionname.
     watreedisplay-tcolor2    = 7.
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 7.
     watreedisplay-tpos3      = 60.
-    CONCATENATE `Function: ` <wafunction>-functionname INTO watreedisplay-text3.
-    APPEND watreedisplay TO iloctreedisplay.
+    concatenate `Function: ` <wafunction>-functionname into watreedisplay-text3.
+    append watreedisplay to iloctreedisplay.
 
 *   Screens.
-    LOOP AT <wafunction>-iscreenflow ASSIGNING <wascreen>.
+    loop at <wafunction>-iscreenflow assigning <wascreen>.
       watreedisplay-tlevel = '2'.
       watreedisplay-text2 = <wascreen>-screen.
       watreedisplay-tcolor2    = 6.
@@ -9247,11 +9315,11 @@ FORM filltreenodefunctions USING ilocfunctions LIKE ifunctions[]
       watreedisplay-tcolor3    = 6.
       watreedisplay-tpos3      = 60.
       watreedisplay-text3 = 'Screen'.
-      APPEND watreedisplay TO itreedisplay.
-    ENDLOOP.
+      append watreedisplay to itreedisplay.
+    endloop.
 
 *   GUI Title.
-    LOOP AT <wafunction>-iguititle ASSIGNING <waguititle>.
+    loop at <wafunction>-iguititle assigning <waguititle>.
       watreedisplay-tlevel = '2'.
       watreedisplay-text2 = <waguititle>-obj_code.
       watreedisplay-tcolor2    = 6.
@@ -9259,61 +9327,61 @@ FORM filltreenodefunctions USING ilocfunctions LIKE ifunctions[]
       watreedisplay-tcolor3    = 6.
       watreedisplay-tpos3      = 60.
       watreedisplay-text3 = 'GUI Title'.
-      APPEND watreedisplay TO itreedisplay.
-    ENDLOOP.
+      append watreedisplay to itreedisplay.
+    endloop.
 
 *   Fill in the tree with include information
-    LOOP AT <wafunction>-iincludes ASSIGNING <wainclude>.
+    loop at <wafunction>-iincludes assigning <wainclude>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wainclude>-includename.
       watreedisplay-tcolor2    = 4.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 4.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Include:   ` <wainclude>-includetitle INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Include:   ` <wainclude>-includetitle into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with dictionary information
-    LOOP AT <wafunction>-idictstruct ASSIGNING <wadictionary>.
+    loop at <wafunction>-idictstruct assigning <wadictionary>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wadictionary>-tablename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Dictionary:` <wadictionary>-tabletitle INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Dictionary:` <wadictionary>-tabletitle into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with Table type information
-    LOOP AT <wafunction>-itabletypes ASSIGNING <watabletype>.
+    loop at <wafunction>-itabletypes assigning <watabletype>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watabletype>-typename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watabletype>-ddtext INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watabletype>-ddtext into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with transformation information
-    LOOP AT <wafunction>-itransformations[] ASSIGNING <watransformation>.
+    loop at <wafunction>-itransformations[] assigning <watransformation>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watransformation>-xsltname.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watransformation>-xsltdesc INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watransformation>-xsltdesc into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with message information
-    SORT <wafunction>-imessages[] ASCENDING BY arbgb.
-    LOOP AT <wafunction>-imessages ASSIGNING <wamessage>.
-      AT NEW arbgb.
+    sort <wafunction>-imessages[] ascending by arbgb.
+    loop at <wafunction>-imessages assigning <wamessage>.
+      at new arbgb.
         watreedisplay-tlevel = 3.
         watreedisplay-text2 = <wamessage>-arbgb.
         watreedisplay-tcolor2    = 5.
@@ -9322,60 +9390,60 @@ FORM filltreenodefunctions USING ilocfunctions LIKE ifunctions[]
         watreedisplay-tpos3      = 60.
 
 *       Select the message class text if we do not have it already
-        IF <wamessage>-stext IS INITIAL.
-          SELECT SINGLE stext FROM t100a
-                              INTO <wamessage>-stext
-                              WHERE arbgb = <wamessage>-arbgb.
-        ENDIF.
+        if <wamessage>-stext is initial.
+          select single stext from t100a
+                              into <wamessage>-stext
+                              where arbgb = <wamessage>-arbgb.
+        endif.
 
         watreedisplay-text3 = <wamessage>-stext.
-        CONCATENATE `Message class: `  watreedisplay-text3 INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDAT.
-    ENDLOOP.
-  ENDLOOP.
-ENDFORM.                                                                                         "fillTreeNodeFunctions
+        concatenate `Message class: `  watreedisplay-text3 into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endat.
+    endloop.
+  endloop.
+endform.                                                                                         "fillTreeNodeFunctions
 
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodePrograms
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodeprograms USING ilocprograms LIKE iprograms[]
-                                ilocfunctions LIKE ifunctions[]
-                                iloctreedisplay LIKE itreedisplay[]
+form filltreenodeprograms using ilocprograms like iprograms[]
+                                ilocfunctions like ifunctions[]
+                                iloctreedisplay like itreedisplay[]
                                 value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <waprogram> TYPE tprogram.
-  FIELD-SYMBOLS: <wascreen> TYPE tscreenflow.
-  FIELD-SYMBOLS: <wafunction> TYPE tfunction.
-  FIELD-SYMBOLS: <wadictionary> TYPE tdicttable.
-  FIELD-SYMBOLS: <wainclude> TYPE tinclude.
-  FIELD-SYMBOLS: <wamessage> TYPE tmessage.
-  FIELD-SYMBOLS: <watabletype> TYPE ttabletype.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <waprogram> type tprogram.
+  field-symbols: <wascreen> type tscreenflow.
+  field-symbols: <wafunction> type tfunction.
+  field-symbols: <wadictionary> type tdicttable.
+  field-symbols: <wainclude> type tinclude.
+  field-symbols: <wamessage> type tmessage.
+  field-symbols: <watabletype> type ttabletype.
+  field-symbols: <watransformation> type ttransformation.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
 
   tablelines = lines( ilocprograms ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring ` program downloaded` INTO watreedisplay-text2.
-  ELSE.
-    CONCATENATE tablelinesstring ` programs downloaded` INTO watreedisplay-text2.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring ` program downloaded` into watreedisplay-text2.
+  else.
+    concatenate tablelinesstring ` programs downloaded` into watreedisplay-text2.
+  endif.
 
-  WRITE runtime TO runtimechar.
+  write runtime to runtimechar.
 
-  CONCATENATE watreedisplay-text2 ` - runtime ` runtimechar INTO watreedisplay-text2.
+  concatenate watreedisplay-text2 ` - runtime ` runtimechar into watreedisplay-text2.
 * include header display record.
   watreedisplay-tlevel = '1'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO itreedisplay.
+  append watreedisplay to itreedisplay.
 
-  LOOP AT ilocprograms ASSIGNING <waprogram>.
+  loop at ilocprograms assigning <waprogram>.
 *   Main programs.
     watreedisplay-tlevel = '2'.
     watreedisplay-text2 = <waprogram>-progname.
@@ -9384,10 +9452,10 @@ FORM filltreenodeprograms USING ilocprograms LIKE iprograms[]
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 1.
     watreedisplay-tpos3      = 60.
-    CONCATENATE `Program: ` <waprogram>-programtitle INTO watreedisplay-text3.
-    APPEND watreedisplay TO itreedisplay.
+    concatenate `Program: ` <waprogram>-programtitle into watreedisplay-text3.
+    append watreedisplay to itreedisplay.
 *   Screens.
-    LOOP AT <waprogram>-iscreenflow ASSIGNING <wascreen>.
+    loop at <waprogram>-iscreenflow assigning <wascreen>.
       watreedisplay-tlevel = '3'.
       watreedisplay-text2 = <wascreen>-screen.
       watreedisplay-tcolor2    = 6.
@@ -9395,12 +9463,12 @@ FORM filltreenodeprograms USING ilocprograms LIKE iprograms[]
       watreedisplay-tcolor3    = 6.
       watreedisplay-tpos3      = 60.
       watreedisplay-text3 = 'Screen'.
-      APPEND watreedisplay TO itreedisplay.
-    ENDLOOP.
+      append watreedisplay to itreedisplay.
+    endloop.
 *   fill in the tree with message information
-    SORT <waprogram>-imessages[] ASCENDING BY arbgb.
-    LOOP AT <waprogram>-imessages ASSIGNING <wamessage>.
-      AT NEW arbgb.
+    sort <waprogram>-imessages[] ascending by arbgb.
+    loop at <waprogram>-imessages assigning <wamessage>.
+      at new arbgb.
         watreedisplay-tlevel = 3.
         watreedisplay-text2 = <wamessage>-arbgb.
         watreedisplay-tcolor2    = 5.
@@ -9409,103 +9477,103 @@ FORM filltreenodeprograms USING ilocprograms LIKE iprograms[]
         watreedisplay-tpos3      = 60.
 
 *       Select the message class text if we do not have it already
-        IF <wamessage>-stext IS INITIAL.
-          SELECT SINGLE stext FROM t100a
-                              INTO <wamessage>-stext
-                              WHERE arbgb = <wamessage>-arbgb.
-        ENDIF.
+        if <wamessage>-stext is initial.
+          select single stext from t100a
+                              into <wamessage>-stext
+                              where arbgb = <wamessage>-arbgb.
+        endif.
 
         watreedisplay-text3 = <wamessage>-stext.
-        CONCATENATE `Message class: `  watreedisplay-text3 INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDAT.
-    ENDLOOP.
+        concatenate `Message class: `  watreedisplay-text3 into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endat.
+    endloop.
 *   Fill in the tree with include information
-    LOOP AT <waprogram>-iincludes ASSIGNING <wainclude>.
+    loop at <waprogram>-iincludes assigning <wainclude>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wainclude>-includename.
       watreedisplay-tcolor2    = 4.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 4.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Include:   ` <wainclude>-includetitle INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Include:   ` <wainclude>-includetitle into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 *   fill in the tree with dictionary information
-    LOOP AT <waprogram>-idictstruct ASSIGNING <wadictionary>.
+    loop at <waprogram>-idictstruct assigning <wadictionary>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wadictionary>-tablename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Dictionary:    ` <wadictionary>-tabletitle INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Dictionary:    ` <wadictionary>-tabletitle into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with Table type information
-    LOOP AT <waprogram>-itabletypes ASSIGNING <watabletype>.
+    loop at <waprogram>-itabletypes assigning <watabletype>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watabletype>-typename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watabletype>-ddtext INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watabletype>-ddtext into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with transformation information
-    LOOP AT <waprogram>-itransformations ASSIGNING <watransformation>.
+    loop at <waprogram>-itransformations assigning <watransformation>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watransformation>-xsltname.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watransformation>-xsltdesc INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watransformation>-xsltdesc into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   Function Modules
-    LOOP AT ilocfunctions ASSIGNING <wafunction> WHERE programlinkname = <waprogram>-progname.
+    loop at ilocfunctions assigning <wafunction> where programlinkname = <waprogram>-progname.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 = <wafunction>-functionname.
       watreedisplay-tcolor2    = 7.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 7.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Function:      ` <wafunction>-functionname INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
+      concatenate `Function:      ` <wafunction>-functionname into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
 
 *     Fill in the tree with include information
-      LOOP AT <wafunction>-iincludes ASSIGNING <wainclude>.
+      loop at <wafunction>-iincludes assigning <wainclude>.
         watreedisplay-tlevel = 4.
         watreedisplay-text2 =  <wainclude>-includename.
         watreedisplay-tcolor2    = 4.
         watreedisplay-tlength3   = 80.
         watreedisplay-tcolor3    = 4.
         watreedisplay-tpos3      = 60.
-        CONCATENATE `Include:       ` <wainclude>-includetitle INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDLOOP.
+        concatenate `Include:       ` <wainclude>-includetitle into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endloop.
 
 *     fill in the tree with dictionary information
-      LOOP AT <wafunction>-idictstruct ASSIGNING <wadictionary>.
+      loop at <wafunction>-idictstruct assigning <wadictionary>.
         watreedisplay-tlevel = 4.
         watreedisplay-text2 =  <wadictionary>-tablename.
         watreedisplay-tcolor2    = 3.
         watreedisplay-tlength3   = 80.
         watreedisplay-tcolor3    = 3.
         watreedisplay-tpos3      = 60.
-        CONCATENATE `Dictionary:    ` <wadictionary>-tabletitle INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDLOOP.
+        concatenate `Dictionary:    ` <wadictionary>-tabletitle into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endloop.
 
 *     fill in the tree with message information
-      SORT <wafunction>-imessages[] ASCENDING BY arbgb.
-      LOOP AT <wafunction>-imessages ASSIGNING <wamessage>.
-        AT NEW arbgb.
+      sort <wafunction>-imessages[] ascending by arbgb.
+      loop at <wafunction>-imessages assigning <wamessage>.
+        at new arbgb.
           watreedisplay-tlevel = 4.
           watreedisplay-text2 = <wamessage>-arbgb.
           watreedisplay-tcolor2    = 5.
@@ -9514,61 +9582,61 @@ FORM filltreenodeprograms USING ilocprograms LIKE iprograms[]
           watreedisplay-tpos3      = 60.
 
 *         Select the message class text if we do not have it already
-          IF <wamessage>-stext IS INITIAL.
-            SELECT SINGLE stext FROM t100a
-                                INTO <wamessage>-stext
-                                WHERE arbgb = <wamessage>-arbgb.
-          ENDIF.
+          if <wamessage>-stext is initial.
+            select single stext from t100a
+                                into <wamessage>-stext
+                                where arbgb = <wamessage>-arbgb.
+          endif.
 
           watreedisplay-text3 = <wamessage>-stext.
-          CONCATENATE `Message class:  `  watreedisplay-text3 INTO watreedisplay-text3.
-          APPEND watreedisplay TO iloctreedisplay.
-        ENDAT.
-      ENDLOOP.
-    ENDLOOP.
-  ENDLOOP.
-ENDFORM.                                                                                          "fillTreeNodePrograms
+          concatenate `Message class:  `  watreedisplay-text3 into watreedisplay-text3.
+          append watreedisplay to iloctreedisplay.
+        endat.
+      endloop.
+    endloop.
+  endloop.
+endform.                                                                                          "fillTreeNodePrograms
 
 *----------------------------------------------------------------------------------------------------------------------
 *  fillTreeNodeClasses
 *----------------------------------------------------------------------------------------------------------------------
-FORM filltreenodeclasses USING ilocclasses LIKE iclasses[]
-                               ilocfunctions LIKE ifunctions[]
-                               iloctreedisplay LIKE itreedisplay[]
+form filltreenodeclasses using ilocclasses like iclasses[]
+                               ilocfunctions like ifunctions[]
+                               iloctreedisplay like itreedisplay[]
                                value(runtime).
 
-  DATA: tablelines TYPE i.
-  DATA: watreedisplay LIKE snodetext.
-  FIELD-SYMBOLS: <waclass> TYPE tclass.
-  FIELD-SYMBOLS: <wamethod> TYPE tmethod.
-  FIELD-SYMBOLS: <wafunction> TYPE tfunction.
-  FIELD-SYMBOLS: <wadictionary> TYPE tdicttable.
-  FIELD-SYMBOLS: <wainclude> TYPE tinclude.
-  FIELD-SYMBOLS: <wamessage> TYPE tmessage.
-  FIELD-SYMBOLS: <watabletype> TYPE ttabletype.
-  FIELD-SYMBOLS: <watransformation> TYPE ttransformation.
-  DATA: tablelinesstring TYPE string.
-  DATA: runtimechar(10).
+  data: tablelines type i.
+  data: watreedisplay like snodetext.
+  field-symbols: <waclass> type tclass.
+  field-symbols: <wamethod> type tmethod.
+  field-symbols: <wafunction> type tfunction.
+  field-symbols: <wadictionary> type tdicttable.
+  field-symbols: <wainclude> type tinclude.
+  field-symbols: <wamessage> type tmessage.
+  field-symbols: <watabletype> type ttabletype.
+  field-symbols: <watransformation> type ttransformation.
+  data: tablelinesstring type string.
+  data: runtimechar(10).
 
   tablelines = lines( ilocclasses ).
   tablelinesstring = tablelines.
 
-  IF tablelines = 1.
-    CONCATENATE tablelinesstring ` class downloaded` INTO watreedisplay-text2.
-  ELSE.
-    CONCATENATE tablelinesstring ` classes downloaded` INTO watreedisplay-text2.
-  ENDIF.
+  if tablelines = 1.
+    concatenate tablelinesstring ` class downloaded` into watreedisplay-text2.
+  else.
+    concatenate tablelinesstring ` classes downloaded` into watreedisplay-text2.
+  endif.
 
-  WRITE runtime TO runtimechar.
+  write runtime to runtimechar.
 
-  CONCATENATE watreedisplay-text2 ` - runtime ` runtimechar INTO watreedisplay-text2.
+  concatenate watreedisplay-text2 ` - runtime ` runtimechar into watreedisplay-text2.
 * include header display record.
   watreedisplay-tlevel = '1'.
   watreedisplay-tlength2  = 60.
   watreedisplay-tcolor2    = 1.
-  APPEND watreedisplay TO itreedisplay.
+  append watreedisplay to itreedisplay.
 
-  LOOP AT ilocclasses ASSIGNING <waclass>.
+  loop at ilocclasses assigning <waclass>.
 *   Main Class.
     watreedisplay-tlevel = '2'.
     watreedisplay-text2 = <waclass>-clsname.
@@ -9577,25 +9645,25 @@ FORM filltreenodeclasses USING ilocclasses LIKE iclasses[]
     watreedisplay-tlength3   = 80.
     watreedisplay-tcolor3    = 1.
     watreedisplay-tpos3      = 60.
-    CONCATENATE `Class:    ` <waclass>-descript INTO watreedisplay-text3.
-    APPEND watreedisplay TO itreedisplay.
+    concatenate `Class:    ` <waclass>-descript into watreedisplay-text3.
+    append watreedisplay to itreedisplay.
 
 *   fill in the tree with method information
-    LOOP AT <waclass>-imethods[] ASSIGNING <wamethod>.
+    loop at <waclass>-imethods[] assigning <wamethod>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wamethod>-cmpname.
       watreedisplay-tcolor2    = 2.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 2.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Method:   ` <wamethod>-descript INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Method:   ` <wamethod>-descript into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with message information
-    SORT <waclass>-imessages[] ASCENDING BY arbgb.
-    LOOP AT <waclass>-imessages ASSIGNING <wamessage>.
-      AT NEW arbgb.
+    sort <waclass>-imessages[] ascending by arbgb.
+    loop at <waclass>-imessages assigning <wamessage>.
+      at new arbgb.
         watreedisplay-tlevel = 3.
         watreedisplay-text2 = <wamessage>-arbgb.
         watreedisplay-tcolor2    = 5.
@@ -9604,93 +9672,93 @@ FORM filltreenodeclasses USING ilocclasses LIKE iclasses[]
         watreedisplay-tpos3      = 60.
 
 *       Select the message class text if we do not have it already
-        IF <wamessage>-stext IS INITIAL.
-          SELECT SINGLE stext FROM t100a
-                              INTO <wamessage>-stext
-                              WHERE arbgb = <wamessage>-arbgb.
-        ENDIF.
+        if <wamessage>-stext is initial.
+          select single stext from t100a
+                              into <wamessage>-stext
+                              where arbgb = <wamessage>-arbgb.
+        endif.
 
         watreedisplay-text3 = <wamessage>-stext.
-        CONCATENATE `Message class: `  watreedisplay-text3 INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDAT.
-    ENDLOOP.
+        concatenate `Message class: `  watreedisplay-text3 into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endat.
+    endloop.
 
 *   fill in the tree with dictionary information
-    LOOP AT <waclass>-idictstruct ASSIGNING <wadictionary>.
+    loop at <waclass>-idictstruct assigning <wadictionary>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <wadictionary>-tablename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Dictionary:    ` <wadictionary>-tabletitle INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Dictionary:    ` <wadictionary>-tabletitle into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with Table type information
-    LOOP AT <waclass>-itabletypes ASSIGNING <watabletype>.
+    loop at <waclass>-itabletypes assigning <watabletype>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watabletype>-typename.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watabletype>-ddtext INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watabletype>-ddtext into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   fill in the tree with transformation information
-    LOOP AT <waclass>-itransformations ASSIGNING <watransformation>.
+    loop at <waclass>-itransformations assigning <watransformation>.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 =  <watransformation>-xsltname.
       watreedisplay-tcolor2    = 3.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 3.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Table Type:    ` <watransformation>-xsltdesc INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
-    ENDLOOP.
+      concatenate `Table Type:    ` <watransformation>-xsltdesc into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
+    endloop.
 
 *   Function Modules
-    LOOP AT ilocfunctions ASSIGNING <wafunction> WHERE programlinkname = <waclass>-clsname.
+    loop at ilocfunctions assigning <wafunction> where programlinkname = <waclass>-clsname.
       watreedisplay-tlevel = 3.
       watreedisplay-text2 = <wafunction>-functionname.
       watreedisplay-tcolor2    = 7.
       watreedisplay-tlength3   = 80.
       watreedisplay-tcolor3    = 7.
       watreedisplay-tpos3      = 60.
-      CONCATENATE `Function:      ` <wafunction>-functionname INTO watreedisplay-text3.
-      APPEND watreedisplay TO iloctreedisplay.
+      concatenate `Function:      ` <wafunction>-functionname into watreedisplay-text3.
+      append watreedisplay to iloctreedisplay.
 
 *     Fill in the tree with include information
-      LOOP AT <wafunction>-iincludes ASSIGNING <wainclude>.
+      loop at <wafunction>-iincludes assigning <wainclude>.
         watreedisplay-tlevel = 4.
         watreedisplay-text2 =  <wainclude>-includename.
         watreedisplay-tcolor2    = 4.
         watreedisplay-tlength3   = 80.
         watreedisplay-tcolor3    = 4.
         watreedisplay-tpos3      = 60.
-        CONCATENATE `Include:       ` <wainclude>-includetitle INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDLOOP.
+        concatenate `Include:       ` <wainclude>-includetitle into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endloop.
 
 *     fill in the tree with dictionary information
-      LOOP AT <wafunction>-idictstruct ASSIGNING <wadictionary>.
+      loop at <wafunction>-idictstruct assigning <wadictionary>.
         watreedisplay-tlevel = 4.
         watreedisplay-text2 =  <wadictionary>-tablename.
         watreedisplay-tcolor2    = 3.
         watreedisplay-tlength3   = 80.
         watreedisplay-tcolor3    = 3.
         watreedisplay-tpos3      = 60.
-        CONCATENATE `Dictionary:    ` <wadictionary>-tabletitle INTO watreedisplay-text3.
-        APPEND watreedisplay TO iloctreedisplay.
-      ENDLOOP.
+        concatenate `Dictionary:    ` <wadictionary>-tabletitle into watreedisplay-text3.
+        append watreedisplay to iloctreedisplay.
+      endloop.
 
 *     fill in the tree with message information
-      SORT <wafunction>-imessages[] ASCENDING BY arbgb.
-      LOOP AT <wafunction>-imessages ASSIGNING <wamessage>.
-        AT NEW arbgb.
+      sort <wafunction>-imessages[] ascending by arbgb.
+      loop at <wafunction>-imessages assigning <wamessage>.
+        at new arbgb.
           watreedisplay-tlevel = 4.
           watreedisplay-text2 = <wamessage>-arbgb.
           watreedisplay-tcolor2    = 5.
@@ -9699,62 +9767,62 @@ FORM filltreenodeclasses USING ilocclasses LIKE iclasses[]
           watreedisplay-tpos3      = 60.
 
 *         Select the message class text if we do not have it already
-          IF <wamessage>-stext IS INITIAL.
-            SELECT SINGLE stext FROM t100a
-                                INTO <wamessage>-stext
-                                WHERE arbgb = <wamessage>-arbgb.
-          ENDIF.
+          if <wamessage>-stext is initial.
+            select single stext from t100a
+                                into <wamessage>-stext
+                                where arbgb = <wamessage>-arbgb.
+          endif.
 
           watreedisplay-text3 = <wamessage>-stext.
-          CONCATENATE `Message class:  `  watreedisplay-text3 INTO watreedisplay-text3.
-          APPEND watreedisplay TO iloctreedisplay.
-        ENDAT.
-      ENDLOOP.
-    ENDLOOP.
-  ENDLOOP.
-ENDFORM.                                                                                           "fillTreeNodeClasses
+          concatenate `Message class:  `  watreedisplay-text3 into watreedisplay-text3.
+          append watreedisplay to iloctreedisplay.
+        endat.
+      endloop.
+    endloop.
+  endloop.
+endform.                                                                                           "fillTreeNodeClasses
 
 *----------------------------------------------------------------------------------------------------------------------
 * displayTree...
 *----------------------------------------------------------------------------------------------------------------------
-FORM displaytree USING iloctreedisplay LIKE itreedisplay[].
+form displaytree using iloctreedisplay like itreedisplay[].
 
-  DATA: watreedisplay TYPE snodetext.
+  data: watreedisplay type snodetext.
 
 * build up the tree from the internal table node
-  CALL FUNCTION 'RS_TREE_CONSTRUCT'
-    TABLES
+  call function 'RS_TREE_CONSTRUCT'
+    tables
       nodetab            = itreedisplay
-    EXCEPTIONS
+    exceptions
       tree_failure       = 1
       id_not_found       = 2
       wrong_relationship = 3
-      OTHERS             = 4.
+      others             = 4.
 
 * get the first index and expand the whole tree
-  READ TABLE iloctreedisplay INTO watreedisplay INDEX 1.
-  CALL FUNCTION 'RS_TREE_EXPAND'
-    EXPORTING
+  read table iloctreedisplay into watreedisplay index 1.
+  call function 'RS_TREE_EXPAND'
+    exporting
       node_id   = watreedisplay-id
       all       = 'X'
-    EXCEPTIONS
+    exceptions
       not_found = 1
-      OTHERS    = 2.
+      others    = 2.
 
 * now display the tree
-  CALL FUNCTION 'RS_TREE_LIST_DISPLAY'
-    EXPORTING
+  call function 'RS_TREE_LIST_DISPLAY'
+    exporting
       callback_program      = sy-cprog
       callback_user_command = 'CB_USER_COMMAND'
       callback_text_display = 'CB_text_DISPLAY'
       callback_top_of_page  = 'TOP_OF_PAGE'
-    EXCEPTIONS
-      OTHERS                = 1.
-ENDFORM.                                                                                                   "displayTree
+    exceptions
+      others                = 1.
+endform.                                                                                                   "displayTree
 
 *----------------------------------------------------------------------------------------------------------------------
 *  topOfPage... for tree display routines.
 *----------------------------------------------------------------------------------------------------------------------
-FORM topofpage.
+form topofpage.
 
-ENDFORM.                    "topOfPage
+endform.                    "topOfPage
