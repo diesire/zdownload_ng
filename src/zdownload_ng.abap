@@ -367,7 +367,8 @@ endclass.                    "gc_output_xml DEFINITION
 class gc_output_xml implementation.
   method generate.
     field-symbols:
-      <ls_statement> type sstmnt.
+      <ls_statement> type sstmnt,
+      <ls_token> type stokes.
 
     data:
       lt_tokens type standard table of stokes,
@@ -383,6 +384,37 @@ class gc_output_xml implementation.
     append( |<description>| ).
     append( |<![CDATA[{ gv_program_description }]]>|  ).
     append( |</description>| ).
+    append( |<code>| ).
+
+    " code
+    loop at lt_statements assigning <ls_statement>.
+      case <ls_statement>-type.
+
+        when 'P'. "line comment
+
+          loop at lt_tokens from <ls_statement>-from to <ls_statement>-to assigning <ls_token>.
+            append( |<comment><![CDATA[{ <ls_token>-str }]]></comment>| ).
+          endloop.
+        when 'I'. "include
+
+          append( |<include>| ).
+          loop at lt_tokens from <ls_statement>-from to <ls_statement>-to assigning <ls_token>.
+            append( |<token>{ <ls_token>-str }</token>| ).
+          endloop.
+          append( |</include>| ).
+        when 'K'. "otro código
+
+          append( |<statement>| ).
+          loop at lt_tokens from <ls_statement>-from to <ls_statement>-to assigning <ls_token>.
+            append( |<token><![CDATA[{ <ls_token>-str }]]></token>| ).
+          endloop.
+          append( |</statement>| ).
+        when others.
+
+      endcase.
+    endloop.
+
+    append( |</code>| ).
     append( '</program>' ).
 
     et_lines = gt_lines.
